@@ -17,8 +17,5 @@ $(BINDIR)liblist.so: $(BINDIR)liblist.o
 $(BINDIR)liblist.o: $(SRCDIR)LinkedListAPI.c $(IDIR)LinkedListAPI.h
 	$(CC) $(CFLAGS) -c $(SRCDIR)LinkedListAPI.c -o $@
 
-run:
-	$(BINDIR)LinkedListAPI 
-
 clean:
-	rm ./bin/*.o ./LinkedListAPI
+	rm ./bin/*.o 
