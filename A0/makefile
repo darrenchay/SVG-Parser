@@ -15,7 +15,7 @@ $(BINDIR)liblist.so: $(BINDIR)liblist.o
 	$(CC) -shared $(BINDIR)liblist.o -o $@
 
 $(BINDIR)liblist.o: $(SRCDIR)LinkedListAPI.c $(IDIR)LinkedListAPI.h
-	$(CC) $(CFLAGS) -c $(SRCDIR)LinkedListAPI.c -o $@
+	$(CC) $(CFLAGS) -c -fpic $(SRCDIR)LinkedListAPI.c -o $@
 
 clean:
 	rm ./bin/*.o 
