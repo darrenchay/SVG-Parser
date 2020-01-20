@@ -119,7 +119,7 @@ char* attributeToString( void* data) {
 }
 
 int compareAttributes(const void *first, const void *second) {
-
+    return 0;
 }
 
 
@@ -132,7 +132,7 @@ char* groupToString( void* data) {
 }
 
 int compareGroups(const void *first, const void *second) {
-
+    return 0;
 }
 
 
@@ -145,7 +145,7 @@ char* rectangleToString(void* data) {
 }
 
 int compareRectangles(const void *first, const void *second) {
-
+    return 0;
 }
 
 
@@ -158,7 +158,7 @@ char* circleToString(void* data) {
 }
 
 int compareCircles(const void *first, const void *second) {
-
+    return 0;
 }
 
 
@@ -171,5 +171,5 @@ char* pathToString(void* data) {
 }
 
 int comparePaths(const void *first, const void *second) {
-
+    return 0;
 }
