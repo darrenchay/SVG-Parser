@@ -1,4 +1,7 @@
 #include "SVGParser.h"
+#include <string.h>
+#include <stdlib.h>
+
 /** Function to create an SVG object based on the contents of an SVG file.
  *@pre File name cannot be an empty string or NULL.
        File represented by this name must exist and must be readable.
@@ -10,7 +13,7 @@
  *@param fileName - a string containing the name of the SVG file
 **/
 SVGimage* createSVGimage(char* fileName) {
-
+    return NULL;
 }
 
 /** Function to create a string representation of an SVG object.
@@ -20,7 +23,7 @@ SVGimage* createSVGimage(char* fileName) {
  *@param obj - a pointer to an SVG struct
 **/
 char* SVGimageToString(SVGimage* img) {
-
+    return NULL;
 }
 
 /** Function to delete image content and free all the memory.
@@ -49,18 +52,22 @@ void deleteSVGimage(SVGimage* img) {
 
 // Function that returns a list of all rectangles in the image.  
 List* getRects(SVGimage* img) {
+    return NULL;
 
 }
 // Function that returns a list of all circles in the image.  
 List* getCircles(SVGimage* img) {
+    return NULL;
 
 }
 // Function that returns a list of all groups in the image.  
 List* getGroups(SVGimage* img) {
+    return NULL;
 
 }
 // Function that returns a list of all paths in the image.  
 List* getPaths(SVGimage* img) {
+    return NULL;
 
 }
 
@@ -81,18 +88,20 @@ List* getPaths(SVGimage* img) {
 
 // Function that returns the number of all rectangles with the specified area
 int numRectsWithArea(SVGimage* img, float area) {
-
+    return 0;
 }
 // Function that returns the number of all circles with the specified area
 int numCirclesWithArea(SVGimage* img, float area) {
-
+    return 0;
 }
 // Function that returns the number of all paths with the specified data - i.e. Path.data field
 int numPathsWithdata(SVGimage* img, char* data) {
+    return 0;
 
 }
 // Function that returns the number of all groups with the specified length - see A1 Module 2 for details
 int numGroupsWithLen(SVGimage* img, int len) {
+    return 0;
 
 }
 
@@ -104,18 +113,28 @@ int numGroupsWithLen(SVGimage* img, int len) {
     *@param obj - a pointer to an SVG struct
 */
 int numAttr(SVGimage* img) {
+    return 0;
 
 }
 
 
 /* ******************************* List helper functions  - MUST be implemented *************************** */
 
-void deleteAttribute( void* data) {
+void deleteAttribute(void* data) {
 
 }
 
-char* attributeToString( void* data) {
+char* attributeToString(void* data) {
+    Attribute *attribute = (Attribute *) data;
+    char *stringAtt = malloc(strlen(attribute->name) + strlen(attribute->value) + 30);
+    
+    strcat(stringAtt, "Attribute:\n\tName: ");
+    strcat(stringAtt, attribute->name);
+    strcat(stringAtt, "\n\tValue: ");
+    strcat(stringAtt, attribute->value);
+    strcat(stringAtt, "\n");
 
+    return stringAtt;
 }
 
 int compareAttributes(const void *first, const void *second) {
@@ -128,6 +147,7 @@ void deleteGroup(void* data) {
 }
 
 char* groupToString( void* data) {
+    return NULL;
 
 }
 
@@ -141,6 +161,42 @@ void deleteRectangle(void* data) {
 }
 
 char* rectangleToString(void* data) {
+    Rectangle *rect;
+
+    if(data == NULL) {
+        return NULL;
+    }
+    /* Initializes rect struct */
+    rect = (Rectangle *)data;
+
+    /* Creates iterator for list of attributes */
+    ListIterator attributeList = createIterator(rect->otherAttributes);
+    void *listNode;
+
+    /* String to store attribute list as string */
+    char *attributeListString = malloc(1024);
+    int stringLen = 0;
+
+    /* Iterate through list of attributes until hit a NULL */
+    while((listNode = nextElement(&attributeList)) != NULL) {
+        Attribute *currAttribute = (Attribute *)listNode;
+
+        /* Convert current att to a string */
+        char *currAttributeString = attributeToString(currAttribute);
+        stringLen += strlen(currAttributeString);
+
+        /* Allocate more space for string attribute */
+        attributeListString = realloc(attributeListString, stringLen);
+
+        /* Adds curr attribute string to list of attributes string */
+        strcat(attributeListString, currAttributeString);
+
+    }
+    
+    char *rectString = malloc(1024 + strlen(attributeListString));
+
+    sprintf(rectString, "Rectangle: x=%.3f, y=%.3f, width=%.3f, height=%.3f, unit=%s\n %s", rect->x, rect->y, rect->width, rect->height, rect->units, attributeListString);
+    return rectString;
 
 }
 
@@ -154,6 +210,7 @@ void deleteCircle(void* data) {
 }
 
 char* circleToString(void* data) {
+    return NULL;
 
 }
 
@@ -167,6 +224,7 @@ void deletePath(void* data) {
 }
 
 char* pathToString(void* data) {
+    return NULL;
 
 }
 
