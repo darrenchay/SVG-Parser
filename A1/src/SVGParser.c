@@ -121,11 +121,31 @@ int numAttr(SVGimage* img) {
 /* ******************************* List helper functions  - MUST be implemented *************************** */
 
 void deleteAttribute(void* data) {
+    Attribute *attribute;
+
+    if(data == NULL) {
+        return;
+    }
+
+    attribute = (Attribute *)data;
+    /* printf("Freeing name\n"); */
+    free(attribute->name);
+    /* printf("Freeing value\n"); */
+    free(attribute->value);
+    free(attribute);
+    /* printf("deleted\n"); */
 
 }
 
 char* attributeToString(void* data) {
-    Attribute *attribute = (Attribute *) data;
+    Attribute *attribute;
+
+    if(data == NULL) {
+        return NULL;
+    }
+
+    attribute = (Attribute *)data;
+
     char *stringAtt = malloc(strlen(attribute->name) + strlen(attribute->value) + 30);
     
     strcat(stringAtt, "Attribute:\n\tName: ");
@@ -157,7 +177,16 @@ int compareGroups(const void *first, const void *second) {
 
 
 void deleteRectangle(void* data) {
+    Rectangle *rect;
 
+    if(data == NULL) {
+        return;
+    }
+    /* Initializes rect struct */
+    rect = (Rectangle *)data;
+
+    freeList(rect->otherAttributes);
+    /* free(rect); */
 }
 
 char* rectangleToString(void* data) {
@@ -169,33 +198,11 @@ char* rectangleToString(void* data) {
     /* Initializes rect struct */
     rect = (Rectangle *)data;
 
-    /* Creates iterator for list of attributes */
-    ListIterator attributeList = createIterator(rect->otherAttributes);
-    void *listNode;
-
-    /* String to store attribute list as string */
-    char *attributeListString = malloc(1024);
-    int stringLen = 0;
-
-    /* Iterate through list of attributes until hit a NULL */
-    while((listNode = nextElement(&attributeList)) != NULL) {
-        Attribute *currAttribute = (Attribute *)listNode;
-
-        /* Convert current att to a string */
-        char *currAttributeString = attributeToString(currAttribute);
-        stringLen += strlen(currAttributeString);
-
-        /* Allocate more space for string attribute */
-        attributeListString = realloc(attributeListString, stringLen);
-
-        /* Adds curr attribute string to list of attributes string */
-        strcat(attributeListString, currAttributeString);
-
-    }
+    char *attributeListString = toString(rect->otherAttributes);
     
     char *rectString = malloc(1024 + strlen(attributeListString));
 
-    sprintf(rectString, "Rectangle: x=%.3f, y=%.3f, width=%.3f, height=%.3f, unit=%s\n %s", rect->x, rect->y, rect->width, rect->height, rect->units, attributeListString);
+    sprintf(rectString, "Rectangle: x=%.3f, y=%.3f, width=%.3f, height=%.3f, unit=%s\n%s", rect->x, rect->y, rect->width, rect->height, rect->units, attributeListString);
     return rectString;
 
 }
@@ -206,12 +213,32 @@ int compareRectangles(const void *first, const void *second) {
 
 
 void deleteCircle(void* data) {
+    Circle *circle;
+
+    if(data == NULL) {
+        return;
+    }
+
+    circle = (Circle *)data;
+    freeList(circle->otherAttributes);
+    free(circle);
 
 }
 
 char* circleToString(void* data) {
-    return NULL;
+    Circle *circle;
 
+    if(data == NULL) {
+        return NULL;
+    }
+
+    circle = (Circle *)data;
+
+    char *attributeListString = toString(circle->otherAttributes);
+
+    char *circleString = malloc(1024 + strlen(attributeListString));
+    sprintf(circleString, "Circle: cx=%.3f, cy=%.3f, r=%.3f, unit=%s\n%s", circle->cx, circle->cy, circle->r, circle->units, attributeListString);
+    return circleString;
 }
 
 int compareCircles(const void *first, const void *second) {
