@@ -163,10 +163,34 @@ int compareAttributes(const void *first, const void *second) {
 
 
 void deleteGroup(void* data) {
+    Group *group;
 
+    if(data == NULL) {
+        return;
+    }
+
+    group = (Group *)data;
+
+    freeList(group->rectangles);
+    freeList(group->circles);
+    freeList(group->paths);
+    freeList(group->otherAttributes);
+    deleteGroup(group);
+    free(group);
 }
 
 char* groupToString( void* data) {
+    Group *group;
+    char *groupString;
+    int lengthString = 0;
+
+    if(data == NULL) {
+        return NULL;
+    }
+
+    group = (Group *)data;
+    lengthString = strlen()
+
     return NULL;
 
 }
@@ -247,11 +271,35 @@ int compareCircles(const void *first, const void *second) {
 
 
 void deletePath(void* data) {
+    Path *path;
 
+    if(data == NULL) {
+        return;
+    }
+
+    path = (Path *)data;
+    free(path->data);
+    freeList(path->otherAttributes);
+    free(path);
 }
 
 char* pathToString(void* data) {
-    return NULL;
+    Path *path;
+    char *pathString;
+    if(data == NULL) {
+        return NULL;
+    }
+
+    path = (Path *)data;
+
+    pathString = malloc(20 + strlen(path->data) + strlen(toString(path->otherAttributes)));
+
+    strcat(pathString, "Path:\n\tData: ");
+    strcat(pathString, path->data);
+    strcat(pathString, "\n");
+    strcat(pathString, path->otherAttributes);
+
+    return pathString;
 
 }
 
