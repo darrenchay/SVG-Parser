@@ -7,6 +7,11 @@ XML_PATH = /usr/include/libxml2
 # Standard common makefile
 parser: $(BIN)libsvgparse.so
 
+debug: $(BIN)main_debug
+
+$(BIN)main_debug: $(SRC)main_tester_function.c $(BIN)libsvgparse.so
+	gcc -c $(CFLAGS) -I$(INC) $(SRC)main_tester_function.c -o $@ -lxml2 -lm -llibsvgparse
+
 $(BIN)libsvgparse.so: $(BIN)SVGParser.o $(BIN)LinkedListAPI.o
 	gcc -shared -o $(BIN)libsvgparse.so $(BIN)SVGParser.o $(BIN)LinkedListAPI.o -lxml2 -lm
 
