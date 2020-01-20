@@ -13,6 +13,37 @@
  *@param fileName - a string containing the name of the SVG file
 **/
 SVGimage* createSVGimage(char* fileName) {
+    xmlDoc *doc = NULL;
+    xmlNode *root_element = NULL;
+
+    /*
+     * this initialize the library and check potential ABI mismatches
+     * between the version it was compiled for and the actual shared
+     * library used.
+     */
+    LIBXML_TEST_VERSION
+
+    /*parse the file and get the DOM */
+    doc = xmlReadFile(fileName, NULL, 0);
+
+    if (doc == NULL) {
+        printf("error: could not parse file %s\n", fileName);
+    }
+
+    /*Get the root element node */
+    root_element = xmlDocGetRootElement(doc);
+    xmlNode *cur_node;
+    for (cur_node = root_element; cur_node != NULL; cur_node = cur_node->next) {
+        if (cur_node->type == XML_ELEMENT_NODE) {
+            printf("node type: Element, name: %s\n", cur_node->name);
+        }
+
+        // Uncomment the code below if you want to see the content of every node.
+
+        if (cur_node->content != NULL ){
+            printf("  content: %s\n", cur_node->content);
+        }
+    }
     return NULL;
 }
 
@@ -33,7 +64,7 @@ char* SVGimageToString(SVGimage* img) {
  *@param obj - a pointer to an SVG struct
 **/
 void deleteSVGimage(SVGimage* img) {
-
+/* 6 freelist 1 free */
 }
 
 /* For the four "get..." functions below, make sure you return a list of opinters to the existing structs 
@@ -175,7 +206,9 @@ void deleteGroup(void* data) {
     freeList(group->circles);
     freeList(group->paths);
     freeList(group->otherAttributes);
-    deleteGroup(group);
+    printf("deleting group1\n");
+    freeList(group->groups);
+    printf("deleting group\n");
     free(group);
 }
 
@@ -189,9 +222,19 @@ char* groupToString( void* data) {
     }
 
     group = (Group *)data;
-    lengthString = strlen()
+    lengthString = strlen(toString(group->rectangles)) + strlen(toString(group->circles)) + strlen(toString(group->paths)) + strlen(toString(group->groups)) + strlen(toString(group->otherAttributes));
 
-    return NULL;
+    groupString = malloc(10 + lengthString);
+
+    strcat(groupString, "Group:\n");
+    strcat(groupString, toString(group->rectangles));
+    strcat(groupString, toString(group->circles));
+    strcat(groupString, toString(group->paths));
+    strcat(groupString, toString(group->groups));
+    strcat(groupString, toString(group->otherAttributes));
+
+
+    return groupString;
 
 }
 
@@ -297,7 +340,7 @@ char* pathToString(void* data) {
     strcat(pathString, "Path:\n\tData: ");
     strcat(pathString, path->data);
     strcat(pathString, "\n");
-    strcat(pathString, path->otherAttributes);
+    strcat(pathString, toString(path->otherAttributes));
 
     return pathString;
 
