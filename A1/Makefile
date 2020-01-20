@@ -1,32 +1,20 @@
-UNAME := $(shell uname)
-CC = gcc
-CFLAGS = -Wall -std=c11 -g
-LDFLAGS= -L.
+CFLAGS = -Wall -g -std=c11
+BIN = bin/
+INC = include/
+SRC = src/
+XML_PATH = /usr/include/libxml2
 
-ifeq ($(UNAME), Linux)
-	INC_PATH = /usr/include/libxml2
-endif
-ifeq ($(UNAME), Darwin)
-	INC_PATH = /System/Volumes/Data/Applications/Xcode.app/Contents/Developer/Platforms/MacOSX.platform/Developer/SDKs/MacOSX.sdk/usr/include/libxml2
-endif
+# Standard common makefile
+parser: $(BIN)libsvgparse.so
 
+$(BIN)libsvgparse.so: $(BIN)SVGParser.o $(BIN)LinkedListAPI.o
+	gcc -shared -o $(BIN)libsvgparse.so $(BIN)SVGParser.o $(BIN)LinkedListAPI.o -lxml2 -lm
 
-all: StructListDemo
-	
-StructListDemo: StructListDemo.o liblist.so
-	$(CC) $(CFLAGS) $(LDFLAGS) -o StructListDemo StructListDemo.o  -llist
-	
-StructListDemo.o: StructListDemo.c
-	$(CC) $(CFLAGS) -c StructListDemo.c 
-	
-liblist.so: LinkedListAPI.o
-	$(CC) -shared -o liblist.so LinkedListAPI.o
+$(BIN)SVGParser.o: $(SRC)SVGParser.c $(INC)LinkedListAPI.h $(INC)SVGParser.h
+	gcc -c -fpic $(CFLAGS) -I$(XML_PATH) -I$(INC) $(SRC)SVGParser.c -o $(BIN)SVGParser.o
 
-LinkedListAPI.o: LinkedListAPI.c LinkedListAPI.h
-	$(CC) $(CFLAGS) -c -fpic LinkedListAPI.c
-
-xmlExample: libXmlExample.c
-	$(CC) $(CFLAGS) -I$(INC_PATH) libXmlExample.c -lxml2 -o xmlExample
+$(BIN)LinkedListAPI.o: $(SRC)LinkedListAPI.c $(INC)LinkedListAPI.h
+	gcc -c -fpic $(CFLAGS) -I$(INC) $(SRC)LinkedListAPI.c -o $(BIN)LinkedListAPI.o
 
 clean:
-	rm -rf StructListDemo xmlExample *.o *.so
+	rm $(BIN)*.o $(BIN)*.so
