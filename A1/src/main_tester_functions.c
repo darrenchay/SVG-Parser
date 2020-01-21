@@ -14,6 +14,8 @@ int main (void) {
     Attribute *attribute2 = malloc (sizeof(Attribute));
     Attribute *attribute3 = malloc (sizeof(Attribute));
     Attribute *attribute4 = malloc (sizeof(Attribute));
+    Attribute *attribute5 = malloc (sizeof(Attribute));
+
 
 
     char *name1 = malloc(5);
@@ -48,6 +50,14 @@ int main (void) {
     attribute4->name = name4;
     attribute4->value = value4;
 
+    char *name5 = malloc(6);
+    strcpy(name5, "test5");
+    char *value5 = malloc(7);
+    strcpy(value5, "value5");
+
+    attribute5->name = name5;
+    attribute5->value = value5;
+
     char *attributeString = attributeToString((void *)attribute1);
     printf("%s\n", attributeString);
     free(attributeString);
@@ -62,6 +72,9 @@ int main (void) {
 
     List *attributeList4 = initializeList(&attributeToString, &deleteAttribute, &compareAttributes);
     insertFront(attributeList4, attribute4);
+
+    List *attributeList5 = initializeList(&attributeToString, &deleteAttribute, &compareAttributes);
+    insertFront(attributeList5, attribute5);
 
     printf("---FREEING LIST ATTRIBUTES---\n");
     /* freeList(attributeList); */
@@ -141,11 +154,18 @@ int main (void) {
     group->circles = CircleList;
     group->paths = PathList;
     group->otherAttributes = attributeList4;
+    group->groups = initializeList(groupToString, deleteGroup, compareGroups);
+
+    Group *group2 = malloc(sizeof(Group));
+    group2->rectangles = initializeList(rectangleToString, deleteRectangle, compareRectangles);
+    group2->circles = initializeList(circleToString, deleteCircle, compareCircles);
+    group2->paths = initializeList(pathToString, deletePath, comparePaths);
+    group2->otherAttributes = attributeList5;
+    group2->groups = initializeList(groupToString, deleteGroup, compareGroups);
+
+    insertFront(group->groups, group2);
 
     List *GroupList = initializeList(groupToString, deleteGroup, compareGroups);
-    List *GroupList1 = initializeList(groupToString, deleteGroup, compareGroups);
-
-    group->groups = GroupList1;
     insertFront(GroupList, group);
     
     /* group->groups = GroupList; */

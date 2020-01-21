@@ -206,9 +206,7 @@ void deleteGroup(void* data) {
     freeList(group->circles);
     freeList(group->paths);
     freeList(group->otherAttributes);
-    printf("deleting group1\n");
     freeList(group->groups);
-    printf("deleting group\n");
     free(group);
 }
 
@@ -223,26 +221,30 @@ char* groupToString( void* data) {
 
     group = (Group *)data;
 
+    /* Getting all the lists of items as strings */
     char *rectListString = toString(group->rectangles);
     char *circleListString = toString(group->circles);
     char *pathListString = toString(group->paths);
-    char *groupListString = toString(group->groups);
     char *attListString = toString(group->otherAttributes);
+    char *groupListString = toString(group->groups);
+
+    /* Mallocing enough space for group string */
     lengthString = strlen(rectListString) + strlen(circleListString) + strlen(pathListString) + strlen(groupListString) + strlen(attListString);
 
-    groupString = malloc(30 + lengthString);
+    groupString = malloc(50 + lengthString);
 
+    /* Generating group string */
     strcpy(groupString, "Group:\n");
     strcat(groupString, rectListString);
     strcat(groupString, circleListString);
     strcat(groupString, pathListString);
-    strcat(groupString, "Group Attributes:\n");
-    strcat(groupString, attListString);
     strcat(groupString, "\t");
+    strcat(groupString, "\n\tGroup Attributes:");
+    strcat(groupString, attListString);
     strcat(groupString, groupListString);
+    strcat(groupString, "\n");
 
-
-
+    //Freeing list strings
     free(rectListString);
     free(circleListString);
     free(pathListString);
@@ -287,7 +289,7 @@ char* rectangleToString(void* data) {
     
     /* Creates the string to return */
     char *rectString = malloc(1024 + strlen(attributeListString));
-    sprintf(rectString, "Rectangle: x=%.3f, y=%.3f, width=%.3f, height=%.3f, unit=%s\n%s", rect->x, rect->y, rect->width, rect->height, rect->units, attributeListString);
+    sprintf(rectString, "Rectangle: x=%.3f, y=%.3f, width=%.3f, height=%.3f, unit=%s%s", rect->x, rect->y, rect->width, rect->height, rect->units, attributeListString);
     
     /* Frees attribute list string */
     free(attributeListString);
@@ -327,7 +329,7 @@ char* circleToString(void* data) {
     char *attributeListString = toString(circle->otherAttributes);
 
     char *circleString = malloc(1024 + strlen(attributeListString));
-    sprintf(circleString, "Circle: cx=%.3f, cy=%.3f, r=%.3f, unit=%s\n\t%s", circle->cx, circle->cy, circle->r, circle->units, attributeListString);
+    sprintf(circleString, "Circle: cx=%.3f, cy=%.3f, r=%.3f, unit=%s\t%s", circle->cx, circle->cy, circle->r, circle->units, attributeListString);
     
     free(attributeListString);
     return circleString;
@@ -369,7 +371,7 @@ char* pathToString(void* data) {
 
     strcpy(pathString, "Path: Data=");
     strcat(pathString, path->data);
-    strcat(pathString, "\n\t");
+    strcat(pathString, "\t");
     strcat(pathString, attributeListString);
 
     free(attributeListString);
