@@ -167,7 +167,7 @@ int main (void) {
     printf("---FREEING LIST GROUPS---\n");
     freeList(GroupList);
  */
-    createSVGimage("../rect.svg");
-
+    SVGimage *image = createSVGimage("../rect.svg");
+    printf("%s\n", SVGimageToString(image));
     return 0;
 }
