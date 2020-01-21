@@ -2,9 +2,15 @@
 #include <string.h>
 #include <stdlib.h>
 
+/* Function definitions */
 SVGimage *initSVGimage(); 
-Attribute *createAttribute(xmlAttr *attributeNode); 
 void loadSVGimage(xmlNode * a_node, SVGimage *image);
+Attribute *createAttribute(xmlAttr *attributeNode); 
+void createRect(xmlNode *rectNode, SVGimage * image);
+
+
+
+
 
 /** Function to create an SVG object based on the contents of an SVG file.
  *@pre File name cannot be an empty string or NULL.
@@ -41,7 +47,6 @@ SVGimage* createSVGimage(char* fileName) {
     image = initSVGimage();
 
     loadSVGimage(root_element, image);
-    printf("    Attributes List SVG: %s\n", toString(image->otherAttributes));
 
     /*free the document */
     xmlFreeDoc(doc);
@@ -58,6 +63,11 @@ SVGimage* createSVGimage(char* fileName) {
 /* Creates an SVGimage struct */
 SVGimage *initSVGimage() {
     SVGimage *image = malloc(sizeof(SVGimage));
+
+    image->namespace[0] = '\0';
+    image->title[0] = '\0';
+    image->description[0] = '\0';
+
     image->rectangles = initializeList(rectangleToString, deleteRectangle, compareRectangles);
     image->circles = initializeList(circleToString, deleteCircle, compareCircles);
     image->paths = initializeList(pathToString, deletePath, comparePaths);
@@ -67,17 +77,18 @@ SVGimage *initSVGimage() {
     return image;
 }
 
+/* Loads content of xml into SVGimage */
 void loadSVGimage(xmlNode * a_node, SVGimage *image) {
     xmlNode *cur_node = NULL;
 
     for (cur_node = a_node; cur_node != NULL; cur_node = cur_node->next) {
-        if (cur_node->type == XML_ELEMENT_NODE) {
+        /* if (cur_node->type == XML_ELEMENT_NODE) {
             printf("node type: Element, name: %s\n", cur_node->name);
         }
 
         if (cur_node->content != NULL ){
             printf("  content: %s, size%ld\n", (char *)cur_node->content, strlen((char *)cur_node->content));
-        }
+        } */
 
         /* Writing title to svg image */
         if(strcmp((char *)cur_node->name,"title")==0) {
@@ -93,15 +104,28 @@ void loadSVGimage(xmlNode * a_node, SVGimage *image) {
             } else {
                 strcpy(image->title, (char *)cur_node->children->content);
             }
+        } else if(strcmp((char *)cur_node->name,"desc")==0) { /* Writing desc to svg image */
+            /* Truncates if > 255 */
+            if(strlen((char *)cur_node->children->content) > 255) {
+                char *tempString = malloc(256);
+                strncpy(tempString, (char *)cur_node->children->content, 255);
+                tempString[255] = '\0';
+                strcpy(image->description, tempString);
+                free(tempString);
+            } else {
+                strcpy(image->description, (char *)cur_node->children->content);
+            }
+        } else if(strcmp((char *)cur_node->name,"rect")==0) { /* Adding rect to svg image */
+            createRect(cur_node, image);
+        } else if (strcmp((char *)cur_node->name,"svg")==0) { /* Adding svg attributes */
+            xmlAttr *attr;
+            for (attr = cur_node->properties; attr != NULL; attr = attr->next)
+            {
+                Attribute *attribute = createAttribute(attr);
+                insertBack(image->otherAttributes, attribute);
+            }
         }
-
-        // Iterate through every attribute of the current node
-        xmlAttr *attr;
-        for (attr = cur_node->properties; attr != NULL; attr = attr->next)
-        {
-            Attribute *attribute = createAttribute(attr);
-            insertBack(image->otherAttributes, attribute);
-        }
+        
         loadSVGimage(cur_node->children, image);
     }
 }
@@ -122,6 +146,42 @@ Attribute *createAttribute(xmlAttr *attributeNode) {
 
     return attribute;
 
+}
+
+void createRect(xmlNode *rectNode, SVGimage * image) {
+    Rectangle *rect = malloc(sizeof(Rectangle));
+
+    rect->x = 0;
+    rect->y = 0;
+    rect->width = 0;
+    rect->height = 0;
+    rect->otherAttributes = initializeList(attributeToString, deleteAttribute, compareAttributes);
+    rect->units[0] = '\0';
+
+    // Iterate through every attribute of the current node
+    xmlAttr *attr;
+    for (attr = rectNode->properties; attr != NULL; attr = attr->next)
+    {
+        char *buffer;
+        if(strcmp((char *)attr->name, "x") == 0) {
+            /* strcpy */
+            rect->x = strtod((const char *)attr->children->content, &buffer);
+        } else if(strcmp((char *)attr->name, "y") == 0) {
+            /* strcpy */
+            rect->y= strtod((const char *)attr->children->content, &buffer);
+        } else if(strcmp((char *)attr->name, "width") == 0) {
+            /* strcpy */
+            rect->width = strtod((const char *)attr->children->content, &buffer);
+        } else if(strcmp((char *)attr->name, "height") == 0) {
+            /* strcpy */
+            rect->height = strtod((const char *)attr->children->content, &buffer);
+        } else {
+            Attribute *attribute = createAttribute(attr);
+            insertBack(rect->otherAttributes, attribute);
+        }
+        strcpy(rect->units, buffer);
+    }
+    insertBack(image->rectangles, rect);
 }
 
 
@@ -170,7 +230,7 @@ char* SVGimageToString(SVGimage* img) {
     strcat(imageString, groupString);
     free(groupString);
 
-    strcat(imageString, "\n");
+    strcat(imageString, "\nOther Attributes: \n");
     char *attributeString = toString(img->otherAttributes);
     bufferLen += strlen(attributeString);
     imageString = realloc(imageString, bufferLen);
