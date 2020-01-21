@@ -179,9 +179,9 @@ char* attributeToString(void* data) {
 
     char *stringAtt = malloc(strlen(attribute->name) + strlen(attribute->value) + 30);
     
-    strcat(stringAtt, "Attribute:\n\tName: ");
+    strcpy(stringAtt, "Attribute: Name=");
     strcat(stringAtt, attribute->name);
-    strcat(stringAtt, "\n\tValue: ");
+    strcat(stringAtt, " Value=");
     strcat(stringAtt, attribute->value);
     strcat(stringAtt, "\n");
 
@@ -222,17 +222,32 @@ char* groupToString( void* data) {
     }
 
     group = (Group *)data;
-    lengthString = strlen(toString(group->rectangles)) + strlen(toString(group->circles)) + strlen(toString(group->paths)) + strlen(toString(group->groups)) + strlen(toString(group->otherAttributes));
 
-    groupString = malloc(10 + lengthString);
+    char *rectListString = toString(group->rectangles);
+    char *circleListString = toString(group->circles);
+    char *pathListString = toString(group->paths);
+    char *groupListString = toString(group->groups);
+    char *attListString = toString(group->otherAttributes);
+    lengthString = strlen(rectListString) + strlen(circleListString) + strlen(pathListString) + strlen(groupListString) + strlen(attListString);
 
-    strcat(groupString, "Group:\n");
-    strcat(groupString, toString(group->rectangles));
-    strcat(groupString, toString(group->circles));
-    strcat(groupString, toString(group->paths));
-    strcat(groupString, toString(group->groups));
-    strcat(groupString, toString(group->otherAttributes));
+    groupString = malloc(30 + lengthString);
 
+    strcpy(groupString, "Group:\n");
+    strcat(groupString, rectListString);
+    strcat(groupString, circleListString);
+    strcat(groupString, pathListString);
+    strcat(groupString, "Group Attributes:\n");
+    strcat(groupString, attListString);
+    strcat(groupString, "\t");
+    strcat(groupString, groupListString);
+
+
+
+    free(rectListString);
+    free(circleListString);
+    free(pathListString);
+    free(groupListString);
+    free(attListString);
 
     return groupString;
 
@@ -252,8 +267,9 @@ void deleteRectangle(void* data) {
     /* Initializes rect struct */
     rect = (Rectangle *)data;
 
+    /* Frees list of attributes first then rectangle struct itself */
     freeList(rect->otherAttributes);
-    /* free(rect); */
+    free(rect);
 }
 
 char* rectangleToString(void* data) {
@@ -265,11 +281,16 @@ char* rectangleToString(void* data) {
     /* Initializes rect struct */
     rect = (Rectangle *)data;
 
+
+    /* Gets string of list of attributes */
     char *attributeListString = toString(rect->otherAttributes);
     
+    /* Creates the string to return */
     char *rectString = malloc(1024 + strlen(attributeListString));
-
     sprintf(rectString, "Rectangle: x=%.3f, y=%.3f, width=%.3f, height=%.3f, unit=%s\n%s", rect->x, rect->y, rect->width, rect->height, rect->units, attributeListString);
+    
+    /* Frees attribute list string */
+    free(attributeListString);
     return rectString;
 
 }
@@ -287,6 +308,8 @@ void deleteCircle(void* data) {
     }
 
     circle = (Circle *)data;
+
+    /* Frees list of attributes then circle struct */
     freeList(circle->otherAttributes);
     free(circle);
 
@@ -304,7 +327,9 @@ char* circleToString(void* data) {
     char *attributeListString = toString(circle->otherAttributes);
 
     char *circleString = malloc(1024 + strlen(attributeListString));
-    sprintf(circleString, "Circle: cx=%.3f, cy=%.3f, r=%.3f, unit=%s\n%s", circle->cx, circle->cy, circle->r, circle->units, attributeListString);
+    sprintf(circleString, "Circle: cx=%.3f, cy=%.3f, r=%.3f, unit=%s\n\t%s", circle->cx, circle->cy, circle->r, circle->units, attributeListString);
+    
+    free(attributeListString);
     return circleString;
 }
 
@@ -321,6 +346,8 @@ void deletePath(void* data) {
     }
 
     path = (Path *)data;
+
+    /* Frees all content of a path struct then the struct itself */
     free(path->data);
     freeList(path->otherAttributes);
     free(path);
@@ -329,19 +356,23 @@ void deletePath(void* data) {
 char* pathToString(void* data) {
     Path *path;
     char *pathString;
+
     if(data == NULL) {
         return NULL;
     }
 
     path = (Path *)data;
 
-    pathString = malloc(20 + strlen(path->data) + strlen(toString(path->otherAttributes)));
+    char *attributeListString = toString(path->otherAttributes);
 
-    strcat(pathString, "Path:\n\tData: ");
+    pathString = malloc(20 + strlen(path->data) + strlen(attributeListString));
+
+    strcpy(pathString, "Path: Data=");
     strcat(pathString, path->data);
-    strcat(pathString, "\n");
-    strcat(pathString, toString(path->otherAttributes));
+    strcat(pathString, "\n\t");
+    strcat(pathString, attributeListString);
 
+    free(attributeListString);
     return pathString;
 
 }
