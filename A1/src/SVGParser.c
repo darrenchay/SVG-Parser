@@ -6,10 +6,10 @@
 SVGimage *initSVGimage(); 
 void loadSVGimage(xmlNode * a_node, SVGimage *image);
 Attribute *createAttribute(xmlAttr *attributeNode); 
-void createRect(xmlNode *rectNode, SVGimage * image);
-void createCircle(xmlNode *rectNode, SVGimage * image);
-void createPath(xmlNode *rectNode, SVGimage * image);
-
+void createRect(xmlNode *node, List *list);
+void createCircle(xmlNode *node, List *list);
+void createPath(xmlNode *node, List *list);
+void createGroup(xmlNode *node, List *list); 
 
 
 /** Function to create an SVG object based on the contents of an SVG file.
@@ -82,11 +82,11 @@ void loadSVGimage(xmlNode * a_node, SVGimage *image) {
     xmlNode *cur_node = NULL;
 
     for (cur_node = a_node; cur_node != NULL; cur_node = cur_node->next) {
-        /* if (cur_node->type == XML_ELEMENT_NODE) {
+        if (cur_node->type == XML_ELEMENT_NODE) {
             printf("node type: Element, name: %s\n", cur_node->name);
         }
 
-        if (cur_node->content != NULL ){
+        /* if (cur_node->content != NULL ){
             printf("  content: %s, size%ld\n", (char *)cur_node->content, strlen((char *)cur_node->content));
         } */
 
@@ -116,13 +116,16 @@ void loadSVGimage(xmlNode * a_node, SVGimage *image) {
                 strcpy(image->description, (char *)cur_node->children->content);
             }
         } else if(strcmp((char *)cur_node->name,"rect")==0) { /* Adding rect to svg image */
-            createRect(cur_node, image);
+            createRect(cur_node, image->rectangles);
 
         } else if (strcmp((char *)cur_node->name,"circle")==0) { /* Adding circle to svg image */
-            createCircle(cur_node, image);
+            createCircle(cur_node, image->circles);
 
         } else if (strcmp((char *)cur_node->name,"path")==0) { /* Adding path to svg image */
-            createPath(cur_node, image);
+            createPath(cur_node, image->paths);
+
+        } else if (strcmp((char *)cur_node->name,"g")==0) { /* Adding group to svg image */
+            createGroup(cur_node, image->groups);
 
         } else if (strcmp((char *)cur_node->name,"svg")==0) { /* Adding svg attributes */
             xmlAttr *attr;
@@ -155,7 +158,7 @@ Attribute *createAttribute(xmlAttr *attributeNode) {
 
 }
 
-void createRect(xmlNode *rectNode, SVGimage * image) {
+void createRect(xmlNode *node, List *list) {
     Rectangle *rect = malloc(sizeof(Rectangle));
 
     rect->x = 0;
@@ -167,7 +170,7 @@ void createRect(xmlNode *rectNode, SVGimage * image) {
 
     // Iterate through every attribute of the current node
     xmlAttr *attr;
-    for (attr = rectNode->properties; attr != NULL; attr = attr->next)
+    for (attr = node->properties; attr != NULL; attr = attr->next)
     {
         char *buffer;
         if(strcmp((char *)attr->name, "x") == 0) {
@@ -188,10 +191,10 @@ void createRect(xmlNode *rectNode, SVGimage * image) {
         }
         strcpy(rect->units, buffer);
     }
-    insertBack(image->rectangles, rect);
+    insertBack(list, rect);
 }
 
-void createCircle(xmlNode *rectNode, SVGimage * image) {
+void createCircle(xmlNode *node, List *list) {
     Circle *circle = malloc(sizeof(Circle));
 
     circle->cx = 0;
@@ -202,7 +205,7 @@ void createCircle(xmlNode *rectNode, SVGimage * image) {
 
     // Iterate through every attribute of the current node
     xmlAttr *attr;
-    for (attr = rectNode->properties; attr != NULL; attr = attr->next)
+    for (attr = node->properties; attr != NULL; attr = attr->next)
     {
         char *buffer;
         if(strcmp((char *)attr->name, "cx") == 0) {
@@ -220,10 +223,10 @@ void createCircle(xmlNode *rectNode, SVGimage * image) {
         }
         strcpy(circle->units, buffer);
     }
-    insertBack(image->circles, circle);
+    insertBack(list, circle);
 }
 
-void createPath(xmlNode *rectNode, SVGimage * image) {
+void createPath(xmlNode *node, List *list) {
     Path *path = malloc(sizeof(Path));
 
     path->data = malloc(10);
@@ -232,7 +235,7 @@ void createPath(xmlNode *rectNode, SVGimage * image) {
 
     // Iterate through every attribute of the current node
     xmlAttr *attr;
-    for (attr = rectNode->properties; attr != NULL; attr = attr->next)
+    for (attr = node->properties; attr != NULL; attr = attr->next)
     {
         if(strcmp((char *)attr->name, "d") == 0) {
             path->data = realloc(path->data, strlen((char *)attr->children->content) + 1);
@@ -243,7 +246,40 @@ void createPath(xmlNode *rectNode, SVGimage * image) {
             insertBack(path->otherAttributes, attribute);
         }
     }
-    insertBack(image->paths, path);
+    insertBack(list, path);
+}
+
+void createGroup(xmlNode *node, List *list) {
+    Group *group = malloc(sizeof(Group));
+
+    group->rectangles = initializeList(rectangleToString, deleteRectangle, compareRectangles);
+    group->circles = initializeList(circleToString, deleteCircle, compareCircles);
+    group->paths = initializeList(pathToString, deletePath, comparePaths);
+    group->otherAttributes = initializeList(attributeToString, deleteAttribute, compareAttributes);
+    group->groups = initializeList(groupToString, deleteGroup, compareGroups);
+
+    xmlNode *cur_node = NULL;
+    for (cur_node = node->children; cur_node != NULL; cur_node = cur_node->next) {
+        if(strcmp((char *)cur_node->name,"rect")==0) { /* Adding rect to svg image */
+            createRect(cur_node, group->rectangles);
+
+        } else if (strcmp((char *)cur_node->name,"circle")==0) { /* Adding circle to svg image */
+            createCircle(cur_node, group->circles);
+
+        } else if (strcmp((char *)cur_node->name,"path")==0) { /* Adding path to svg image */
+            createPath(cur_node, group->paths);
+
+        } else if (strcmp((char *)cur_node->name,"g")==0) { /* Adding group to svg image */
+            createGroup(cur_node, group->groups);
+        }
+    }
+    xmlAttr *attr;
+    for (attr = node->properties; attr != NULL; attr = attr->next)
+    {
+        Attribute *attribute = createAttribute(attr);
+        insertBack(group->otherAttributes, attribute);
+    }
+    insertBack(list, group);
 }
 
 
@@ -435,7 +471,6 @@ char* attributeToString(void* data) {
     strcat(stringAtt, attribute->name);
     strcat(stringAtt, ", Value=");
     strcat(stringAtt, attribute->value);
-    strcat(stringAtt, "\n");
 
     return stringAtt;
 }
@@ -491,7 +526,7 @@ char* groupToString( void* data) {
     strcat(groupString, circleListString);
     strcat(groupString, pathListString);
     strcat(groupString, "\t");
-    strcat(groupString, "\n\tGroup Attributes:");
+    strcat(groupString, "\nGroup Attributes:");
     strcat(groupString, attListString);
     strcat(groupString, groupListString);
     strcat(groupString, "\n");
