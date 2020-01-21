@@ -82,16 +82,16 @@ void loadSVGimage(xmlNode * a_node, SVGimage *image) {
     xmlNode *cur_node = NULL;
 
     for (cur_node = a_node; cur_node != NULL; cur_node = cur_node->next) {
-        if (cur_node->type == XML_ELEMENT_NODE) {
+        /* if (cur_node->type == XML_ELEMENT_NODE) {
             printf("node type: Element, name: %s\n", cur_node->name);
-        }
+        } */
 
         /* if (cur_node->content != NULL ){
             printf("  content: %s, size%ld\n", (char *)cur_node->content, strlen((char *)cur_node->content));
         } */
 
         /* Writing title to svg image */
-        if(strcmp((char *)cur_node->name,"title")==0) {
+        if(strcmp((char *)cur_node->name,"title")==0 && strcmp((char *)cur_node->parent->name,"svg")==0) {
             /* printf("  content: %s\n", (char *)cur_node->children->content); */
 
             /* Truncates if > 255 */
@@ -104,7 +104,7 @@ void loadSVGimage(xmlNode * a_node, SVGimage *image) {
             } else {
                 strcpy(image->title, (char *)cur_node->children->content);
             }
-        } else if(strcmp((char *)cur_node->name,"desc")==0) { /* Writing desc to svg image */
+        } else if(strcmp((char *)cur_node->name,"desc")==0 && strcmp((char *)cur_node->parent->name,"svg")==0) { /* Writing desc to svg image */
             /* Truncates if > 255 */
             if(strlen((char *)cur_node->children->content) > 255) {
                 char *tempString = malloc(256);
@@ -115,19 +115,29 @@ void loadSVGimage(xmlNode * a_node, SVGimage *image) {
             } else {
                 strcpy(image->description, (char *)cur_node->children->content);
             }
-        } else if(strcmp((char *)cur_node->name,"rect")==0) { /* Adding rect to svg image */
+        } else if(strcmp((char *)cur_node->name,"rect")==0 && strcmp((char *)cur_node->parent->name,"svg")==0) { /* Adding rect to svg image */
             createRect(cur_node, image->rectangles);
 
-        } else if (strcmp((char *)cur_node->name,"circle")==0) { /* Adding circle to svg image */
+        } else if (strcmp((char *)cur_node->name,"circle")==0 && strcmp((char *)cur_node->parent->name,"svg")==0) { /* Adding circle to svg image */
             createCircle(cur_node, image->circles);
 
-        } else if (strcmp((char *)cur_node->name,"path")==0) { /* Adding path to svg image */
+        } else if (strcmp((char *)cur_node->name,"path")==0 && strcmp((char *)cur_node->parent->name,"svg")==0) { /* Adding path to svg image */
             createPath(cur_node, image->paths);
 
-        } else if (strcmp((char *)cur_node->name,"g")==0) { /* Adding group to svg image */
+        } else if (strcmp((char *)cur_node->name,"g")==0 && strcmp((char *)cur_node->parent->name,"svg")==0) { /* Adding group to svg image */
             createGroup(cur_node, image->groups);
 
         } else if (strcmp((char *)cur_node->name,"svg")==0) { /* Adding svg attributes */
+            if(strlen((char *)cur_node->ns->href) > 255) {
+                char *tempString = malloc(256);
+                strncpy(tempString, (char *)cur_node->ns->href, 255);
+                tempString[255] = '\0';
+                strcpy(image->namespace, tempString);
+                free(tempString);
+            } else {
+                strcpy(image->namespace, (char *)cur_node->ns->href);
+            }
+            
             xmlAttr *attr;
             for (attr = cur_node->properties; attr != NULL; attr = attr->next)
             {
