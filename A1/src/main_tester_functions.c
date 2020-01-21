@@ -4,12 +4,9 @@
 #include "SVGParser.h"
 
 int main (void) {
-    char *buffer;
+    /*char *buffer;
 
-    /* 
-     * Testing Attributes 
-     */
-    printf("===========================================\n\t\tTESTING ATTRIBUTES\n===========================================\n");
+     printf("===========================================\n\t\tTESTING ATTRIBUTES\n===========================================\n");
     Attribute *attribute1 = malloc (sizeof(Attribute));
     Attribute *attribute2 = malloc (sizeof(Attribute));
     Attribute *attribute3 = malloc (sizeof(Attribute));
@@ -77,10 +74,8 @@ int main (void) {
     insertFront(attributeList5, attribute5);
 
     printf("---FREEING LIST ATTRIBUTES---\n");
-    /* freeList(attributeList); */
+    freeList(attributeList);
 
-
-    /* Testing Rectangles */
     printf("\n\n");
     printf("===========================================\n\t\tTESTING RECTANGLES\n===========================================\n");
     Rectangle *rect1 = malloc (sizeof(Rectangle));
@@ -99,10 +94,9 @@ int main (void) {
     printf("%s\n", buffer);
 
     free(buffer);
-    /* printf("---FREEING LIST RECTANGLES---\n");
-    freeList(RectangleList); */
+    printf("---FREEING LIST RECTANGLES---\n");
+    freeList(RectangleList);
 
-    /* Making Circle */
     printf("\n\n");
     printf("===========================================\n\t\tTESTING CIRCLE\n===========================================\n");
     Circle *circ1 = malloc (sizeof(Circle));
@@ -121,11 +115,8 @@ int main (void) {
 
     free(buffer);
     printf("---FREEING LIST CIRCLES---\n");
-    /* freeList(CircleList); */
+    freeList(CircleList);
 
-    
-
-    /* Testing Paths */
     printf("\n\n");
     printf("===========================================\n\t\tTESTING PATHS\n===========================================\n");
     Path *path1 = malloc (sizeof(Path));
@@ -144,9 +135,8 @@ int main (void) {
     free(buffer);
 
     printf("---FREEING LIST PATHS---\n");
-    /* freeList(PathList); */
+    freeList(PathList); 
 
-    /* Testing Groups */
     printf("\n\n");
     printf("===========================================\n\t\tTESTING GROUPS\n===========================================\n");
     Group *group = malloc(sizeof(Group));
@@ -168,7 +158,6 @@ int main (void) {
     List *GroupList = initializeList(groupToString, deleteGroup, compareGroups);
     insertFront(GroupList, group);
     
-    /* group->groups = GroupList; */
     printf("printing group\n");
 
     buffer = toString(GroupList);
@@ -177,8 +166,8 @@ int main (void) {
 
     printf("---FREEING LIST GROUPS---\n");
     freeList(GroupList);
-
-    /* createSVGimage("../rect.svg"); */
+ */
+    createSVGimage("../rect.svg");
 
     return 0;
 }

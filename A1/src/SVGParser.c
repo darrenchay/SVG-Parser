@@ -2,6 +2,10 @@
 #include <string.h>
 #include <stdlib.h>
 
+SVGimage *initSVGimage(); 
+Attribute *createAttribute(xmlAttr *attributeNode); 
+void loadSVGimage(xmlNode * a_node, SVGimage *image);
+
 /** Function to create an SVG object based on the contents of an SVG file.
  *@pre File name cannot be an empty string or NULL.
        File represented by this name must exist and must be readable.
@@ -15,6 +19,7 @@
 SVGimage* createSVGimage(char* fileName) {
     xmlDoc *doc = NULL;
     xmlNode *root_element = NULL;
+    SVGimage *image = NULL;
 
     /*
      * this initialize the library and check potential ABI mismatches
@@ -32,8 +37,36 @@ SVGimage* createSVGimage(char* fileName) {
 
     /*Get the root element node */
     root_element = xmlDocGetRootElement(doc);
-    xmlNode *cur_node;
-    for (cur_node = root_element; cur_node != NULL; cur_node = cur_node->next) {
+    xmlNode *cur_node = root_element;
+
+    image = initSVGimage();
+
+    loadSVGimage(root_element, image);
+    printf("    Attributes List SVG: %s\n", toString(image->otherAttributes));
+    /* Getting the SVG attributes, namespace, and title */
+   /*  if (cur_node->type == XML_ELEMENT_NODE) {
+        printf("node type: Element, name: %s\n", cur_node->name);
+    }
+
+    if (cur_node->content != NULL ){
+        printf("  content: %s\n", cur_node->content);
+    } */
+    /* if (cur_node->ns != NULL ){
+        printf("  namespace: %s\n", cur_node->ns);
+    } */
+
+    // Iterate through every attribute of the current node (svgnode)
+    /* xmlAttr *attr;
+    for (attr = cur_node->properties; attr != NULL; attr = attr->next)
+    {
+        xmlNode *value = attr->children;
+        char *attrName = (char *)attr->name;
+        char *cont = (char *)(value->content);
+        printf("\tattribute name: %s, attribute value = %s\n", attrName, cont);
+    }
+
+
+    for (cur_node = cur_node->children; cur_node != NULL; cur_node = cur_node->next) {
         if (cur_node->type == XML_ELEMENT_NODE) {
             printf("node type: Element, name: %s\n", cur_node->name);
         }
@@ -41,11 +74,81 @@ SVGimage* createSVGimage(char* fileName) {
         // Uncomment the code below if you want to see the content of every node.
 
         if (cur_node->content != NULL ){
-            printf("  content: %s\n", cur_node->content);
+            printf("  content: %s\n", (char *)cur_node->content);
         }
-    }
-    return NULL;
+
+        if(strcmp((char *)cur_node->name,"title")==0) {
+            printf("  content: %s\n", (char *)cur_node->children->content);
+        }
+
+        // Iterate through every attribute of the current node
+        xmlAttr *attr;
+        for (attr = cur_node->properties; attr != NULL; attr = attr->next)
+        {
+            Attribute *attribute = createAttribute(attr);
+            insertBack(image->otherAttributes, attribute);
+        }
+        printf("    Attributes List SVG: %s\n", toString(image->otherAttributes));
+
+    } */
+
+    return image;
 }
+
+/* Creates an SVGimage struct */
+SVGimage *initSVGimage() {
+    SVGimage *image = malloc(sizeof(SVGimage));
+    image->rectangles = initializeList(rectangleToString, deleteRectangle, compareRectangles);
+    image->circles = initializeList(circleToString, deleteCircle, compareCircles);
+    image->paths = initializeList(pathToString, deletePath, comparePaths);
+    image->groups = initializeList(groupToString, deleteGroup, compareGroups);
+    image->otherAttributes = initializeList(attributeToString, deleteAttribute, compareAttributes);
+
+    return image;
+}
+
+void loadSVGimage(xmlNode * a_node, SVGimage *image) {
+    xmlNode *cur_node = NULL;
+
+    for (cur_node = a_node; cur_node != NULL; cur_node = cur_node->next) {
+        if (cur_node->type == XML_ELEMENT_NODE) {
+            printf("node type: Element, name: %s\n", cur_node->name);
+        }
+
+        if (cur_node->content != NULL ){
+            printf("  content: %s, size%d\n", (char *)cur_node->content, strlen((char *)cur_node->content));
+        }
+
+        /* if(strcmp((char *)cur_node->name,"title")==0) {
+            printf("  content: %s\n", (char *)cur_node->children->content);
+        } */
+
+        // Iterate through every attribute of the current node
+        xmlAttr *attr;
+        for (attr = cur_node->properties; attr != NULL; attr = attr->next)
+        {
+            Attribute *attribute = createAttribute(attr);
+            insertBack(image->otherAttributes, attribute);
+        }
+        loadSVGimage(cur_node->children, image);
+    }
+}
+
+Attribute *createAttribute(xmlAttr *attributeNode) {
+    Attribute *attribute = malloc(sizeof(Attribute));
+
+    xmlNode *value = attributeNode->children;
+    char *attrName = (char *)attributeNode->name;
+    char *cont = (char *)(value->content);
+
+    attribute->name = attrName;
+    attribute->value = cont;
+    /* printf("\tattribute name: %s, attribute value = %s\n", attrName, cont); */
+
+    return attribute;
+
+}
+
 
 /** Function to create a string representation of an SVG object.
  *@pre SVGimgage exists, is not null, and is valid
@@ -59,12 +162,17 @@ char* SVGimageToString(SVGimage* img) {
 
 /** Function to delete image content and free all the memory.
  *@pre SVGimgage  exists, is not null, and has not been freed
- *@post SVSVGimgageG  had been freed
+ *@post SVGimgage  had been freed
  *@return none
  *@param obj - a pointer to an SVG struct
 **/
 void deleteSVGimage(SVGimage* img) {
-/* 6 freelist 1 free */
+    freeList(img->rectangles);
+    freeList(img->circles);
+    freeList(img->paths);
+    freeList(img->groups);
+    freeList(img->otherAttributes);
+    free(img);
 }
 
 /* For the four "get..." functions below, make sure you return a list of opinters to the existing structs 
@@ -179,9 +287,9 @@ char* attributeToString(void* data) {
 
     char *stringAtt = malloc(strlen(attribute->name) + strlen(attribute->value) + 30);
     
-    strcpy(stringAtt, "Attribute: Name=");
+    strcpy(stringAtt, "\tAttribute name:");
     strcat(stringAtt, attribute->name);
-    strcat(stringAtt, " Value=");
+    strcat(stringAtt, ", Value=");
     strcat(stringAtt, attribute->value);
     strcat(stringAtt, "\n");
 
