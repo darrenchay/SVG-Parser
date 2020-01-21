@@ -7,8 +7,8 @@ SVGimage *initSVGimage();
 void loadSVGimage(xmlNode * a_node, SVGimage *image);
 Attribute *createAttribute(xmlAttr *attributeNode); 
 void createRect(xmlNode *rectNode, SVGimage * image);
-
-
+void createCircle(xmlNode *rectNode, SVGimage * image);
+void createPath(xmlNode *rectNode, SVGimage * image);
 
 
 
@@ -117,6 +117,13 @@ void loadSVGimage(xmlNode * a_node, SVGimage *image) {
             }
         } else if(strcmp((char *)cur_node->name,"rect")==0) { /* Adding rect to svg image */
             createRect(cur_node, image);
+
+        } else if (strcmp((char *)cur_node->name,"circle")==0) { /* Adding circle to svg image */
+            createCircle(cur_node, image);
+
+        } else if (strcmp((char *)cur_node->name,"path")==0) { /* Adding path to svg image */
+            createPath(cur_node, image);
+
         } else if (strcmp((char *)cur_node->name,"svg")==0) { /* Adding svg attributes */
             xmlAttr *attr;
             for (attr = cur_node->properties; attr != NULL; attr = attr->next)
@@ -124,7 +131,7 @@ void loadSVGimage(xmlNode * a_node, SVGimage *image) {
                 Attribute *attribute = createAttribute(attr);
                 insertBack(image->otherAttributes, attribute);
             }
-        }
+        } 
         
         loadSVGimage(cur_node->children, image);
     }
@@ -183,6 +190,63 @@ void createRect(xmlNode *rectNode, SVGimage * image) {
     }
     insertBack(image->rectangles, rect);
 }
+
+void createCircle(xmlNode *rectNode, SVGimage * image) {
+    Circle *circle = malloc(sizeof(Circle));
+
+    circle->cx = 0;
+    circle->cy = 0;
+    circle->r = 0;
+    circle->units[0] = '\0';
+    circle->otherAttributes = initializeList(attributeToString, deleteAttribute, compareAttributes);
+
+    // Iterate through every attribute of the current node
+    xmlAttr *attr;
+    for (attr = rectNode->properties; attr != NULL; attr = attr->next)
+    {
+        char *buffer;
+        if(strcmp((char *)attr->name, "cx") == 0) {
+            circle->cx = strtod((const char *)attr->children->content, &buffer);
+            
+        } else if(strcmp((char *)attr->name, "cy") == 0) {
+            circle->cy= strtod((const char *)attr->children->content, &buffer);
+
+        } else if(strcmp((char *)attr->name, "r") == 0) {
+            circle->r = strtod((const char *)attr->children->content, &buffer);
+
+        } else {
+            Attribute *attribute = createAttribute(attr);
+            insertBack(circle->otherAttributes, attribute);
+        }
+        strcpy(circle->units, buffer);
+    }
+    insertBack(image->circles, circle);
+}
+
+void createPath(xmlNode *rectNode, SVGimage * image) {
+    Path *path = malloc(sizeof(Path));
+
+    path->data = malloc(10);
+    strcpy(path->data, "\0");
+    path->otherAttributes = initializeList(attributeToString, deleteAttribute, compareAttributes);
+
+    // Iterate through every attribute of the current node
+    xmlAttr *attr;
+    for (attr = rectNode->properties; attr != NULL; attr = attr->next)
+    {
+        if(strcmp((char *)attr->name, "d") == 0) {
+            path->data = realloc(path->data, strlen((char *)attr->children->content) + 1);
+            strcpy(path->data, (char *)attr->children->content);
+
+        } else {
+            Attribute *attribute = createAttribute(attr);
+            insertBack(path->otherAttributes, attribute);
+        }
+    }
+    insertBack(image->paths, path);
+}
+
+
 
 
 /** Function to create a string representation of an SVG object.
