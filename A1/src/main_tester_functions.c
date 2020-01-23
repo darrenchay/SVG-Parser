@@ -3,7 +3,7 @@
 #include <stdlib.h>
 #include "SVGParser.h"
 
-int main (void) {
+int main (int argc, char **argv) {
     /*char *buffer;
 
      printf("===========================================\n\t\tTESTING ATTRIBUTES\n===========================================\n");
@@ -167,9 +167,13 @@ int main (void) {
     printf("---FREEING LIST GROUPS---\n");
     freeList(GroupList);
  */
-    SVGimage *image = createSVGimage("../quad01.svg");
+    if (argc != 2)
+        return(1);
+
+    SVGimage *image = createSVGimage(argv[1]);
     char *string = SVGimageToString(image);
-    printf("%s\n", string);
+    int val = numAttr(image);
+    printf("%s\nNum attributes: %d\n", string, val);
     free(string);
     deleteSVGimage(image);
     return 0;

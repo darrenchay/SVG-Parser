@@ -8,6 +8,7 @@ LIB = include/
 # Standard common makefile
 parser: $(BIN)libsvgparse.so
 
+#REMOVE BEFORE SUBMISSION
 debug: test
 
 test: $(SRC)main_tester_functions.c $(BIN)libsvgparse.so
