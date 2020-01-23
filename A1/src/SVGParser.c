@@ -693,7 +693,7 @@ int search(List* list, void *key, int type){
             tempCount += getLength(group->circles);
             tempCount += getLength(group->groups);
             tempCount += getLength(group->paths);
-            printf("======================\nGroup count: %d \n key: %d\n======================\n", tempCount, *(int *)key);
+            //printf("======================\nGroup count: %d \n key: %d\n======================\n", tempCount, *(int *)key);
             if(tempCount == *(int *)key) {
                 count ++;
             }

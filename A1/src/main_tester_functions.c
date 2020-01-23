@@ -173,11 +173,36 @@ int main (int argc, char **argv) {
     SVGimage *image = createSVGimage(argv[1]);
     char *string = SVGimageToString(image);
     int val = numAttr(image);
+
     printf("%s\n=======================================\nNum attributes: %d\n", string, val);
     printf("Rects: %d\n", numRectsWithArea(image, 716404));
     printf("Circ: %d\n", numCirclesWithArea(image, 40.72));
     printf("groups: %d\n", numGroupsWithLen(image, 2));
     free(string);
+
+    List *listGroup = getGroups(image);
+    List *listPaths = getPaths(image);
+    List *listCircles = getCircles(image);
+    List *listRects = getRects(image);
+
+    char *buffer = toString(listGroup);
+    printf("======Groups=====\n%s", buffer);
+    freeList(listGroup);
+
+    buffer = toString(listPaths);
+    printf("======listPaths=====\n%s", buffer);
+    freeList(listPaths);
+
+    buffer = toString(listCircles);
+    printf("======listCircles=====\n%s", buffer);
+    freeList(listCircles);
+
+    buffer = toString(listRects);
+    printf("======listRects=====\n%s", buffer);
+    free(buffer);
+    freeList(listRects);
+
+    
     deleteSVGimage(image);
     return 0;
 }
