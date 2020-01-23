@@ -173,7 +173,10 @@ int main (int argc, char **argv) {
     SVGimage *image = createSVGimage(argv[1]);
     char *string = SVGimageToString(image);
     int val = numAttr(image);
-    printf("%s\nNum attributes: %d\n", string, val);
+    printf("%s\n=======================================\nNum attributes: %d\n", string, val);
+    printf("Rects: %d\n", numRectsWithArea(image, 716404));
+    printf("Circ: %d\n", numCirclesWithArea(image, 40.72));
+    printf("groups: %d\n", numGroupsWithLen(image, 2));
     free(string);
     deleteSVGimage(image);
     return 0;

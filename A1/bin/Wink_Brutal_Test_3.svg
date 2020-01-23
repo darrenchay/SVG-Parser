@@ -9,24 +9,26 @@
         and end points</desc>
   <rect  width="1198" height="598"
         fill="none" stroke="blue" stroke-width="1" />
-  <rect x="2" y="2" width="2222" height="222"
+  <rect x="2" y="2" width="1198" height="598"
         fill="none" stroke="red" stroke-width="2" />
+        <circle cx="23.6" cy="34.3" r="3.6" fill="#231f20"/>
   <g>
-      <rect x="3" y="3" width="3333" height="333"
+      <rect x="3" y="3" width="1198" height="598"
           fill="none" stroke="green" stroke-width="3" />
       <g>
-          <rect x="4" y="4" width="4444" height="444"
+          <rect x="4" y="4" width="1198" height="598"
               fill="none" stroke="yellow" stroke-width="4" />
+              <circle cx="23.6" cy="34.3" r="3.6" fill="#231f20"/>
+              <circle cx="23.6" cy="34.3" r="3.6" fill="#231f20"/>
               <g>
-                 <rect x="5" y="5" width="5555" height="555"
+                 <rect x="5" y="5" width="1198" height="598"
               fill="none" stroke="purple" stroke-width="5" />
                   <g>
-                      <rect x="6" y="6" width="6666" height="666"
+                      <rect x="6" y="6" width="1198" height="598"
                   fill="none" stroke="pink" stroke-width="6" />
-                  <g></g>
                   </g>
               </g>
-      </g>
+       </g>
   </g>
 </svg>
 <!--

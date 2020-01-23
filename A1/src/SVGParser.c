@@ -2,7 +2,7 @@
 #include <string.h>
 #include <strings.h>
 #include <stdlib.h>
-
+#include <math.h>
 /* Function definitions */
 SVGimage *initSVGimage(); 
 void loadSVGimage(xmlNode * a_node, SVGimage *image);
@@ -17,6 +17,9 @@ void searchGroupPaths(List *list, Group *group);
 void searchGroupGroups(List *list, Group *group);
 int findAttributesFromGroups(List *listGroup);
 int findAttributesFromElement(List *list, int caseNo);
+int searchGroup (List *list, void *area, int type);
+bool compareLen(const void *first, const void *second);
+int search(List* list, void *area, int type);
 
 /** Function to create an SVG object based on the contents of an SVG file.
  *@pre File name cannot be an empty string or NULL.
@@ -584,17 +587,27 @@ void searchGroupGroups(List *list, Group *group) {
 // Function that returns the number of all rectangles with the specified area
 int numRectsWithArea(SVGimage* img, float area) {
     int count = 0;
+
     if(img == NULL || area < 0) {
         return 0;
     }
+
+    count += search(img->rectangles, (void *)&area, 1);
+    count += searchGroup(img->groups, (void *)&area, 1);
+    
     return count;
 }
+
 // Function that returns the number of all circles with the specified area
 int numCirclesWithArea(SVGimage* img, float area) {
     int count = 0;
+
     if(img == NULL || area < 0) {
         return 0;
     }
+
+    count += search(img->circles, (void *)&area, 2);
+    count += searchGroup(img->groups, (void *)&area, 2);
     return count;
 }
 // Function that returns the number of all paths with the specified data - i.e. Path.data field
@@ -603,6 +616,9 @@ int numPathsWithdata(SVGimage* img, char* data) {
     if(img == NULL || data == NULL || strlen(data) == 0) {
         return 0;
     }
+
+    count += search(img->paths, (void *)data, 3);
+    count += searchGroup(img->groups, (void *)data, 3);
     return count;
 
 }
@@ -612,69 +628,81 @@ int numGroupsWithLen(SVGimage* img, int len) {
     if(img == NULL || len < 0) {
         return 0;
     }
+
+    count += search(img->groups, (void *)&len, 4);
+    count += searchGroup(img->groups, (void *)&len, 4);
     return count;
 }
 
 
-// compareArea returns true if two areas have the same value
-bool compareArea(const void *first, const void *second){
-    float area1;
-    float area2;
-    
-    if (first == NULL || second == NULL){
-        return false;
+
+int searchGroup (List *list, void *key, int type) {
+    int count = 0;
+    void *elem;
+
+    /* Searches down groups for all subsequent groups */
+    ListIterator iterGroups = createIterator(list);
+    while((elem = nextElement(&iterGroups)) != NULL) {
+        Group *group = (Group *)elem;
+        if(type == 1) {
+            count += search(group->rectangles, key, type);
+        } else if(type == 2) {
+            count += search(group->circles, key, type);
+        } else if (type == 3) {
+            count += search(group->paths, key, type);
+        } else {
+            count += search(group->groups, key, type);
+        }
+        count += searchGroup(group->groups, key, type);
     }
-    
-    area1 = *(float *)first;
-    area2 = *(float *)second;
-    
-    //Elements are "equal" if their areas are equal
-    if (area1 == area2){
-        return true;
-    }else{
-        return false;
-    }
+    return count;
 }
 
-// compareArea returns true if two areas have the same value
-bool compareLen(const void *first, const void *second){
-    float len1;
-    float len2;
-    
-    if (first == NULL || second == NULL){
-        return false;
+int search(List* list, void *key, int type){
+    int count = 0;
+    void *elem;
+
+    ListIterator iter = createIterator(list);
+    while((elem = nextElement(&iter)) != NULL) {
+        if(type == 1) {
+            /* Counting rectangles with same area */
+            Rectangle *rect = (Rectangle *)elem;
+            int areaRect = ceil(rect->width * rect->height);
+            if(areaRect == ceil(*(float *)key)) {
+                count ++;
+            }
+        } else if(type == 2){
+            /* Counting circles with same area */
+            Circle *circle = (Circle *)elem;
+            int areaCircle = ceil(circle->r * circle->r * 3.14159265);
+            int areaKey = ceil(*(float *)key);
+            if(areaCircle == areaKey) {
+                count++;
+            }
+        } else if (type == 3) {
+            /* Counting paths with data equal to key */
+            Path *path = (Path *)elem;
+            //printf("======================\nPath data: |%s| \n key: |%s|\n======================\n", path->data, (char *)key);
+            if(strcasecmp(path->data, (char *)key) == 0) {
+                count ++;
+            }
+        } else {
+            Group *group = (Group *)elem;
+            int tempCount = 0;
+            tempCount += getLength(group->rectangles);
+            tempCount += getLength(group->circles);
+            tempCount += getLength(group->groups);
+            tempCount += getLength(group->paths);
+            printf("======================\nGroup count: %d \n key: %d\n======================\n", tempCount, *(int *)key);
+            if(tempCount == *(int *)key) {
+                count ++;
+            }
+
+        }
     }
-    
-    len1 = *(float *)first;
-    len2 = *(float *)second;
-    
-    //Elements are "equal" if their length are equal
-    if (len1 == len2){
-        return true;
-    }else{
-        return false;
-    }
+    return count;
 }
 
-// comparePath returns true if two paths have the same data
-bool comparePath(const void *first, const void *second){
-    char* data1;
-    char* data2;
-    
-    if (first == NULL || second == NULL){
-        return false;
-    }
-    
-    data1 = (char*)first;
-    data2 = (char*)second;
-    
-    //Elements are "equal" if their last names are equal
-    if (strcmp(data1, data2) == 0){
-        return true;
-    }else{
-        return false;
-    }
-}
 
 /*  Function that returns the total number of Attribute structs in the SVGimage - i.e. the number of Attributes
     contained in all otherAttributes lists in the structs making up the SVGimage
