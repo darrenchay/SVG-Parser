@@ -24,4 +24,4 @@ $(BIN)LinkedListAPI.o: $(SRC)LinkedListAPI.c $(INC)LinkedListAPI.h
 	gcc -c -fpic $(CFLAGS) -I$(INC) $(SRC)LinkedListAPI.c -o $(BIN)LinkedListAPI.o
 
 clean:
-	rm $(BIN)*.o $(BIN)*.so $(BIN)main_debug
+	rm $(BIN)*.o $(BIN)*.so $(BIN)test

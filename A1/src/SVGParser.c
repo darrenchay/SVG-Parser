@@ -20,6 +20,7 @@ int findAttributesFromElement(List *list, int caseNo);
 int searchGroup (List *list, void *area, int type);
 bool compareLen(const void *first, const void *second);
 int search(List* list, void *area, int type);
+void deleteListGetter(void *data);
 
 /** Function to create an SVG object based on the contents of an SVG file.
  *@pre File name cannot be an empty string or NULL.
@@ -401,7 +402,7 @@ void deleteSVGimage(SVGimage* img) {
 
 // Function that returns a list of all rectangles in the image.  
 List* getRects(SVGimage* img) {
-    List *rectList = initializeList(rectangleToString, deleteRectangle, compareRectangles);
+    List *rectList = initializeList(rectangleToString, deleteListGetter, compareRectangles);
 
     if(img == NULL) {
         return rectList;
@@ -414,7 +415,7 @@ List* getRects(SVGimage* img) {
     while((elem = nextElement(&iter)) != NULL) {
         Rectangle *rect = (Rectangle *)elem;
 
-        insertBack(rectList, &rect);
+        insertBack(rectList, rect);
     }
 
     /* Searches down groups for all subsequent rectangles */
@@ -430,7 +431,7 @@ List* getRects(SVGimage* img) {
 
 // Function that returns a list of all circles in the image.  
 List* getCircles(SVGimage* img) {
-    List *circleList = initializeList(circleToString, deleteCircle, compareCircles);
+    List *circleList = initializeList(circleToString, deleteListGetter, compareCircles);
 
     if(img == NULL) {
         return circleList;
@@ -442,10 +443,10 @@ List* getCircles(SVGimage* img) {
 
     while((elem = nextElement(&iter)) != NULL) {
         Circle *circle = (Circle *)elem;
-        insertBack(circleList, &circle);
+        insertBack(circleList, circle);
     }
 
-    /* Searches down groups for all subsequent rectangles */
+    /* Searches down groups for all subsequent circles */
     ListIterator iterGroups = createIterator(img->groups);
     while((elem = nextElement(&iterGroups)) != NULL) {
         Group *group = (Group *)elem;
@@ -459,7 +460,7 @@ List* getCircles(SVGimage* img) {
 // Function that returns a list of all groups in the image.  
 List* getGroups(SVGimage* img) {
     void *elem;
-    List * groupList = initializeList(groupToString, deleteGroup, compareGroups);
+    List * groupList = initializeList(groupToString, deleteListGetter, compareGroups);
 
     if(img == NULL) {
         return groupList;
@@ -469,7 +470,7 @@ List* getGroups(SVGimage* img) {
     ListIterator iterGroups = createIterator(img->groups);
     while((elem = nextElement(&iterGroups)) != NULL) {
         Group *group = (Group *)elem;
-        insertBack(groupList, &group);
+        insertBack(groupList, group);
         searchGroupGroups(groupList, group);
     }
 
@@ -478,7 +479,7 @@ List* getGroups(SVGimage* img) {
 
 // Function that returns a list of all paths in the image.  
 List* getPaths(SVGimage* img) {
-    List *pathList = initializeList(pathToString, deletePath, comparePaths);
+    List *pathList = initializeList(pathToString, deleteListGetter, comparePaths);
 
     if(img == NULL) {
         return pathList;
@@ -490,7 +491,7 @@ List* getPaths(SVGimage* img) {
 
     while((elem = nextElement(&iter)) != NULL) {
         Path *path = (Path *)elem;
-        insertBack(pathList, &path);
+        insertBack(pathList, path);
     }
 
     /* Searches down groups for all subsequent paths */
@@ -511,7 +512,7 @@ void searchGroupRect(List *list, Group *group) {
     ListIterator iterRects = createIterator(group->rectangles);
     while((elem = nextElement(&iterRects)) != NULL) {
         Rectangle *rect = (Rectangle *)elem;
-        insertBack(list, &rect);
+        insertBack(list, rect);
     }
 
     /* Searches down groups for all subsequent rectangles */
@@ -529,7 +530,7 @@ void searchGroupCircle(List *list, Group *group) {
     ListIterator iter = createIterator(group->circles);
     while((elem = nextElement(&iter)) != NULL) {
         Circle *circle = (Circle *)elem;
-        insertBack(list, &circle);
+        insertBack(list, circle);
     }
 
     /* Searches down groups for all subsequent circles */
@@ -547,7 +548,7 @@ void searchGroupPaths(List *list, Group *group) {
     ListIterator iter = createIterator(group->paths);
     while((elem = nextElement(&iter)) != NULL) {
         Path *path = (Path *)elem;
-        insertBack(list, &path);
+        insertBack(list, path);
     }
 
     /* Searches down groups for all subsequent paths */
@@ -565,7 +566,7 @@ void searchGroupGroups(List *list, Group *group) {
     ListIterator iterGroups = createIterator(group->groups);
     while((elem = nextElement(&iterGroups)) != NULL) {
         Group *group = (Group *)elem;
-        insertBack(list, &group);
+        insertBack(list, group);
         searchGroupGroups(list, group);
     }
 }
@@ -1005,4 +1006,8 @@ char* pathToString(void* data) {
 
 int comparePaths(const void *first, const void *second) {
     return 0;
+}
+
+void deleteListGetter(void *data) {
+    
 }

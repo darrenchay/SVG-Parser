@@ -184,21 +184,24 @@ int main (int argc, char **argv) {
     List *listPaths = getPaths(image);
     List *listCircles = getCircles(image);
     List *listRects = getRects(image);
-
+    printf("len group: %d, paths: %d, circles: %d, rects: %d\n", getLength(listGroup), getLength(listPaths), getLength(listCircles), getLength(listRects));
     char *buffer = toString(listGroup);
-    printf("======Groups=====\n%s", buffer);
+    //printf("======Groups=====\n%s\n", buffer);
+    free(buffer);
     freeList(listGroup);
 
     buffer = toString(listPaths);
-    printf("======listPaths=====\n%s", buffer);
+    //printf("======listPaths=====\n%s\n", buffer);
+    free(buffer);
     freeList(listPaths);
 
     buffer = toString(listCircles);
-    printf("======listCircles=====\n%s", buffer);
+    //printf("======listCircles=====\n%s\n", buffer);
+    free(buffer);
     freeList(listCircles);
 
     buffer = toString(listRects);
-    printf("======listRects=====\n%s", buffer);
+    //printf("======listRects=====\n%s\n", buffer);
     free(buffer);
     freeList(listRects);
 
