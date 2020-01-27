@@ -1,8 +1,16 @@
+/* Name: Darren Chay Loong
+ * ID: 1049254
+ * Email: tchayloo@uoguelph.ca
+ */
+
 #include "SVGParser.h"
 #include <string.h>
 #include <strings.h>
 #include <stdlib.h>
 #include <math.h>
+
+
+
 /* Function definitions */
 SVGimage *initSVGimage(); 
 void loadSVGimage(xmlNode * a_node, SVGimage *image);
@@ -80,10 +88,25 @@ SVGimage *initSVGimage() {
     image->description[0] = '\0';
 
     image->rectangles = initializeList(rectangleToString, deleteRectangle, compareRectangles);
+    if(image->rectangles == NULL) {
+        return NULL;
+    }
     image->circles = initializeList(circleToString, deleteCircle, compareCircles);
+    if(image->circles == NULL) {
+        return NULL;
+    }
     image->paths = initializeList(pathToString, deletePath, comparePaths);
+    if(image->paths == NULL) {
+        return NULL;
+    }
     image->groups = initializeList(groupToString, deleteGroup, compareGroups);
+    if(image->groups == NULL) {
+        return NULL;
+    }
     image->otherAttributes = initializeList(attributeToString, deleteAttribute, compareAttributes);
+    if(image->otherAttributes == NULL) {
+        return NULL;
+    }
 
     return image;
 }
@@ -200,20 +223,31 @@ void createRect(xmlNode *node, List *list) {
         if(strcasecmp((char *)attr->name, "x") == 0) {
             /* strcpy */
             rect->x = strtod((const char *)attr->children->content, &buffer);
+            if(strlen(rect->units) == 0) {
+                strcpy(rect->units, buffer);
+            }
         } else if(strcasecmp((char *)attr->name, "y") == 0) {
             /* strcpy */
             rect->y= strtod((const char *)attr->children->content, &buffer);
+            if(strlen(rect->units) == 0) {
+                strcpy(rect->units, buffer);
+            }
         } else if(strcasecmp((char *)attr->name, "width") == 0) {
             /* strcpy */
             rect->width = strtod((const char *)attr->children->content, &buffer);
+            if(strlen(rect->units) == 0) {
+                strcpy(rect->units, buffer);
+            }
         } else if(strcasecmp((char *)attr->name, "height") == 0) {
             /* strcpy */
             rect->height = strtod((const char *)attr->children->content, &buffer);
+            if(strlen(rect->units) == 0) {
+                strcpy(rect->units, buffer);
+            }
         } else {
             Attribute *attribute = createAttribute(attr);
             insertBack(rect->otherAttributes, attribute);
         }
-        strcpy(rect->units, buffer);
     }
     insertBack(list, rect);
 }
@@ -234,18 +268,23 @@ void createCircle(xmlNode *node, List *list) {
         char *buffer;
         if(strcasecmp((char *)attr->name, "cx") == 0) {
             circle->cx = strtod((const char *)attr->children->content, &buffer);
-            
+            if(strlen(circle->units) == 0) {
+                strcpy(circle->units, buffer);
+            }
         } else if(strcasecmp((char *)attr->name, "cy") == 0) {
             circle->cy= strtod((const char *)attr->children->content, &buffer);
-
+            if(strlen(circle->units) == 0) {
+                strcpy(circle->units, buffer);
+            }
         } else if(strcasecmp((char *)attr->name, "r") == 0) {
             circle->r = strtod((const char *)attr->children->content, &buffer);
-
+            if(strlen(circle->units) == 0) {
+                strcpy(circle->units, buffer);
+            }
         } else {
             Attribute *attribute = createAttribute(attr);
             insertBack(circle->otherAttributes, attribute);
         }
-        strcpy(circle->units, buffer);
     }
     if(circle->cx < 0 || circle->cy < 0 || circle->r < 0) {
         deleteCircle(circle);
@@ -537,7 +576,7 @@ void searchGroupCircle(List *list, Group *group) {
     ListIterator iterGroups = createIterator(group->groups);
     while((elem = nextElement(&iterGroups)) != NULL) {
         Group *group = (Group *)elem;
-        searchGroupRect(list, group);
+        searchGroupCircle(list, group);
     }
 }
 
@@ -555,7 +594,7 @@ void searchGroupPaths(List *list, Group *group) {
     ListIterator iterGroups = createIterator(group->groups);
     while((elem = nextElement(&iterGroups)) != NULL) {
         Group *group = (Group *)elem;
-        searchGroupRect(list, group);
+        searchGroupPaths(list, group);
     }
 
 }
@@ -992,7 +1031,7 @@ char* pathToString(void* data) {
 
     char *attributeListString = toString(path->otherAttributes);
 
-    pathString = malloc(20 + strlen(path->data) + strlen(attributeListString));
+    pathString = malloc( (sizeof(char) * 20) + strlen(path->data) + strlen(attributeListString));
 
     strcpy(pathString, "Path: Data=");
     strcat(pathString, path->data);

@@ -4,9 +4,9 @@
 #include "SVGParser.h"
 
 int main (int argc, char **argv) {
-    /*char *buffer;
+    char *buffer;
 
-     printf("===========================================\n\t\tTESTING ATTRIBUTES\n===========================================\n");
+    /* printf("===========================================\n\t\tTESTING ATTRIBUTES\n===========================================\n");
     Attribute *attribute1 = malloc (sizeof(Attribute));
     Attribute *attribute2 = malloc (sizeof(Attribute));
     Attribute *attribute3 = malloc (sizeof(Attribute));
@@ -74,7 +74,7 @@ int main (int argc, char **argv) {
     insertFront(attributeList5, attribute5);
 
     printf("---FREEING LIST ATTRIBUTES---\n");
-    freeList(attributeList);
+    //freeList(attributeList);
 
     printf("\n\n");
     printf("===========================================\n\t\tTESTING RECTANGLES\n===========================================\n");
@@ -185,25 +185,31 @@ int main (int argc, char **argv) {
     List *listCircles = getCircles(image);
     List *listRects = getRects(image);
     printf("len group: %d, paths: %d, circles: %d, rects: %d\n", getLength(listGroup), getLength(listPaths), getLength(listCircles), getLength(listRects));
-    char *buffer = toString(listGroup);
-    //printf("======Groups=====\n%s\n", buffer);
+    buffer = toString(listGroup);
+    printf("======Groups=====\n%s\n", buffer);
     free(buffer);
-    freeList(listGroup);
+
+    printf("======listPaths=====\n");
 
     buffer = toString(listPaths);
-    //printf("======listPaths=====\n%s\n", buffer);
+    if(buffer == NULL) {
+        printf("ERROR\n");
+    }
+    printf("%s\n", buffer);
     free(buffer);
-    freeList(listPaths);
 
-    buffer = toString(listCircles);
-    //printf("======listCircles=====\n%s\n", buffer);
-    free(buffer);
-    freeList(listCircles);
+    char *buffer2 = toString(listCircles);
+    printf("======listCircles=====\n%s\n", buffer2);
+    free(buffer2);
 
     buffer = toString(listRects);
-    //printf("======listRects=====\n%s\n", buffer);
+    printf("======listRects=====\n%s\n", buffer);
     free(buffer);
+
+    freeList(listGroup);
     freeList(listRects);
+    freeList(listCircles);
+    freeList(listPaths);
 
     
     deleteSVGimage(image);
