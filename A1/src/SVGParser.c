@@ -56,12 +56,15 @@ SVGimage* createSVGimage(char* fileName) {
     doc = xmlReadFile(fileName, NULL, 0);
 
     if (doc == NULL) {
-        printf("error: could not parse file %s\n", fileName);
+        //printf("error: could not parse file %s\n", fileName);
         return NULL;
     }
 
     /*Get the root element node */
     root_element = xmlDocGetRootElement(doc);
+    if(root_element == NULL) {
+        return NULL;
+    }
 
     image = initSVGimage();
 
@@ -116,21 +119,11 @@ void loadSVGimage(xmlNode * a_node, SVGimage *image) {
     xmlNode *cur_node = NULL;
 
     for (cur_node = a_node; cur_node != NULL; cur_node = cur_node->next) {
-        /* if (cur_node->type == XML_ELEMENT_NODE) {
-            printf("node type: Element, name: %s\n", cur_node->name);
-        } */
-
-        /* if (cur_node->content != NULL ){
-            printf("  content: %s, size%ld\n", (char *)cur_node->content, strlen((char *)cur_node->content));
-        } */
-
         /* Writing title to svg image */
         if(strcasecmp((char *)cur_node->name,"title")==0 && strcasecmp((char *)cur_node->parent->name,"svg")==0) {
-            /* printf("  content: %s\n", (char *)cur_node->children->content); */
-
             /* Truncates if > 255 */
             if(strlen((char *)cur_node->children->content) > 255) {
-                char *tempString = malloc(256);
+                char *tempString = malloc(sizeof(char) * 256);
                 strncpy(tempString, (char *)cur_node->children->content, 255);
                 tempString[255] = '\0';
                 strcpy(image->title, tempString);
@@ -141,7 +134,7 @@ void loadSVGimage(xmlNode * a_node, SVGimage *image) {
         } else if(strcasecmp((char *)cur_node->name,"desc")==0 && strcasecmp((char *)cur_node->parent->name,"svg")==0) { /* Writing desc to svg image */
             /* Truncates if > 255 */
             if(strlen((char *)cur_node->children->content) > 255) {
-                char *tempString = malloc(256);
+                char *tempString = malloc(sizeof(char) * 256);
                 strncpy(tempString, (char *)cur_node->children->content, 255);
                 tempString[255] = '\0';
                 strcpy(image->description, tempString);
@@ -165,7 +158,7 @@ void loadSVGimage(xmlNode * a_node, SVGimage *image) {
             /* Checks if there is a namespace, if there is add it to SVG struct */
             if(cur_node->ns) {
                 if(strlen((char *)cur_node->ns->href) > 255) {
-                    char *tempString = malloc(256);
+                    char *tempString = malloc(sizeof(char) * 256);
                     strncpy(tempString, (char *)cur_node->ns->href, 255);
                     tempString[255] = '\0';
                     strcpy(image->namespace, tempString);
@@ -195,7 +188,13 @@ Attribute *createAttribute(xmlAttr *attributeNode) {
     char *cont = (char *)(value->content);
 
     attribute->name = malloc(strlen(attrName) + 1);
+    if(attribute->name == NULL) {
+        return NULL;
+    }
     attribute->value = malloc(strlen(cont) + 1);
+    if(attribute->value == NULL) {
+        return NULL;
+    }
 
     strcpy(attribute->name, attrName);
     strcpy(attribute->value, cont);
@@ -296,7 +295,7 @@ void createCircle(xmlNode *node, List *list) {
 void createPath(xmlNode *node, List *list) {
     Path *path = malloc(sizeof(Path));
 
-    path->data = malloc(10);
+    path->data = malloc(sizeof(char) * 10);
     strcpy(path->data, "\0");
     path->otherAttributes = initializeList(attributeToString, deleteAttribute, compareAttributes);
 
@@ -359,7 +358,7 @@ void createGroup(xmlNode *node, List *list) {
  *@param obj - a pointer to an SVG struct
 **/
 char* SVGimageToString(SVGimage* img) {
-    char *imageString = malloc(2048);
+    char *imageString = malloc(sizeof(char) * 2048);
     int bufferLen = 2048;
 
     strcpy(imageString, "Namespace: ");
@@ -840,7 +839,7 @@ char* attributeToString(void* data) {
 
     attribute = (Attribute *)data;
 
-    char *stringAtt = malloc(strlen(attribute->name) + strlen(attribute->value) + 30);
+    char *stringAtt = malloc(strlen(attribute->name) + strlen(attribute->value) + (sizeof(char) * 30));
     
     strcpy(stringAtt, "\tAttribute name:");
     strcat(stringAtt, attribute->name);
@@ -893,7 +892,7 @@ char* groupToString( void* data) {
     /* Mallocing enough space for group string */
     lengthString = strlen(rectListString) + strlen(circleListString) + strlen(pathListString) + strlen(groupListString) + strlen(attListString);
 
-    groupString = malloc(50 + lengthString);
+    groupString = malloc((sizeof(char) * 50) + lengthString);
 
     /* Generating group string */
     strcpy(groupString, "Group Start:\n");
@@ -952,7 +951,7 @@ char* rectangleToString(void* data) {
     char *attributeListString = toString(rect->otherAttributes);
     
     /* Creates the string to return */
-    char *rectString = malloc(1024 + strlen(attributeListString));
+    char *rectString = malloc(sizeof(char) * (1024 + strlen(attributeListString)));
     sprintf(rectString, "Rectangle: x=%.3f, y=%.3f, width=%.3f, height=%.3f, unit=%s%s", rect->x, rect->y, rect->width, rect->height, rect->units, attributeListString);
     
     /* Frees attribute list string */
@@ -992,7 +991,7 @@ char* circleToString(void* data) {
 
     char *attributeListString = toString(circle->otherAttributes);
 
-    char *circleString = malloc(1024 + strlen(attributeListString));
+    char *circleString = malloc(sizeof(char) * (1024 + strlen(attributeListString)));
     sprintf(circleString, "Circle: cx=%.3f, cy=%.3f, r=%.3f, unit=%s\t%s", circle->cx, circle->cy, circle->r, circle->units, attributeListString);
     
     free(attributeListString);
