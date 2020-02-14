@@ -4,9 +4,11 @@
 #include "SVGParser.h"
 xmlDoc* convertSVGimageToXMLdoc (SVGimage* image) ;
 int main (int argc, char **argv) {
-    char *buffer;
+    //char *buffer;
 
-    SVGimage* img = createSVGimage("quad01_A2.svg");
+    SVGimage* img = createSVGimage("beer.svg");
+    //SVGimage* img = createSVGimage("quad01_A2.svg");
+
 
     /* strcpy(img->namespace,"http://www.w3.org/2000/svg");
     strcpy(img->title,"beertest");
@@ -18,6 +20,7 @@ int main (int argc, char **argv) {
     img->groups = initializeList(groupToString, deleteGroup, compareGroups); */
     xmlDoc* doc = convertSVGimageToXMLdoc(img); 
     xmlSaveFormatFileEnc("testing.svg", doc, "UTF-8", 1);
+    deleteSVGimage(img);
     /* printf("===========================================\n\t\tTESTING ATTRIBUTES\n===========================================\n");
     Attribute *attribute1 = malloc (sizeof(Attribute));
     Attribute *attribute2 = malloc (sizeof(Attribute));

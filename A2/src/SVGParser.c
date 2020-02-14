@@ -33,7 +33,9 @@ xmlDoc* convertSVGimageToXMLdoc (SVGimage* image);
 void addAttributesToXMLnode (List* attributeList, xmlNode* node);
 void addRectanglesToXMLnode(List* rectList, xmlNode* rootNode);
 void addPathsToXMLnode(List* pathList, xmlNode* rootNode);
-void addCirclesToXMLnode(List* circList, xmlNode* rootNode); 
+void addCirclesToXMLnode(List* circList, xmlNode* rootNode);
+void addGroupsToXMLnode(List* groupList, xmlNode* rootNode); 
+
 /** Function to create an SVG object based on the contents of an SVG file.
  *@pre File name cannot be an empty string or NULL.
        File represented by this name must exist and must be readable.
@@ -875,7 +877,6 @@ xmlDoc* convertSVGimageToXMLdoc (SVGimage* image) {
     }
     xmlDoc* doc = NULL;
     xmlNode* rootNode = NULL;
-    xmlNode* node = NULL;
 
     LIBXML_TEST_VERSION;
     
@@ -884,16 +885,13 @@ xmlDoc* convertSVGimageToXMLdoc (SVGimage* image) {
     xmlDocSetRootElement(doc, rootNode);
 
     //write out the root svg node and adding title, desc and namespace
-    xmlNewChild(rootNode, NULL, BAD_CAST "title",
-                BAD_CAST image->title);
-    xmlNewChild(rootNode, NULL, BAD_CAST "desc",
-                BAD_CAST image->description);
+    xmlNewChild(rootNode, NULL, BAD_CAST "title", BAD_CAST image->title);
+    xmlNewChild(rootNode, NULL, BAD_CAST "desc", BAD_CAST image->description);
     xmlSetNs(rootNode, xmlNewNs(rootNode, (const xmlChar*)image->namespace, NULL));
     addAttributesToXMLnode(image->otherAttributes, rootNode);
 
     //write out any rects that are in the root node
     addRectanglesToXMLnode(image->rectangles, rootNode);
-
     //write out any circles in the root
     addCirclesToXMLnode(image->circles, rootNode);
 
@@ -901,12 +899,15 @@ xmlDoc* convertSVGimageToXMLdoc (SVGimage* image) {
     addPathsToXMLnode(image->paths, rootNode);
     
     //write out any groups
-
+    addGroupsToXMLnode(image->groups, rootNode);
     return doc;
 }
 
 //adds the attributes of an xmlNode
 void addAttributesToXMLnode (List* attributeList, xmlNode* node) {
+    if(getLength(attributeList) == 0) {
+        return;
+    }
     void *elem = NULL;
     ListIterator iter = createIterator(attributeList);
     while((elem = nextElement(&iter)) != NULL) {
@@ -916,6 +917,9 @@ void addAttributesToXMLnode (List* attributeList, xmlNode* node) {
 }
 
 void addRectanglesToXMLnode(List* rectList, xmlNode* rootNode) {
+    if(getLength(rectList) == 0) {
+        return;
+    }
     void *elem = NULL;
     xmlNode* node = NULL;
     char buffer[1024];
@@ -934,23 +938,31 @@ void addRectanglesToXMLnode(List* rectList, xmlNode* rootNode) {
 
         addAttributesToXMLnode(rect->otherAttributes, node);
     }
+    printf("done adding rects\n");
+
 }
 
 void addPathsToXMLnode(List* pathList, xmlNode* rootNode) {
+    if(getLength(pathList) == 0) {
+        return;
+    }
     void *elem = NULL;
     xmlNode* node = NULL;
-    char buffer[1024];
     ListIterator iter = createIterator(pathList);
     while((elem = nextElement(&iter)) != NULL) {
         Path* path = (Path *)elem;
         node = xmlNewChild(rootNode, NULL, BAD_CAST "path", NULL);
-        sprintf(buffer, "%s", path->data);
-        xmlNewProp(node, BAD_CAST "d", BAD_CAST buffer);
+        xmlNewProp(node, BAD_CAST "d", BAD_CAST path->data);
         addAttributesToXMLnode(path->otherAttributes, node);
     }
+    printf("done adding paths\n");
+
 }
 
 void addCirclesToXMLnode(List* circList, xmlNode* rootNode) {
+    if(getLength(circList) == 0) {
+        return;
+    }
     ListIterator iter = createIterator(circList);
     void *elem = NULL;
     char buffer[1024];
@@ -968,6 +980,31 @@ void addCirclesToXMLnode(List* circList, xmlNode* rootNode) {
 
         addAttributesToXMLnode(circle->otherAttributes, node);
     }
+    printf("done adding circles\n");
+
+}
+
+void addGroupsToXMLnode(List* groupList, xmlNode* rootNode) {
+    if(getLength(groupList) == 0) {
+        printf("no more groups\n");
+        return;
+    }
+    ListIterator iter = createIterator(groupList);
+    void *elem = NULL;
+    xmlNode* node = NULL;
+
+    while((elem = nextElement(&iter)) != NULL) {
+        Group* group = (Group *)elem;
+        node = xmlNewChild(rootNode, NULL, BAD_CAST "g", NULL);
+        addRectanglesToXMLnode(group->rectangles, node);
+        addCirclesToXMLnode(group->circles, node);
+        addPathsToXMLnode(group->paths, node);
+        addGroupsToXMLnode(group->groups, node);
+        addAttributesToXMLnode(group->otherAttributes, node);
+    }
+    printf("done adding groups\n");
+
+
 }
 
 /** Function to setting an attribute in an SVGimage or component
