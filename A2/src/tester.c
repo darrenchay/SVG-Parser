@@ -7,8 +7,13 @@ int main (int argc, char **argv) {
     //char *buffer;
 
     //SVGimage* img = createSVGimage("beer.svg");
-    SVGimage* img = createValidSVGimage("quad01_A2.svg", "svg.xsd");
-    writeSVGimage(img, "testingQuad01.svg");
+    if (argc != 3) {
+        return(1);
+    }
+
+    SVGimage* img = createValidSVGimage(argv[1], "svg.xsd");
+    validateSVGimage(img, "svg.xsd");
+    writeSVGimage(img, argv[2]);
 
     /* strcpy(img->namespace,"http://www.w3.org/2000/svg");
     strcpy(img->title,"beertest");

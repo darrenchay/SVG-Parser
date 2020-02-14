@@ -29,6 +29,12 @@ int searchGroup (List *list, void *area, int type);
 bool compareLen(const void *first, const void *second);
 int search(List* list, void *area, int type);
 void deleteListGetter(void *data);
+
+bool checkAttributes(List* list);
+bool checkRect(List* list);
+bool checkCircle(List* list);
+bool checkPath(List* list);
+bool checkGroup(List* list);
 xmlDoc* convertSVGimageToXMLdoc (SVGimage* image);
 bool validateXMLtree(xmlDoc* doc, char* schemaFile);
 void addAttributesToXMLnode (List* attributeList, xmlNode* node);
@@ -449,7 +455,7 @@ void deleteSVGimage(SVGimage* img) {
 List* getRects(SVGimage* img) {
     List *rectList = initializeList(rectangleToString, deleteListGetter, compareRectangles);
 
-    if(img == NULL) {
+    if(img == NULL || img->rectangles == NULL) {
         return rectList;
     }
 
@@ -478,7 +484,7 @@ List* getRects(SVGimage* img) {
 List* getCircles(SVGimage* img) {
     List *circleList = initializeList(circleToString, deleteListGetter, compareCircles);
 
-    if(img == NULL) {
+    if(img == NULL || img->circles == NULL) {
         return circleList;
     }
 
@@ -507,10 +513,9 @@ List* getGroups(SVGimage* img) {
     void *elem;
     List * groupList = initializeList(groupToString, deleteListGetter, compareGroups);
 
-    if(img == NULL) {
+    if(img == NULL || img->groups == NULL) {
         return groupList;
     }
-
     /* Searches down groups for all subsequent groups */
     ListIterator iterGroups = createIterator(img->groups);
     while((elem = nextElement(&iterGroups)) != NULL) {
@@ -526,7 +531,7 @@ List* getGroups(SVGimage* img) {
 List* getPaths(SVGimage* img) {
     List *pathList = initializeList(pathToString, deleteListGetter, comparePaths);
 
-    if(img == NULL) {
+    if(img == NULL || img->paths == NULL) {
         return pathList;
     }
 
@@ -552,7 +557,9 @@ List* getPaths(SVGimage* img) {
 /* Recursively goes through groups to find elements and add to list */
 void searchGroupRect(List *list, Group *group) {
     void *elem;
-
+    if(group->rectangles == NULL) {
+        return;
+    }
     /* Creates iterator to go through list of rectangles in that group */
     ListIterator iterRects = createIterator(group->rectangles);
     while((elem = nextElement(&iterRects)) != NULL) {
@@ -570,7 +577,9 @@ void searchGroupRect(List *list, Group *group) {
 
 void searchGroupCircle(List *list, Group *group) {
     void *elem;
-
+    if(group->circles == NULL) {
+        return;
+    }
     /* Creates iterator to go through list of circles in that group */
     ListIterator iter = createIterator(group->circles);
     while((elem = nextElement(&iter)) != NULL) {
@@ -588,7 +597,9 @@ void searchGroupCircle(List *list, Group *group) {
 
 void searchGroupPaths(List *list, Group *group) {
     void *elem;
-
+    if(group->paths == NULL) {
+        return;
+    }
     /* Creates iterator to go through list of paths in that group */
     ListIterator iter = createIterator(group->paths);
     while((elem = nextElement(&iter)) != NULL) {
@@ -607,6 +618,9 @@ void searchGroupPaths(List *list, Group *group) {
 
 void searchGroupGroups(List *list, Group *group) {
     void *elem;
+    if(group->groups == NULL) {
+        return;
+    }
     /* Searches down groups for all subsequent groups */
     ListIterator iterGroups = createIterator(group->groups);
     while((elem = nextElement(&iterGroups)) != NULL) {
@@ -830,12 +844,113 @@ bool validateSVGimage(SVGimage* image, char* schemaFile) {
     if (image == NULL || schemaFile == NULL) {
         return false;
     }
+
     xmlDoc* doc = convertSVGimageToXMLdoc(image);
+    printf("done converting\n");
     if(validateXMLtree(doc, schemaFile) == false) {
         return false;
     }
 
+    bool isValid = checkRect(getRects(image));
+    if(isValid == false) {
+        return false;
+    }
+    isValid = checkCircle(getCircles(image));
+    if(isValid == false) {
+        return false;
+    }
+    isValid = checkPath(getPaths(image));
+    if(isValid == false) {
+        return false;
+    }
+    isValid = checkGroup(getGroups(image));
+    if(isValid == false) {
+        return false;
+    }
 
+    return true;
+}
+
+bool checkAttributes(List* list) {
+    if(list == NULL) {
+        return false;
+    }
+    void *elem;
+    ListIterator iter = createIterator(list);
+    while((elem = nextElement(&iter)) != NULL) {
+        Attribute* attribute = (Attribute *)elem;
+        //printf("checking attribute\n");
+
+        if(attribute->name == NULL || attribute->value == NULL || strlen(attribute->name) == 0 || strlen(attribute->value) == 0 ) {
+            return false;
+        }
+    }
+    return true;
+}
+
+bool checkRect(List* list) {
+    void *elem;
+    
+    ListIterator iter = createIterator(list);
+    while((elem = nextElement(&iter)) != NULL) {
+        Rectangle* rect = (Rectangle *)elem;
+        //printf("checking rect\n");
+        if(rect->x < 0 || rect->y < 0 || rect->width < 0 || rect->height < 0) {
+            return false;
+        }
+        if(!checkAttributes(rect->otherAttributes)) {
+
+            return false;
+        }
+    }
+    
+    freeList(list);
+
+    return true;
+}
+
+bool checkCircle(List* list) {
+    void *elem;
+    
+    ListIterator iter = createIterator(list);
+    while((elem = nextElement(&iter)) != NULL) {
+        Circle* circle = (Circle *)elem;
+        if(circle->cx < 0 || circle->cy < 0 || circle->r < 0) {
+            return false;
+        }
+        if(!checkAttributes(circle->otherAttributes)) {
+            return false;
+        }
+    }
+    freeList(list);
+    return true;
+}
+
+bool checkPath(List* list) {
+    void *elem;
+    
+    ListIterator iter = createIterator(list);
+    while((elem = nextElement(&iter)) != NULL) {
+        Path* path = (Path *)elem;
+        if(path->data == NULL || strlen(path->data) == 0 || !checkAttributes(path->otherAttributes)) {
+            return false;
+        }
+    }
+    freeList(list);
+    return true;
+}
+
+bool checkGroup(List* list) {
+    void *elem;
+    
+    ListIterator iter = createIterator(list);
+    while((elem = nextElement(&iter)) != NULL) {
+        Group* group = (Group *)elem;
+        if(!checkAttributes(group->otherAttributes)) {
+            return false;
+        }
+    }
+    freeList(list);
     return true;
 }
 
@@ -928,36 +1043,63 @@ xmlDoc* convertSVGimageToXMLdoc (SVGimage* image) {
     }
     xmlDoc* doc = NULL;
     xmlNode* rootNode = NULL;
+    xmlNode* node = NULL;
+
 
     LIBXML_TEST_VERSION;
     
     doc = xmlNewDoc(BAD_CAST "1.0");
+    if(doc == NULL) {
+        return NULL;
+    }
     rootNode = xmlNewNode(NULL, BAD_CAST "svg");
+    if(rootNode == NULL) {
+        return NULL;
+    }
     xmlDocSetRootElement(doc, rootNode);
 
     //write out the root svg node and adding title, desc and namespace
-    /* if(strlen(image->title) > 1) {
-        xmlNode* nodeTemp = xmlNewText(BAD_CAST image->title);
+    if(image->namespace !=NULL) {
+        xmlSetNs(rootNode, xmlNewNs(rootNode, (const xmlChar*)image->namespace, NULL));
+    }
+
+    if(strlen(image->title) > 1) {
+        /* xmlNode* nodeTemp = xmlNewText(BAD_CAST image->title);
         xmlNode* node = xmlNewNode(NULL, BAD_CAST "title");
         xmlAddChild(node, nodeTemp);
-        xmlAddChild(rootNode, node);
-    } */
-    /* if(strlen(image->description) > 1) {
-        xmlNewChild(rootNode, NULL, BAD_CAST "desc", BAD_CAST image->description);
-    }  */
-    xmlSetNs(rootNode, xmlNewNs(rootNode, (const xmlChar*)image->namespace, NULL));
-    addAttributesToXMLnode(image->otherAttributes, rootNode);
+        xmlAddChild(rootNode, node); */
+        node = xmlNewChild(rootNode, NULL, BAD_CAST "title", BAD_CAST image->title);
+        xmlSetNs(node, xmlNewNs(node, (const xmlChar*)image->namespace, NULL));
 
+
+    }
+    if(strlen(image->description) > 1) {
+        node = xmlNewChild(rootNode, NULL, BAD_CAST "desc", BAD_CAST image->description);
+        xmlSetNs(node, xmlNewNs(node, (const xmlChar*)image->namespace, NULL));
+
+    } 
+    if(image->otherAttributes != NULL) {
+        addAttributesToXMLnode(image->otherAttributes, rootNode);
+    }
     //write out any rects that are in the root node
-    addRectanglesToXMLnode(image->rectangles, rootNode);
+    if(image->rectangles != NULL) {
+        addRectanglesToXMLnode(image->rectangles, rootNode);
+    }
+
     //write out any circles in the root
-    addCirclesToXMLnode(image->circles, rootNode);
+    if(image->circles != NULL) {    
+        addCirclesToXMLnode(image->circles, rootNode);
+    }
 
     //write out any paths
-    addPathsToXMLnode(image->paths, rootNode);
+    if(image->paths != NULL) {
+        addPathsToXMLnode(image->paths, rootNode);
+    }
     
     //write out any groups
-    addGroupsToXMLnode(image->groups, rootNode);
+    if(image->groups != NULL) {
+        addGroupsToXMLnode(image->groups, rootNode);
+    }
     return doc;
 }
 
@@ -1000,7 +1142,7 @@ bool validateXMLtree(xmlDoc* doc, char* schemaFile) {
 
 //adds the attributes of an xmlNode
 void addAttributesToXMLnode (List* attributeList, xmlNode* node) {
-    if(getLength(attributeList) == 0) {
+    if(attributeList == NULL || getLength(attributeList) == 0) {
         return;
     }
     void *elem = NULL;
@@ -1012,7 +1154,7 @@ void addAttributesToXMLnode (List* attributeList, xmlNode* node) {
 }
 
 void addRectanglesToXMLnode(List* rectList, xmlNode* rootNode) {
-    if(getLength(rectList) == 0) {
+    if(rectList == NULL || getLength(rectList) == 0) {
         return;
     }
     void *elem = NULL;
@@ -1038,7 +1180,7 @@ void addRectanglesToXMLnode(List* rectList, xmlNode* rootNode) {
 }
 
 void addPathsToXMLnode(List* pathList, xmlNode* rootNode) {
-    if(getLength(pathList) == 0) {
+    if(pathList == NULL || getLength(pathList) == 0) {
         return;
     }
     void *elem = NULL;
@@ -1055,7 +1197,7 @@ void addPathsToXMLnode(List* pathList, xmlNode* rootNode) {
 }
 
 void addCirclesToXMLnode(List* circList, xmlNode* rootNode) {
-    if(getLength(circList) == 0) {
+    if(circList == NULL || getLength(circList) == 0) {
         return;
     }
     ListIterator iter = createIterator(circList);
@@ -1080,7 +1222,7 @@ void addCirclesToXMLnode(List* circList, xmlNode* rootNode) {
 }
 
 void addGroupsToXMLnode(List* groupList, xmlNode* rootNode) {
-    if(getLength(groupList) == 0) {
+    if(groupList == NULL || getLength(groupList) == 0) {
         return;
     }
     ListIterator iter = createIterator(groupList);
@@ -1113,7 +1255,10 @@ void addGroupsToXMLnode(List* groupList, xmlNode* rootNode) {
     elemIndex - index of thje lement to modify
     newAttribute - struct containing name and value of the updated attribute
  **/
-void setAttribute(SVGimage* image, elementType elemType, int elemIndex, Attribute* newAttribute);
+void setAttribute(SVGimage* image, elementType elemType, int elemIndex, Attribute* newAttribute) {
+    return;
+}
+
 
 /** Function to adding an element - Circle, Rectngle, or Path - to an SVGimage
  *@pre
@@ -1126,7 +1271,10 @@ void setAttribute(SVGimage* image, elementType elemType, int elemIndex, Attribut
     elemType - enum value indicating elemtn to modify
     newElement - pointer to the element sgtruct (Circle, Rectngle, or Path)
  **/
-void addComponent(SVGimage* image, elementType type, void* newElement);
+void addComponent(SVGimage* image, elementType type, void* newElement) {
+    return;
+}
+
 
 /** Function to converting an Attribute into a JSON string
 *@pre Attribute is not NULL
@@ -1134,7 +1282,9 @@ void addComponent(SVGimage* image, elementType type, void* newElement);
 *@return A string in JSON format
 *@param event - a pointer to an Attribute struct
 **/
-char* attrToJSON(const Attribute *a);
+char* attrToJSON(const Attribute *a) {
+    return NULL;
+}
 
 /** Function to converting a Circle into a JSON string
 *@pre Circle is not NULL
@@ -1142,7 +1292,10 @@ char* attrToJSON(const Attribute *a);
 *@return A string in JSON format
 *@param event - a pointer to a Circle struct
 **/
-char* circleToJSON(const Circle *c);
+char* circleToJSON(const Circle *c) {
+    return NULL;
+}
+
 
 /** Function to converting a Rectangle into a JSON string
 *@pre Rectangle is not NULL
@@ -1150,7 +1303,10 @@ char* circleToJSON(const Circle *c);
 *@return A string in JSON format
 *@param event - a pointer to a Rectangle struct
 **/
-char* rectToJSON(const Rectangle *r);
+char* rectToJSON(const Rectangle *r){
+    return NULL;
+}
+
 
 /** Function to converting a Path into a JSON string
 *@pre Path is not NULL
@@ -1158,7 +1314,10 @@ char* rectToJSON(const Rectangle *r);
 *@return A string in JSON format
 *@param event - a pointer to a Path struct
 **/
-char* pathToJSON(const Path *p);
+char* pathToJSON(const Path *p){
+    return NULL;
+}
+
 
 /** Function to converting a Group into a JSON string
 *@pre Group is not NULL
@@ -1166,7 +1325,10 @@ char* pathToJSON(const Path *p);
 *@return A string in JSON format
 *@param event - a pointer to a Group struct
 **/
-char* groupToJSON(const Group *g);
+char* groupToJSON(const Group *g){
+    return NULL;
+}
+
 
 /** Function to converting a list of Attribute structs into a JSON string
 *@pre Attribute list is not NULL
@@ -1174,7 +1336,10 @@ char* groupToJSON(const Group *g);
 *@return A string in JSON format
 *@param event - a pointer to a List struct
 **/
-char* attrListToJSON(const List *list);
+char* attrListToJSON(const List *list){
+    return NULL;
+}
+
 
 /** Function to converting a list of Circle structs into a JSON string
 *@pre Circle list is not NULL
@@ -1182,7 +1347,10 @@ char* attrListToJSON(const List *list);
 *@return A string in JSON format
 *@param event - a pointer to a List struct
 **/
-char* circListToJSON(const List *list);
+char* circListToJSON(const List *list){
+    return NULL;
+}
+
 
 /** Function to converting a list of Rectangle structs into a JSON string
 *@pre Rectangle list is not NULL
@@ -1190,7 +1358,10 @@ char* circListToJSON(const List *list);
 *@return A string in JSON format
 *@param event - a pointer to a List struct
 **/
-char* rectListToJSON(const List *list);
+char* rectListToJSON(const List *list){
+    return NULL;
+}
+
 
 /** Function to converting a list of Path structs into a JSON string
 *@pre Path list is not NULL
@@ -1198,7 +1369,10 @@ char* rectListToJSON(const List *list);
 *@return A string in JSON format
 *@param event - a pointer to a List struct
 **/
-char* pathListToJSON(const List *list);
+char* pathListToJSON(const List *list){
+    return NULL;
+}
+
 
 /** Function to converting a list of Group structs into a JSON string
 *@pre Group list is not NULL
@@ -1206,7 +1380,10 @@ char* pathListToJSON(const List *list);
 *@return A string in JSON format
 *@param event - a pointer to a List struct
 **/
-char* groupListToJSON(const List *list);
+char* groupListToJSON(const List *list){
+    return NULL;
+}
+
 
 /** Function to converting an SVGimage into a JSON string
 *@pre SVGimage is not NULL
@@ -1214,7 +1391,10 @@ char* groupListToJSON(const List *list);
 *@return A string in JSON format
 *@param event - a pointer to an SVGimage struct
 **/
-char* SVGtoJSON(const SVGimage* imge);
+char* SVGtoJSON(const SVGimage* imge){
+    return NULL;
+}
+
 
 /* ******************************* List helper functions  - MUST be implemented *************************** */
 
