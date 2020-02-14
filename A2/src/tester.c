@@ -15,16 +15,21 @@ int main (int argc, char **argv) {
     validateSVGimage(img, "svg.xsd");
     writeSVGimage(img, argv[2]);
 
-    /* strcpy(img->namespace,"http://www.w3.org/2000/svg");
-    strcpy(img->title,"beertest");
-    strcpy(img->description,"testingxml");
-    img->otherAttributes = initializeList(&attributeToString, &deleteAttribute, &compareAttributes);
-    img->rectangles = initializeList(rectangleToString, deleteRectangle, compareRectangles);
-    img->circles = initializeList(circleToString, deleteCircle, compareCircles);
-    img->paths = initializeList(pathToString, deletePath, comparePaths);
-    img->groups = initializeList(groupToString, deleteGroup, compareGroups); */
+    Rectangle *rect1 = malloc (sizeof(Rectangle));
+
+    rect1->x = 1.1;
+    rect1->y = 2.1;
+    rect1->width = 3.1;
+    rect1->height = 4.1;
+    strcpy(rect1->units, "cm");
+    List *attributeList = initializeList(&attributeToString, &deleteAttribute, &compareAttributes);
+    rect1->otherAttributes = attributeList;
+    addComponent(img, RECT, rect1);
+    char *string = SVGimageToString(img);
+    printf("%s\n", string);
+    free(string);
     deleteSVGimage(img);
-    /* printf("===========================================\n\t\tTESTING ATTRIBUTES\n===========================================\n");
+    /*printf("===========================================\n\t\tTESTING ATTRIBUTES\n===========================================\n");
     Attribute *attribute1 = malloc (sizeof(Attribute));
     Attribute *attribute2 = malloc (sizeof(Attribute));
     Attribute *attribute3 = malloc (sizeof(Attribute));

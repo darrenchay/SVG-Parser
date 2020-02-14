@@ -1272,7 +1272,16 @@ void setAttribute(SVGimage* image, elementType elemType, int elemIndex, Attribut
     newElement - pointer to the element sgtruct (Circle, Rectngle, or Path)
  **/
 void addComponent(SVGimage* image, elementType type, void* newElement) {
-    return;
+    if(image == NULL || newElement == NULL || type < CIRC || type > PATH ) {
+        return;
+    }
+    if(type == CIRC) {
+        insertBack(image->circles, newElement);
+    } else if (type == RECT) {
+        insertBack(image->rectangles, newElement);
+    } else if (type == PATH) {
+        insertBack(image->paths, newElement);
+    }
 }
 
 
