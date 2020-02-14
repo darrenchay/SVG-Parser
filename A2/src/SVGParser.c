@@ -30,6 +30,7 @@ bool compareLen(const void *first, const void *second);
 int search(List* list, void *area, int type);
 void deleteListGetter(void *data);
 xmlDoc* convertSVGimageToXMLdoc (SVGimage* image);
+bool validateXMLtree(xmlDoc* doc, char* schemaFile);
 void addAttributesToXMLnode (List* attributeList, xmlNode* node);
 void addRectanglesToXMLnode(List* rectList, xmlNode* rootNode);
 void addPathsToXMLnode(List* pathList, xmlNode* rootNode);
@@ -829,6 +830,12 @@ bool validateSVGimage(SVGimage* image, char* schemaFile) {
     if (image == NULL || schemaFile == NULL) {
         return false;
     }
+    xmlDoc* doc = convertSVGimageToXMLdoc(image);
+    if(validateXMLtree(doc, schemaFile) == false) {
+        return false;
+    }
+
+
     return true;
 }
 
@@ -849,13 +856,35 @@ SVGimage* createValidSVGimage(char* fileName, char* schemaFile) {
     if(fileName == NULL  || schemaFile == NULL) {
         return NULL;
     }
+    xmlDoc *doc = NULL;
+    LIBXML_TEST_VERSION
 
-    /* if(validateSVGimage(fileName, schemaFile)) {
-        return createSVGimage(fileName);
-    } else {
+    /*parse the file and get the DOM */
+    doc = xmlReadFile(fileName, NULL, 0);
+
+    if (doc == NULL) {
+        xmlCleanupParser();
         return NULL;
-    } */
-    return NULL;
+    }
+    if(validateXMLtree(doc, schemaFile) == false) {
+        /*free the document */
+        xmlFreeDoc(doc);
+        xmlCleanupParser();
+        return NULL;
+    }
+
+    printf("done validating file\n");
+    SVGimage* img = createSVGimage(fileName);
+    if(img == NULL) {
+        return NULL;
+    }
+    printf("created image\n");
+    if(validateSVGimage(img, schemaFile) == false) {
+        deleteSVGimage(img);
+        return NULL;
+    }
+    printf("image validated\n");
+    return img;
 }
 
 /** Function to writing a SVGimage into a file in SVG format.
@@ -869,7 +898,29 @@ SVGimage* createValidSVGimage(char* fileName, char* schemaFile) {
     doc - a pointer to a SVGimage struct
  	fileName - the name of the output file
  **/
-bool writeSVGimage(SVGimage* image, char* fileName);
+bool writeSVGimage(SVGimage* image, char* fileName) {
+    if(image == NULL || fileName == NULL) {
+        return false;
+    }
+    //convert struct to xmlDoc
+    xmlDoc* docToFile = convertSVGimageToXMLdoc(image);
+    if(docToFile == NULL) {
+        return false;
+    }
+    //saving doc to file
+    int success = xmlSaveFormatFileEnc(fileName, docToFile, "UTF-8", 1);
+
+    //freeing data
+    xmlFreeDoc(docToFile);
+    xmlCleanupParser();
+
+    if(success == -1) {
+        return false;
+    } else {
+        return true;
+    }
+    
+}
 
 xmlDoc* convertSVGimageToXMLdoc (SVGimage* image) {
     if(image == NULL) {
@@ -885,8 +936,15 @@ xmlDoc* convertSVGimageToXMLdoc (SVGimage* image) {
     xmlDocSetRootElement(doc, rootNode);
 
     //write out the root svg node and adding title, desc and namespace
-    xmlNewChild(rootNode, NULL, BAD_CAST "title", BAD_CAST image->title);
-    xmlNewChild(rootNode, NULL, BAD_CAST "desc", BAD_CAST image->description);
+    /* if(strlen(image->title) > 1) {
+        xmlNode* nodeTemp = xmlNewText(BAD_CAST image->title);
+        xmlNode* node = xmlNewNode(NULL, BAD_CAST "title");
+        xmlAddChild(node, nodeTemp);
+        xmlAddChild(rootNode, node);
+    } */
+    /* if(strlen(image->description) > 1) {
+        xmlNewChild(rootNode, NULL, BAD_CAST "desc", BAD_CAST image->description);
+    }  */
     xmlSetNs(rootNode, xmlNewNs(rootNode, (const xmlChar*)image->namespace, NULL));
     addAttributesToXMLnode(image->otherAttributes, rootNode);
 
@@ -901,6 +959,43 @@ xmlDoc* convertSVGimageToXMLdoc (SVGimage* image) {
     //write out any groups
     addGroupsToXMLnode(image->groups, rootNode);
     return doc;
+}
+
+bool validateXMLtree(xmlDoc* doc, char* schemaFile) {
+    if(doc == NULL || schemaFile == NULL) {
+        return false;
+    }
+    xmlSchema* schemaPtr = NULL;
+    xmlSchemaParserCtxt* ctxt = NULL;
+
+    //parse schema file
+    ctxt = xmlSchemaNewParserCtxt(schemaFile);
+
+    xmlSchemaSetParserErrors(ctxt, (xmlSchemaValidityErrorFunc) fprintf, (xmlSchemaValidityWarningFunc) fprintf, stderr);
+    schemaPtr = xmlSchemaParse(ctxt);
+    xmlSchemaFreeParserCtxt(ctxt);
+
+    xmlSchemaValidCtxtPtr ctxtValid;
+    int returnVal;
+    ctxtValid = xmlSchemaNewValidCtxt(schemaPtr);
+    xmlSchemaSetValidErrors(ctxtValid, (xmlSchemaValidityErrorFunc) fprintf, (xmlSchemaValidityWarningFunc) fprintf, stderr);
+    returnVal = xmlSchemaValidateDoc(ctxtValid, doc);
+
+    //freeing schema and doc
+    xmlSchemaFreeValidCtxt(ctxtValid);
+    xmlFreeDoc(doc);
+    if(schemaPtr != NULL) {
+        xmlSchemaFree(schemaPtr);
+    }
+    xmlSchemaCleanupTypes();
+    xmlCleanupParser();
+
+    if(returnVal == 0) {
+        return true;
+    } else {
+        return false;
+    }
+
 }
 
 //adds the attributes of an xmlNode
@@ -938,7 +1033,7 @@ void addRectanglesToXMLnode(List* rectList, xmlNode* rootNode) {
 
         addAttributesToXMLnode(rect->otherAttributes, node);
     }
-    printf("done adding rects\n");
+    //printf("done adding rects\n");
 
 }
 
@@ -955,7 +1050,7 @@ void addPathsToXMLnode(List* pathList, xmlNode* rootNode) {
         xmlNewProp(node, BAD_CAST "d", BAD_CAST path->data);
         addAttributesToXMLnode(path->otherAttributes, node);
     }
-    printf("done adding paths\n");
+    //printf("done adding paths\n");
 
 }
 
@@ -980,13 +1075,12 @@ void addCirclesToXMLnode(List* circList, xmlNode* rootNode) {
 
         addAttributesToXMLnode(circle->otherAttributes, node);
     }
-    printf("done adding circles\n");
+    //printf("done adding circles\n");
 
 }
 
 void addGroupsToXMLnode(List* groupList, xmlNode* rootNode) {
     if(getLength(groupList) == 0) {
-        printf("no more groups\n");
         return;
     }
     ListIterator iter = createIterator(groupList);
@@ -1002,7 +1096,7 @@ void addGroupsToXMLnode(List* groupList, xmlNode* rootNode) {
         addGroupsToXMLnode(group->groups, node);
         addAttributesToXMLnode(group->otherAttributes, node);
     }
-    printf("done adding groups\n");
+    //printf("done adding groups\n");
 
 
 }
