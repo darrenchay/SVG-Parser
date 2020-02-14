@@ -21,11 +21,13 @@
               <circle cx="23.6" cy="34.3" r="3.6" fill="#231f20"/>
               <circle cx="23.6" cy="34.3" r="3.6" fill="#231f20"/>
               <g>
-                 <rect x="5" y="5" width="1198" height="598"
+                 <rect x="5" y="5" width="98cm" height="598a"
               fill="none" stroke="purple" stroke-width="5" />
+              <path d="M32,2c16.6,0,30,13.4,30,30S48.6,62,32,62C15.4,62,2,48.6,2,32S15.4,2,32,2" fill="#ffdd67"/>
                   <g>
-                      <rect x="6" y="6" width="1198" height="598"
+                      <rect x="6" y="6" width="1198a" height="598cm"
                   fill="none" stroke="pink" stroke-width="6" />
+                  <path d="M32,2c16.6,0,30,13.4,30,30S48.6,62,32,62C15.4,62,2,48.6,2,32S15.4,2,32,2" fill="#ffdd67"/>
                   </g>
               </g>
        </g>

@@ -11,8 +11,8 @@ parser: $(BIN)libsvgparse.so
 #REMOVE BEFORE SUBMISSION
 debug: test
 
-test: $(SRC)main_tester_functions.c $(BIN)libsvgparse.so
-	gcc $(CFLAGS) -L./bin $(SRC)main_tester_functions.c -I$(XML_PATH) -I$(INC) -o $(BIN)test -lsvgparse -lxml2
+test: $(SRC)tester.c $(BIN)libsvgparse.so
+	gcc $(CFLAGS) -L./bin $(SRC)tester.c -I$(XML_PATH) -I$(INC) -o $(BIN)test -lsvgparse -lxml2
 
 $(BIN)libsvgparse.so: $(BIN)SVGParser.o $(BIN)LinkedListAPI.o
 	gcc -shared -o $(BIN)libsvgparse.so $(BIN)SVGParser.o $(BIN)LinkedListAPI.o -lxml2 -lm
