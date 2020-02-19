@@ -36,16 +36,17 @@ int main (int argc, char **argv) {
     attribute1->value = value1; 
 
     char *string = SVGimageToString(img);
-    printf("==================before==================\n%s\n==================\n", string);
+    printf("==================before==================\n%s\n====================================\n", string);
 
     free(string);
     addComponent(img, RECT, rect1);
     setAttribute(img, CIRC, 0, attribute1);
     string = SVGimageToString(img);
-    printf("==================after==================\n%s\n==================\n", string);
+    printf("==================after==================\n%s\n====================================\n", string);
 
     free(string);
     deleteSVGimage(img);
+
     /*printf("===========================================\n\t\tTESTING ATTRIBUTES\n===========================================\n");
 
 
