@@ -35,14 +35,17 @@ bool checkRect(List* list);
 bool checkCircle(List* list);
 bool checkPath(List* list);
 bool checkGroup(List* list);
+
 xmlDoc* convertSVGimageToXMLdoc (SVGimage* image);
 bool validateXMLtree(xmlDoc* doc, char* schemaFile);
+
 void addAttributesToXMLnode (List* attributeList, xmlNode* node);
 void addRectanglesToXMLnode(List* rectList, xmlNode* rootNode);
 void addPathsToXMLnode(List* pathList, xmlNode* rootNode);
 void addCirclesToXMLnode(List* circList, xmlNode* rootNode);
 void addGroupsToXMLnode(List* groupList, xmlNode* rootNode); 
 
+void addAttribute(List* attributes, Attribute* newAttribute); 
 /** Function to create an SVG object based on the contents of an SVG file.
  *@pre File name cannot be an empty string or NULL.
        File represented by this name must exist and must be readable.
@@ -846,7 +849,6 @@ bool validateSVGimage(SVGimage* image, char* schemaFile) {
     }
 
     xmlDoc* doc = convertSVGimageToXMLdoc(image);
-    printf("done converting\n");
     if(validateXMLtree(doc, schemaFile) == false) {
         return false;
     }
@@ -988,17 +990,17 @@ SVGimage* createValidSVGimage(char* fileName, char* schemaFile) {
         return NULL;
     }
 
-    printf("done validating file\n");
+    //printf("done validating file\n");
     SVGimage* img = createSVGimage(fileName);
     if(img == NULL) {
         return NULL;
     }
-    printf("created image\n");
+    //printf("created image\n");
     if(validateSVGimage(img, schemaFile) == false) {
         deleteSVGimage(img);
         return NULL;
     }
-    printf("image validated\n");
+    //printf("image validated\n");
     return img;
 }
 
@@ -1256,7 +1258,131 @@ void addGroupsToXMLnode(List* groupList, xmlNode* rootNode) {
     newAttribute - struct containing name and value of the updated attribute
  **/
 void setAttribute(SVGimage* image, elementType elemType, int elemIndex, Attribute* newAttribute) {
-    return;
+    if(elemType == SVG_IMAGE) {
+        elemIndex = 0;
+    }
+    if(image == NULL || elemType < SVG_IMAGE || elemType > GROUP || newAttribute == NULL || elemIndex < 0 || newAttribute->name == NULL || newAttribute->value == NULL) {
+        return;
+    }
+
+    void* elem;
+    char* buffer;
+
+    if(elemType == SVG_IMAGE) {
+        addAttribute(image->otherAttributes, newAttribute);
+    } else if(elemType == RECT) {
+        //check if index is out of bounds
+        if(getLength(image->rectangles) <= elemIndex) {
+            return;
+        }
+        //getting the element at the right index
+        ListIterator iter = createIterator(image->rectangles);
+        for(int i = 0; i <= elemIndex; i++) {
+            elem = nextElement(&iter);
+        }
+        Rectangle* rect = (Rectangle *)elem;
+        if(strcmp(newAttribute->name, "x") == 0) {
+            rect->x = strtod(newAttribute->value, &buffer);
+            deleteAttribute(newAttribute);
+
+        } else if(strcmp(newAttribute->name, "y") == 0) {
+            rect->y = strtod(newAttribute->value, &buffer);
+            deleteAttribute(newAttribute);
+
+        } else if(strcmp(newAttribute->name, "width") == 0) {
+            rect->width = strtod(newAttribute->value, &buffer);
+            deleteAttribute(newAttribute);
+
+        } else if(strcmp(newAttribute->name, "height") == 0) {
+            rect->height = strtod(newAttribute->value, &buffer);
+            deleteAttribute(newAttribute);
+
+        } else {
+            addAttribute(rect->otherAttributes, newAttribute);
+        }
+    } else if(elemType == CIRC) {
+        //check if index is out of bounds
+        if(getLength(image->circles) <= elemIndex) {
+            return;
+        }
+        //getting the element at the right index
+        ListIterator iter = createIterator(image->circles);
+        for(int i = 0; i <= elemIndex; i++) {
+            elem = nextElement(&iter);
+        }
+        Circle* circle = (Circle *)elem;
+        if(strcmp(newAttribute->name, "cx") == 0) {
+            circle->cx = strtod(newAttribute->value, &buffer);
+            deleteAttribute(newAttribute);
+        } else if(strcmp(newAttribute->name, "cy") == 0) {
+            circle->cy = strtod(newAttribute->value, &buffer);
+            deleteAttribute(newAttribute);
+        } else if(strcmp(newAttribute->name, "r") == 0) {
+            //printf("updating: val: %s\n", newAttribute->value);
+            circle->r = strtod(newAttribute->value, &buffer);
+            deleteAttribute(newAttribute);
+        } else {
+            addAttribute(circle->otherAttributes, newAttribute);
+        }
+    } else if(elemType == PATH) {
+        //check if index is out of bounds
+        if(getLength(image->paths) <= elemIndex) {
+            return;
+        }
+        //getting the element at the right index
+        ListIterator iter = createIterator(image->paths);
+        for(int i = 0; i <= elemIndex; i++) {
+            elem = nextElement(&iter);
+        }
+        Path* path = (Path *)elem;
+        if(strcmp(newAttribute->name, "d") == 0) {
+            //overriding current data
+            free(path->data);
+            path->data = malloc(strlen(newAttribute->value) * sizeof(char));
+            strcpy(path->data, newAttribute->value);
+
+            //deleting newAttribute
+            deleteAttribute(newAttribute);
+        } else {
+            addAttribute(path->otherAttributes, newAttribute);
+        }
+    } else if(elemType == GROUP) {
+        //check if index is out of bounds
+        if(getLength(image->groups) <= elemIndex) {
+            return;
+        }
+        //getting the element at the right index
+        ListIterator iter = createIterator(image->groups);
+        for(int i = 0; i <= elemIndex; i++) {
+            elem = nextElement(&iter);
+        }
+        Group* group = (Group *)elem;
+        addAttribute(group->otherAttributes, newAttribute);
+
+    }
+}
+void addAttribute(List* attributes, Attribute* newAttribute) {
+    void* elem;
+
+    //getting the element at the right index
+    ListIterator iter = createIterator(attributes);
+    while((elem = nextElement(&iter)) != NULL) {
+        Attribute* attribute = (Attribute *)elem;
+        //found an already existing attribute with same name so update this one
+        if(strcmp(attribute->name, newAttribute->name) == 0) {
+            //overriding current value of that attribute
+            free(attribute->value);
+            attribute->value = malloc(strlen(newAttribute->value) * sizeof(char));
+            strcpy(attribute->value, newAttribute->value);
+
+            //deleting newAttribute
+            deleteAttribute(newAttribute);
+            return;
+        }
+    }
+
+    //if no attribute was found, append to the end of list
+    insertBack(attributes, newAttribute);
 }
 
 

@@ -22,22 +22,35 @@ int main (int argc, char **argv) {
     rect1->width = 3.1;
     rect1->height = 4.1;
     strcpy(rect1->units, "cm");
+
     List *attributeList = initializeList(&attributeToString, &deleteAttribute, &compareAttributes);
     rect1->otherAttributes = attributeList;
-    addComponent(img, RECT, rect1);
+    
+    Attribute *attribute1 = malloc (sizeof(Attribute));
+    char *name1 = malloc(5);
+    strcpy(name1, "r");
+    char *value1 = malloc(6);
+    strcpy(value1, "15");
+
+    attribute1->name = name1;
+    attribute1->value = value1; 
+
     char *string = SVGimageToString(img);
-    printf("%s\n", string);
+    printf("==================before==================\n%s\n==================\n", string);
+
+    free(string);
+    addComponent(img, RECT, rect1);
+    setAttribute(img, CIRC, 0, attribute1);
+    string = SVGimageToString(img);
+    printf("==================after==================\n%s\n==================\n", string);
+
     free(string);
     deleteSVGimage(img);
     /*printf("===========================================\n\t\tTESTING ATTRIBUTES\n===========================================\n");
+
+
+
     Attribute *attribute1 = malloc (sizeof(Attribute));
-    Attribute *attribute2 = malloc (sizeof(Attribute));
-    Attribute *attribute3 = malloc (sizeof(Attribute));
-    Attribute *attribute4 = malloc (sizeof(Attribute));
-    Attribute *attribute5 = malloc (sizeof(Attribute));
-
-
-
     char *name1 = malloc(5);
     strcpy(name1, "test");
     char *value1 = malloc(6);
@@ -46,6 +59,8 @@ int main (int argc, char **argv) {
     attribute1->name = name1;
     attribute1->value = value1; 
 
+    
+    Attribute *attribute2 = malloc (sizeof(Attribute));
     char *name2 = malloc(6);
     strcpy(name2, "test2");
     char *value2 = malloc(7);
@@ -54,6 +69,7 @@ int main (int argc, char **argv) {
     attribute2->name = name2;
     attribute2->value = value2; 
 
+    Attribute *attribute3 = malloc (sizeof(Attribute));
     char *name3 = malloc(6);
     strcpy(name3, "test3");
     char *value3 = malloc(7);
@@ -62,6 +78,7 @@ int main (int argc, char **argv) {
     attribute3->name = name3;
     attribute3->value = value3;
 
+    Attribute *attribute4 = malloc (sizeof(Attribute));
     char *name4 = malloc(6);
     strcpy(name4, "test4");
     char *value4 = malloc(7);
@@ -70,6 +87,7 @@ int main (int argc, char **argv) {
     attribute4->name = name4;
     attribute4->value = value4;
 
+    Attribute *attribute5 = malloc (sizeof(Attribute));
     char *name5 = malloc(6);
     strcpy(name5, "test5");
     char *value5 = malloc(7);
