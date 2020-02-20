@@ -82,12 +82,14 @@ int main (int argc, char **argv) {
     string = rectangleToString(rect1);
     printf("%s\n", string);
     free(string);
+    deleteRectangle(rect1);
 
     strcpy(buffer, "{\"cx\":32,\"cy\":32,\"r\":30,\"units\":\"\"}");
     Circle *circ = JSONtoCircle(buffer);
     string = circleToString(circ);
     printf("%s\n", string);
     free(string);
+    deleteCircle(circ);
 
     strcpy(buffer, "{\"title\":\"Example quad01 - quadratic Bézier commands in path data\",\"descr\":\"Picture showing a \"Q\" a \"T\" command, along with annotations showing the control points   and end points\"}");
     SVGimage *testimg = JSONtoSVG(buffer);
@@ -95,6 +97,7 @@ int main (int argc, char **argv) {
     string = SVGimageToString(testimg);
     printf("%s\n", string);
     free(string);
+    deleteSVGimage(testimg);
     /*printf("===========================================\n\t\tTESTING ATTRIBUTES\n===========================================\n");
 
 

@@ -1051,7 +1051,6 @@ xmlDoc* convertSVGimageToXMLdoc (SVGimage* image) {
     }
     xmlDoc* doc = NULL;
     xmlNode* rootNode = NULL;
-    xmlNode* node = NULL;
 
 
     LIBXML_TEST_VERSION;
@@ -1072,19 +1071,10 @@ xmlDoc* convertSVGimageToXMLdoc (SVGimage* image) {
     }
 
     if(strlen(image->title) > 1) {
-        /* xmlNode* nodeTemp = xmlNewText(BAD_CAST image->title);
-        xmlNode* node = xmlNewNode(NULL, BAD_CAST "title");
-        xmlAddChild(node, nodeTemp);
-        xmlAddChild(rootNode, node); */
-        node = xmlNewChild(rootNode, NULL, BAD_CAST "title", BAD_CAST image->title);
-        xmlSetNs(node, xmlNewNs(node, (const xmlChar*)image->namespace, NULL));
-
-
+        xmlNewChild(rootNode, NULL, BAD_CAST "title", BAD_CAST image->title);
     }
     if(strlen(image->description) > 1) {
-        node = xmlNewChild(rootNode, NULL, BAD_CAST "desc", BAD_CAST image->description);
-        xmlSetNs(node, xmlNewNs(node, (const xmlChar*)image->namespace, NULL));
-
+        xmlNewChild(rootNode, NULL, BAD_CAST "desc", BAD_CAST image->description);
     } 
     if(image->otherAttributes != NULL) {
         addAttributesToXMLnode(image->otherAttributes, rootNode);
@@ -1424,11 +1414,12 @@ void addComponent(SVGimage* image, elementType type, void* newElement) {
 *@param event - a pointer to an Attribute struct
 **/
 char* attrToJSON(const Attribute *a) {
-    char *string = calloc(strlen(a->value) + strlen(a->name) + 50, sizeof(char));
     if(a == NULL) {
-        strcpy(string, "{}");
-        return string;
+        char *temp = calloc(10, sizeof(char));
+        strcpy(temp, "{}");
+        return temp;
     }
+    char *string = calloc(strlen(a->value) + strlen(a->name) + 50, sizeof(char));
     
     strcpy(string, "{\"name\":\"");
     strcat(string, a->name);
