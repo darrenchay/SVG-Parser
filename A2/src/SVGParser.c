@@ -1424,10 +1424,12 @@ void addComponent(SVGimage* image, elementType type, void* newElement) {
 *@param event - a pointer to an Attribute struct
 **/
 char* attrToJSON(const Attribute *a) {
-    if(a == NULL) {
-        return "{}";
-    }
     char *string = calloc(strlen(a->value) + strlen(a->name) + 50, sizeof(char));
+    if(a == NULL) {
+        strcpy(string, "{}");
+        return string;
+    }
+    
     strcpy(string, "{\"name\":\"");
     strcat(string, a->name);
     strcat(string, "");
@@ -1444,11 +1446,12 @@ char* attrToJSON(const Attribute *a) {
 *@param event - a pointer to a Circle struct
 **/
 char* circleToJSON(const Circle *c) {
+    char* string = calloc(1000, sizeof(char));
     if(c == NULL) {
-        return "{}";
+        strcpy(string, "{}");
+        return string;
     }
-
-    char *string = calloc(500, sizeof(char));
+     
     char buffer[100];
 
     strcpy(string, "{\"cx\":");
@@ -1478,10 +1481,12 @@ char* circleToJSON(const Circle *c) {
 *@param event - a pointer to a Rectangle struct
 **/
 char* rectToJSON(const Rectangle *r){
+    char* string = calloc(1000, sizeof(char));
     if(r == NULL) {
-        return "{}";
+        strcpy(string, "{}");
+        return string;
     }
-    char *string = calloc(500, sizeof(char));
+     
     char buffer[100];
 
     strcpy(string, "{\"x\":");
@@ -1514,10 +1519,12 @@ char* rectToJSON(const Rectangle *r){
 *@param event - a pointer to a Path struct
 **/
 char* pathToJSON(const Path *p){
+    char* string = calloc(1000, sizeof(char));
     if(p == NULL) {
-        return "{}";
+        strcpy(string, "{}");
+        return string;
     }
-    char *string = calloc(500, sizeof(char));
+    
     char buffer[100];
 
     strcpy(string, "{\"d\":");
@@ -1538,10 +1545,12 @@ char* pathToJSON(const Path *p){
 *@param event - a pointer to a Group struct
 **/
 char* groupToJSON(const Group *g){
+    char* string = calloc(1000, sizeof(char));
     if(g == NULL) {
-        return "{}";
+        strcpy(string, "{}");
+        return string;
     }
-    char *string = calloc(500, sizeof(char));
+    
     char buffer[100];
 
     strcpy(string, "{\"children\":");
@@ -1563,11 +1572,12 @@ char* groupToJSON(const Group *g){
 *@param event - a pointer to a List struct
 **/
 char* attrListToJSON(const List *list){
+    char *string = calloc(500, sizeof(char));
     if(list == NULL || getLength((List *)list) == 0) {
-        return "[]";
+        strcpy(string, "[]");
+        return string;
     }
 
-    char *string = calloc(500, sizeof(char));
     char *buffer = NULL;
     int length = 0;
     bool isFirstElem = true;
@@ -1607,11 +1617,12 @@ char* attrListToJSON(const List *list){
 *@param event - a pointer to a List struct
 **/
 char* circListToJSON(const List *list){
+    char *string = calloc(500, sizeof(char));
     if(list == NULL || getLength((List *)list) == 0) {
-        return "[]";
+        strcpy(string, "[]");
+        return string;
     }
 
-    char *string = calloc(500, sizeof(char));
     char *buffer = NULL;
     int length = 0;
     bool isFirstElem = true;
@@ -1651,11 +1662,12 @@ char* circListToJSON(const List *list){
 *@param event - a pointer to a List struct
 **/
 char* rectListToJSON(const List *list){
+    char *string = calloc(500, sizeof(char));
     if(list == NULL || getLength((List *)list) == 0) {
-        return "[]";
+        strcpy(string, "[]");
+        return string;
     }
 
-    char *string = calloc(500, sizeof(char));
     char *buffer = NULL;
     int length = 0;
     bool isFirstElem = true;
@@ -1695,11 +1707,12 @@ char* rectListToJSON(const List *list){
 *@param event - a pointer to a List struct
 **/
 char* pathListToJSON(const List *list){
+    char *string = calloc(500, sizeof(char));
     if(list == NULL || getLength((List *)list) == 0) {
-        return "[]";
+        strcpy(string, "[]");
+        return string;
     }
 
-    char *string = calloc(500, sizeof(char));
     char *buffer = NULL;
     int length = 0;
     bool isFirstElem = true;
@@ -1739,11 +1752,12 @@ char* pathListToJSON(const List *list){
 *@param event - a pointer to a List struct
 **/
 char* groupListToJSON(const List *list){
+    char *string = calloc(500, sizeof(char));
     if(list == NULL || getLength((List *)list) == 0) {
-        return "[]";
+        strcpy(string, "[]");
+        return string;
     }
 
-    char *string = calloc(500, sizeof(char));
     char *buffer = NULL;
     int length = 0;
     bool isFirstElem = true;
@@ -1783,11 +1797,13 @@ char* groupListToJSON(const List *list){
 *@param event - a pointer to an SVGimage struct
 **/
 char* SVGtoJSON(const SVGimage* imge){
-    if(imge == NULL) {
-        return "{}";
-    }
-    SVGimage* tempSVG = (SVGimage *)imge;
     char* string = calloc(1000, sizeof(char));
+    if(imge == NULL) {
+        strcpy(string, "{}");
+        return string;
+    }
+
+    SVGimage* tempSVG = (SVGimage *)imge;
     char buffer[20];
     List* tempList = NULL;
 
@@ -1823,6 +1839,94 @@ char* SVGtoJSON(const SVGimage* imge){
     return string;
 }
 
+/** Function to converting a JSON string into an SVGimage struct
+*@pre JSON string is not NULL
+*@post String has not been modified in any way
+*@return A newly allocated and initialized SVGimage struct
+*@param str - a pointer to a string
+**/
+SVGimage* JSONtoSVG(const char* svgString) {
+    if(svgString == NULL) {
+        return NULL;
+    }
+    SVGimage *img = initSVGimage();
+    
+    sscanf(svgString, "{\"title\":\"%256[^\",\"descr\":\"]s", img->title);
+    sscanf(svgString, "{\"title\":\"%256[^\"]\",\"descr\":\"%[^\n]s", img->title, img->description);
+    img->description[strlen(img->description) - 2] = '\0';
+
+    //printf("title:[%s]\ndesc:[%s]\nval = %d\n", img->title, img->description, val);
+    strcpy(img->namespace, "http://www.w3.org/2000/svg");
+
+    return img;
+}
+
+/** Function to converting a JSON string into a Rectangle struct
+*@pre JSON string is not NULL
+*@post Rectangle has not been modified in any way
+*@return A newly allocated and initialized Rectangle struct
+*@param str - a pointer to a string
+**/
+Rectangle* JSONtoRect(const char* svgString) {
+    if(svgString == NULL) {
+        return NULL;
+    }
+    Rectangle *rect = calloc(1, sizeof(Rectangle));
+    rect->x = 0;
+    rect->y = 0;
+    rect->width = 0;
+    rect->height = 0;
+    rect->otherAttributes = initializeList(attributeToString, deleteAttribute, compareAttributes);
+    rect->units[0] = '\0';
+
+    sscanf(svgString, "{\"x\":%f,\"y\":%f,\"w\":%f,\"h\":%f,\"units\":\"%[^\"]s\"}", &rect->x, &rect->y, &rect->width, &rect->height, rect->units);
+
+    if(rect->x < 0) {
+        rect->x = 0;
+    }
+    if(rect->y < 0) {
+        rect->y = 0;
+    }
+    if(rect->width < 0) {
+        rect->width = 0;
+    }
+    if(rect->height < 0) {
+        rect->height = 0;
+    }
+    return rect;
+}
+
+/** Function to converting a JSON string into a Circle struct
+*@pre JSON string is not NULL
+*@post Circle has not been modified in any way
+*@return A newly allocated and initialized Circle struct
+*@param str - a pointer to a string
+**/
+Circle* JSONtoCircle(const char* svgString) {
+    if(svgString == NULL) {
+        return NULL;
+    }
+     Circle *circle = malloc(sizeof(Circle));
+
+    circle->cx = 0;
+    circle->cy = 0;
+    circle->r = 0;
+    circle->units[0] = '\0';
+    circle->otherAttributes = initializeList(attributeToString, deleteAttribute, compareAttributes);
+
+    sscanf(svgString, "{\"cx\":%f,\"cy\":%f,\"r\":%f,\"units\":\"%[^\"]s\"}", &circle->cx, &circle->cy, &circle->r, circle->units);
+    
+    if(circle->cx < 0) {
+        circle->cx = 0;
+    }
+    if(circle->cy < 0) {
+        circle->cy = 0;
+    }
+    if(circle->r < 0) {
+        circle->r = 0;
+    }
+    return circle;
+}
 
 /* ******************************* List helper functions  - MUST be implemented *************************** */
 

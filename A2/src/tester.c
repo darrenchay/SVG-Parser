@@ -28,9 +28,9 @@ int main (int argc, char **argv) {
     
     Attribute *attribute1 = malloc (sizeof(Attribute));
     char *name1 = malloc(5);
-    strcpy(name1, "r");
+    strcpy(name1, "x");
     char *value1 = malloc(6);
-    strcpy(value1, "15");
+    strcpy(value1, "15cm");
 
     attribute1->name = name1;
     attribute1->value = value1; 
@@ -39,14 +39,62 @@ int main (int argc, char **argv) {
     printf("==================before==================\n%s\n====================================\n", string);
 
     free(string);
+    //ToJSON functions testing
+    string = SVGtoJSON(img);
+    printf("======================================SVG======================================\n%s\n============================================================================\n", string);
+    free(string);
+    string = attrListToJSON(img->otherAttributes);
+    printf("======================================attribute======================================\n%s\n============================================================================\n", string);
+    free(string);
     addComponent(img, RECT, rect1);
-    setAttribute(img, CIRC, 0, attribute1);
+    setAttribute(img, RECT, 2, attribute1);
+    
     string = SVGimageToString(img);
     printf("==================after==================\n%s\n====================================\n", string);
+    free(string);
 
+    //ToJSON functions testing
+    string = SVGtoJSON(img);
+    printf("======================================SVG======================================\n%s\n============================================================================\n", string);
+    free(string);
+    rect1 = getFromFront(img->rectangles);
+    string = attrListToJSON(rect1->otherAttributes);
+    printf("======================================attribute======================================\n%s\n============================================================================\n", string);
+    free(string);
+    string = circListToJSON(img->circles);
+    printf("======================================circles======================================\n%s\n============================================================================\n", string);
+    free(string);
+    //Group *group = getFromFront(img->groups);
+    string = pathListToJSON(img->paths);
+    printf("======================================paths======================================\n%s\n============================================================================\n", string);
+    free(string);
+    string = rectListToJSON(img->rectangles);
+    printf("======================================rects======================================\n%s\n============================================================================\n", string);
+    free(string);
+    string = groupListToJSON(img->groups);
+    printf("======================================groups======================================\n%s\n============================================================================\n", string);
     free(string);
     deleteSVGimage(img);
 
+    char buffer[1000];
+    strcpy(buffer, "{\"x\":1,\"y\":2,\"w\":19,\"h\":15,\"units\":\"\"}");
+    rect1 = JSONtoRect(buffer);
+    string = rectangleToString(rect1);
+    printf("%s\n", string);
+    free(string);
+
+    strcpy(buffer, "{\"cx\":32,\"cy\":32,\"r\":30,\"units\":\"\"}");
+    Circle *circ = JSONtoCircle(buffer);
+    string = circleToString(circ);
+    printf("%s\n", string);
+    free(string);
+
+    strcpy(buffer, "{\"title\":\"Example quad01 - quadratic Bézier commands in path data\",\"descr\":\"Picture showing a \"Q\" a \"T\" command, along with annotations showing the control points   and end points\"}");
+    SVGimage *testimg = JSONtoSVG(buffer);
+    validateSVGimage(testimg, "svg.xsd");
+    string = SVGimageToString(testimg);
+    printf("%s\n", string);
+    free(string);
     /*printf("===========================================\n\t\tTESTING ATTRIBUTES\n===========================================\n");
 
 
