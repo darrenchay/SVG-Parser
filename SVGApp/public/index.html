@@ -1,12 +1,12 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-    <title>CHANGE ME</title>
+    <title>SVG Image Viewer</title>
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1">
-    <meta name="description" content="CHANGE ME">
-    <meta name="keywords" content="CHANGE ME">
-    <meta name="author" content="CHANGE ME">
+    <meta name="description" content="SVG Image Viewer">
+    <meta name="keywords" content="SVG Image Viewer">
+    <meta name="author" content="SVG Image Viewer">
     <!-- Load jquery, bootstrap -->
     <script src="https://code.jquery.com/jquery-3.3.1.min.js" integrity="sha256-FgpCb/KJQlLNfOu91ta32o/NMZxltwRo8QtmkMRdAu8=" crossorigin="anonymous"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.12.9/umd/popper.min.js" integrity="sha384-ApNbgh9B+Y1QKtv3Rn7W3mgPxhU9K/ScQsAP7hUibX39j7fakFPskvXusvfa0b4Q" crossorigin="anonymous"></script>
@@ -16,9 +16,46 @@
     <link rel="stylesheet" type="text/css" href="/style.css">
     <!-- Custom CSS End -->
 </head>
+
 <body>
-    <h3>Download test</h3>
+    <h3>SVG Image Viewer</h3>
     If the A3 stub is running and simple.gpx exists in the uploads/ directory on the server, then clicking on the link below will download it from the server.<br>
+    <div class="card">
+        <div class="card-header">
+          <h5 class="card-title">File Log Panel</h5>
+        </div>
+        <div class="card-body">
+            <div id="file-log-table" class="table-responsive">
+                <table class="table table-bordered table-hover">
+                    <thead>
+                        <tr>
+                            <th>Image (click to download)</th>
+                            <th>File Name (Click to download)</th>
+                            <th>File Size</th>
+                            <th>Number of Rectangles</th>
+                            <th>Number of Circles</th>
+                            <th>Number of Paths</th>
+                            <th>Number of Groups</th>
+                        </tr>
+                    </thead>
+                    <tbody id="file-table-body">
+                        <tr>
+                            <td><img src="rects.svg" href="rects.svg" class="img-fluid" alt="Responsive image"></td>
+                            <td><a href="rects.svg">rects.svg</a></td>
+                            <td>1KB</td>
+                            <td>1</td>
+                            <td>5</td>
+                            <td>2</td>
+                            <td>3</td>
+                        </tr>
+                      </tbody>
+    
+                </table>
+            </div>
+            <hr>
+          <a href="#" class="btn btn-primary">Upload File</a>
+        </div>
+      </div>
     <a href="rects.svg">rects.svg</a>
     <p></p>
     <img src="rects.svg">

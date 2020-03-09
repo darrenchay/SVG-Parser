@@ -73,9 +73,21 @@ app.get('/uploads/:name', function(req , res){
 
 //Sample endpoint
 app.get('/someendpoint', function(req , res){
-  let retStr = req.query.name1 + " " + req.query.name2;
+  let retStr = req.query.file + " " + req.query.size;
+  let fileName = req.query.file;
+  let fileSize = req.query.size;
+  let numRects = req.query.rects;
+  let numCircs = req.query.circs;
+  let numPaths = req.query.paths;
+  let numGroups = req.query.groups;
   res.send({
-    foo: retStr
+    foo: retStr,
+    getFileName: fileName,
+    getFileSize: fileSize,
+    getNumRects: numRects,
+    getNumCircs: numCircs,
+    getNumPaths: numPaths,
+    getNumGroups: numGroups
   });
 });
 
