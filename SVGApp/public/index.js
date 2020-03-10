@@ -74,8 +74,6 @@ $(document).ready(function() {
         }
     });
 
-    //Populating file log panel
-    document.getElementById('file-log-table');
 
     // Event listener form example , we can use this instead explicitly listening for events
     // No redirects if possible

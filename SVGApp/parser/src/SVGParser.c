@@ -1520,10 +1520,10 @@ char* pathToJSON(const Path *p){
 
     strcpy(string, "{\"d\":");
     strncat(string, p->data, 64);
-    strcat(string, ",\"numAttr\":");
+    strcat(string, ",\"numAttr\":\"");
     sprintf(buffer, "%d", getLength(p->otherAttributes));
     strcat(string, buffer);
-    strcat(string, "}");
+    strcat(string, "\"}");
 
     return string;
 }
