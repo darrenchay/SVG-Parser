@@ -24,6 +24,7 @@ input[type=submit], button {
     cursor: pointer;
     cursor: hand;
 }
+
 @media(max-width: 900px) {
     html {
         font-size: 14px !important;
@@ -41,4 +42,14 @@ input[type=submit], button {
         font-size: 12px !important;
         width: 100% !important;
     }
+}
+
+#file-log-table {
+    display: block;
+    max-height: 500px;
+}
+
+#file-table-body {
+    overflow-y: scroll;
+    height: 300px;
 }

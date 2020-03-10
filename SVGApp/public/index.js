@@ -30,8 +30,41 @@ $(document).ready(function() {
                                             <td>' + data.getNumPaths + '</td> \
                                             <td>' + data.getNumGroups + '</td> \
                                             </tr>');
+            $('#file-table-body').append('<tr> \
+                                            <td><img src="' + data.getFileName + '" href="' + data.getFileName + '" class="img-fluid" alt="Responsive image"></td> \
+                                            <td><a href="' + data.getFileName + '">' + data.getFileName + '</a></td> \
+                                            <td>' + data.getFileSize + '</td> \
+                                            <td>' + data.getNumRects + '</td> \
+                                            <td>' + data.getNumCircs + '</td> \
+                                            <td>' + data.getNumPaths + '</td> \
+                                            <td>' + data.getNumGroups + '</td> \
+                                            </tr>');
+
+            $('#file-table-body').append('<tr> \
+                                            <td><img src="' + data.getFileName + '" href="' + data.getFileName + '" class="img-fluid" alt="Responsive image"></td> \
+                                            <td><a href="' + data.getFileName + '">' + data.getFileName + '</a></td> \
+                                            <td>' + data.getFileSize + '</td> \
+                                            <td>' + data.getNumRects + '</td> \
+                                            <td>' + data.getNumCircs + '</td> \
+                                            <td>' + data.getNumPaths + '</td> \
+                                            <td>' + data.getNumGroups + '</td> \
+                                            </tr>');
+            
+            $('#file-table-body').append('<tr> \
+                                            <td><img src="' + data.getFileName + '" href="' + data.getFileName + '" class="img-fluid" alt="Responsive image"></td> \
+                                            <td><a href="' + data.getFileName + '">' + data.getFileName + '</a></td> \
+                                            <td>' + data.getFileSize + '</td> \
+                                            <td>' + data.getNumRects + '</td> \
+                                            <td>' + data.getNumCircs + '</td> \
+                                            <td>' + data.getNumPaths + '</td> \
+                                            <td>' + data.getNumGroups + '</td> \
+                                            </tr>');
+
+            
             //We write the object to the console to show that the request was successful
-            console.log(data); 
+            console.log("Successfully loaded table"); 
+            console.log(data);
+            
             //$('#file-log-table').html('<p>No files</p>');
 
         },
