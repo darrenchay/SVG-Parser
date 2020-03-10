@@ -53,3 +53,7 @@ input[type=submit], button {
     overflow-y: scroll;
     height: 300px;
 }
+
+.btn-space {
+    margin-right: 5px;
+}

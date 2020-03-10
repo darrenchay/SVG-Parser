@@ -19,7 +19,6 @@ $(document).ready(function() {
                 so we do not need to parse it on the server.
                 JavaScript really does handle JSONs seamlessly
             */
-            $('#blah').html("On page load, received string '"+data.foo+"' from server");
 
             $('#file-table-body').append('<tr> \
                                             <td><img src="' + data.getFileName + '" href="' + data.getFileName + '" class="img-fluid" alt="Responsive image"></td> \
@@ -70,7 +69,6 @@ $(document).ready(function() {
         },
         fail: function(error) {
             // Non-200 return, do something with error
-            $('#blah').html("On page load, received error from server");
             $('#file-log-table').html('<p>No files</p>');
             console.log(error); 
         }
@@ -82,7 +80,6 @@ $(document).ready(function() {
     // Event listener form example , we can use this instead explicitly listening for events
     // No redirects if possible
     $('#someform').submit(function(e){
-        $('#blah').html("Form has data: "+$('#entryBox').val());
         e.preventDefault();
         //Pass data to the Ajax call, so it gets passed to the server
         $.ajax({

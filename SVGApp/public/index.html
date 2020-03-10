@@ -40,9 +40,9 @@
                     </thead>
                     <tbody id="file-table-body">
                         <tr>
-                            <td><img src="rects.svg" href="rects.svg" class="img-fluid" alt="Responsive image"></td>
-                            <td><a href="rects.svg">rects.svg</a></td>
-                            <td>1KB</td>
+                            <td><img src="quad01_A2.svg" href="quad01_A2.svg" class="img-fluid" alt="Responsive image"></td>
+                            <td><a href="quad01_A2.svg">quad01_A2.svg</a></td>
+                            <td>5KB</td>
                             <td>1</td>
                             <td>5</td>
                             <td>2</td>
@@ -55,7 +55,7 @@
             <hr>
           <a href="#" class="btn btn-primary">Upload File</a>
         </div>
-      </div>
+    </div>
 
       
     <!-- <a href="rects.svg">rects.svg</a>
@@ -63,18 +63,234 @@
     <img src="rects.svg"> -->
 
     <hr>
-    <div id="blah">I am blah</div>
-    <hr>
-    <form ref='someform'
-          id='someform'>
-          <div class="form-group">
-                <label for="entryBox">Last Name</label>
-                <input type="text" class="form-control" id="entryBox" value="Value" placeholder="Placeholder">
-            </div>
-        <div class="form-group">
-            <input type='submit' class="btn btn-secondary">
+    <div class="dropdown">
+        <button class="btn btn-secondary dropdown-toggle" type="button" id="dropdownMenuButton" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+            Choose SVG file
+        </button>
+        <div class="dropdown-menu" aria-labelledby="dropdownMenuButton">
+          <a class="dropdown-item" href="#">quad01_A2.svg</a>
+          <a class="dropdown-item" href="#">rects.svg</a>
         </div>
-    </form>
+    </div>
+    <div class="card">
+        <div class="card-header">
+          <h5 class="card-title">SVG View Panel</h5>
+        </div>
+        <div class="card-body">
+            <div class="table-responsive">
+                <table id="view-table" class="table table-bordered w-auto">
+                    <tbody id="file-table-body">
+                        <tr>
+                            <td><img src="quad01_A2.svg" href="quad01_A2.svg" class="img-fluid" alt="Responsive image"></td>
+                        </tr>
+                        <tr>
+                            <table id="main-content-table" class="table table-bordered">
+                                <thead>
+                                    <tr>
+                                        <th>Title</th>
+                                        <th>Description</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    <tr>
+                                        <td>Example</td>
+                                        <td>Pixture bla bla</td>
+                                    </tr>
+                                    <tr>
+                                        <td><button class="btn btn-primary" id="edit-title" type="button">Edit Title</button></td>
+                                        <td><button class="btn btn-primary" id="edit-Desc" type="button">Edit Description</button></td>                                        
+                                    </tr>
+                                </tbody>
+                            </table>
+                        </tr>
+                        <tr>
+                            <table id="contents-table" class="table table-bordered">
+                                <thead>
+                                    <tr>
+                                        <th>Component</th>
+                                        <th>Summary</th>
+                                        <th>Other Attributes</th>
+                                        <th></th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    <tr>
+                                        <th>Path 1</th>
+                                        <td>path data = M200,300 L400,50 L600,300 L800,550 L1000,30</td>
+                                        <td>3</td>
+                                        <td><button class="btn btn-info" id="show-attribute" data-toggle="modal" data-target="#show-attr-modal" type="button">Show Attribute(s)</button></td>
+                                    </tr>
+                                    <tr>
+                                        <th>Rectangle 3</th>
+                                        <td>Upper left corner: x = 0.5cm, y = 0.5cm Width: 1cm, Height: 0.5cm</td>
+                                        <td>2</td>
+                                        <td><button class="btn btn-info" id="show-attribute" data-toggle="modal" data-target="#show-attr-modal" type="button">Show Attribute(s)</button></td>
+                                    </tr>
+                                </tbody>
+                            </table>
+                        </tr>
+                        <tr>
+                            <div class="row">
+                                <button class="btn btn-secondary btn-space col-2" data-toggle="modal" data-target="#add-circle-modal" id="add-circle" type="button">Add Circle</button>
+                                <button class="btn btn-secondary btn-space col-2" id="add-circle" type="button">Scale Circle</button>
+
+                                <form class="col-7">
+                                    <div class="input-group">
+                                        <div class="input-group-prepend">
+                                            <div class="input-group-text" id="btnGroupAddon2">Scale Circle</div>
+                                        </div>
+                                        <input type="text" class="form-control" placeholder="Enter a number" aria-label="Input group example" aria-describedby="btnGroupAddon2">
+                                        </div>
+                                </form>
+                            </div>
+                            
+                        </tr>
+                        
+                        <tr>
+                            <div class="row">
+                                <button class="btn btn-secondary btn-space col-2" data-toggle="modal" data-target="#add-rectangle-modal" id="add-rect" type="button">Add Rectangle</button>
+                                <button class="btn btn-secondary btn-space col-2" id="add-circle" type="button">Scale Rectangle</button>
+                                <form class="col-7">
+                                    <div class="input-group">
+                                        <div class="input-group-prepend">
+                                            <div class="input-group-text" id="btnGroupAddon2">Scale Rectangle</div>
+                                        </div>
+                                        <input type="text" class="form-control" placeholder="Enter a number" aria-label="Input group example" aria-describedby="btnGroupAddon2">
+                                    </div>
+                                </form>
+                            </div>
+                        </tr>
+                    </tbody>
+    
+                </table>
+            </div>
+        </div>
+    </div>
+
+    <!-- SHOW ATTRIBUTE MODAL -->
+    <div class="modal fade" id="show-attr-modal" tabindex="-1" role="dialog" data-backdrop="static" aria-labelledby="staticBackdropLabel" aria-hidden="true">
+        <div class="modal-dialog" role="document">
+          <div class="modal-content">
+            <div class="modal-header">
+              <h5 class="modal-title" id="exampleModalLabel">New message</h5>
+              <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                <span aria-hidden="true">&times;</span>
+              </button>
+            </div>
+            <div class="modal-body">
+                <form ref='someform' id='someform'>
+                        <div class="form-group">
+                            <label for="entryBox">Last Name</label>
+                            <input type="text" class="form-control" id="entryBox" value="Value" placeholder="Placeholder">
+                        </div>
+                    <div class="form-group">
+                        <input type='submit' class="btn btn-secondary">
+                    </div>
+                </form>
+            </div>
+            <div class="modal-footer">
+              <button type="button" class="btn btn-danger" data-dismiss="modal">Close</button>
+              <button type="button" class="btn btn-primary">Create SVG</button>
+            </div>
+          </div>
+        </div>
+    </div>
+
+    <!-- ADD CIRCLE MODAL -->
+    <div class="modal fade" id="add-circle-modal" tabindex="-1" role="dialog" data-backdrop="static" aria-labelledby="staticBackdropLabel" aria-hidden="true">
+        <div class="modal-dialog" role="document">
+          <div class="modal-content">
+            <div class="modal-header">
+              <h5 class="modal-title" id="exampleModalLabel">New message</h5>
+              <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                <span aria-hidden="true">&times;</span>
+              </button>
+            </div>
+            <div class="modal-body">
+                <form ref='someform' id='someform'>
+                        <div class="form-group">
+                            <label for="entryBox">Last Name</label>
+                            <input type="text" class="form-control" id="entryBox" value="Value" placeholder="Placeholder">
+                        </div>
+                    <div class="form-group">
+                        <input type='submit' class="btn btn-secondary">
+                    </div>
+                </form>
+            </div>
+            <div class="modal-footer">
+              <button type="button" class="btn btn-danger" data-dismiss="modal">Close</button>
+              <button type="button" class="btn btn-primary">Create SVG</button>
+            </div>
+          </div>
+        </div>
+    </div>
+
+    <!-- ADD RECTANGLE MODAL -->
+    <div class="modal fade" id="add-rectangle-modal" tabindex="-1" role="dialog" data-backdrop="static" aria-labelledby="staticBackdropLabel" aria-hidden="true">
+        <div class="modal-dialog" role="document">
+          <div class="modal-content">
+            <div class="modal-header">
+              <h5 class="modal-title" id="exampleModalLabel">Adding a Rectangle</h5>
+              <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                <span aria-hidden="true">&times;</span>
+              </button>
+            </div>
+            <div class="modal-body">
+                <form ref='someform' id='someform'>
+                        <div class="form-group">
+                            <label for="entryBox">Last Name</label>
+                            <input type="text" class="form-control" id="entryBox" value="Value" placeholder="Placeholder">
+                        </div>
+                    <div class="form-group">
+                        <input type='submit' class="btn btn-secondary">
+                    </div>
+                </form>
+            </div>
+            <div class="modal-footer">
+              <button type="button" class="btn btn-danger" data-dismiss="modal">Close</button>
+              <button type="button" class="btn btn-primary">Add Rectangle</button>
+            </div>
+          </div>
+        </div>
+    </div>
+
+    <hr>
+
+
+    <!-- CREATE SVG SECTION -->
+    <button class="btn btn-primary" data-toggle="modal" data-target="#create-svg-modal" id="create-svg" type="button">Create SVG</button>
+    
+    <!-- CREATE SVG MODAL -->
+    <div class="modal fade" id="create-svg-modal" tabindex="-1" role="dialog" data-backdrop="static" aria-labelledby="staticBackdropLabel" aria-hidden="true">
+        <div class="modal-dialog" role="document">
+          <div class="modal-content">
+            <div class="modal-header">
+              <h5 class="modal-title" id="exampleModalLabel">New message</h5>
+              <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                <span aria-hidden="true">&times;</span>
+              </button>
+            </div>
+            <div class="modal-body">
+                <form ref='someform' id='someform'>
+                        <div class="form-group">
+                            <label for="entryBox">Last Name</label>
+                            <input type="text" class="form-control" id="entryBox" value="Value" placeholder="Placeholder">
+                        </div>
+                    <div class="form-group">
+                        <input type='submit' class="btn btn-secondary">
+                    </div>
+                </form>
+            </div>
+            <div class="modal-footer">
+              <button type="button" class="btn btn-danger" data-dismiss="modal">Close</button>
+              <button type="button" class="btn btn-primary">Create SVG</button>
+            </div>
+          </div>
+        </div>
+    </div>
+
+    <hr>
+    
     <!-- Leave me at the bottom of body -->
     <script src="/index.js"></script>
 </body>
