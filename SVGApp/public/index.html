@@ -18,13 +18,16 @@
 </head>
 
 <body>
+    <!-- Title of Page -->
     <h3>SVG Image Viewer</h3>
     If the A3 stub is running and simple.gpx exists in the uploads/ directory on the server, then clicking on the link below will download it from the server.<br>
+    <!-- FILE LOG PANEL SECTION -->
     <div class="card">
         <div class="card-header">
           <h5 class="card-title">File Log Panel</h5>
         </div>
         <div class="card-body">
+            <!-- TABLE OF LIST OF SVG FILES -->
             <div id="file-log-table" class="table-responsive">
                 <table id="file-table" class="table table-bordered table-hover w-auto">
                     <thead>
@@ -53,17 +56,25 @@
                 </table>
             </div>
             <hr>
-            <div class="input-group">
-                <div class="custom-file">
-                  <input type="file" class="custom-file-input" id="inputGroupFile04" aria-describedby="inputGroupFileAddon04">
-                  <label class="custom-file-label" for="inputGroupFile04">Choose file</label>
+
+            <!-- UPLOAD NEW FILE BUTTON AND CREATE NEW SVG BUTTON -->
+            <form >
+                <div class="form-row">
+                    <!-- UPLOAD NEW FILE BUTTON -->
+                    <div class="col-7 input-group">
+                        <div class="custom-file">
+                            <input type="file" class="custom-file-input" id="uploadFileInput" aria-describedby="upload-file-btn">
+                            <label class="custom-file-label" for="uploadFileInput">Choose file</label>
+                        </div>
+                        <div class="input-group-append">
+                            <button class="btn btn-dark" type="submit" id="upload-file-btn">Upload Existing SVG</button>
+                        </div>
+                    </div>
+                    <!-- CREATE SVG BUTTON -->
+                    <button class="btn btn-primary col-2" data-toggle="modal" data-target="#create-svg-modal" id="create-svg-btn" type="button">Create New SVG</button>
                 </div>
-                <div class="input-group-append">
-                  <button class="btn btn-outline-secondary" type="submit" id="inputGroupFileAddon04">Upload Existing SVG</button>
-                </div>
-                <!-- CREATE SVG SECTION -->
-                <button class="btn btn-primary" data-toggle="modal" data-target="#create-svg-modal" id="create-svg" type="button">Create New SVG</button>
-            </div>
+                
+            </form>
         </div>
     </div>
 
@@ -73,15 +84,29 @@
     <img src="rects.svg"> -->
 
     <hr>
-    <div class="dropdown">
-        <button class="btn btn-secondary dropdown-toggle" type="button" id="dropdownMenuButton" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
-            Choose SVG file
-        </button>
-        <div class="dropdown-menu" aria-labelledby="dropdownMenuButton">
-          <a class="dropdown-item" href="#">quad01_A2.svg</a>
-          <a class="dropdown-item" href="#">rects.svg</a>
+
+    <!-- DROPDOWN MENU FOR SELECTING SVG TO DISPLAY -->
+    <div class="input-group mb-3">
+        <div class="input-group-prepend">
+          <label class="input-group-text" for="chooseSVGDropdown">Choose SVG file</label>
         </div>
+        <select class="custom-select" id="chooseSVGDropdown" required>
+          <option selected>Choose...</option>
+          <option value="">Open this select menu</option>
+          <option value="Rects.svg">Rects.svg</option>
+          <option value="Quad01_A2.svg">Quad01_A2.svg</option>
+          <option value="Quad01_A2.svg">Three</option>
+        </select>
+        <!-- <div class="invalid-feedback">Example invalid custom select feedback</div> -->
     </div>
+  <!--   <div class="form-group form-inline">
+        <h5 class="form-label"> Choose SVG</h5>
+        <select class="custom-select" required>
+          
+        </select>
+    </div> -->
+
+    <!-- SVG VIEW PANEL -->
     <div class="card">
         <div class="card-header">
           <h5 class="card-title">SVG View Panel</h5>
@@ -90,9 +115,12 @@
             <div class="table-responsive">
                 <table id="view-table" class="table table-bordered w-auto">
                     <tbody id="file-table-body">
+                        <!-- IMAGE SECTION -->
                         <tr>
                             <td><img src="quad01_A2.svg" href="quad01_A2.svg" class="img-fluid" alt="Responsive image"></td>
                         </tr>
+
+                        <!-- TITLE AND DESCRIPTION SECTION -->
                         <tr>
                             <table id="main-content-table" class="table table-bordered">
                                 <thead>
@@ -103,24 +131,35 @@
                                 </thead>
                                 <tbody>
                                     <tr>
-                                        <td>Example</td>
-                                        <td>Pixture bla bla</td>
+                                        <td>
+                                            <input type="text" readonly class="form-control-plaintext" id="titleInput" value="This is a title">
+                                        </td>
+                                        <td>
+                                            <input type="text" readonly class="form-control-plaintext" id="descInput" value="This is a description">
+                                        </td>
                                     </tr>
                                     <tr>
-                                        <td><button class="btn btn-primary disabled" id="edit-title" type="button">Edit Title</button></td>
-                                        <td><button class="btn btn-primary" id="edit-Desc" type="button">Edit Description</button></td>                                        
+                                        <td>
+                                            <button class="btn btn-primary" id="edit-title" type="button">Edit Title</button>
+                                            <button class="btn btn-success" id="confirm-edit-title" type="button">Save</button>
+                                        </td>
+                                        <td>
+                                            <button class="btn btn-primary" id="edit-desc" type="button">Edit Description</button>
+                                            <button class="btn btn-success" id="confirm-edit-desc" type="button">Save</button>
+                                        </td>                                        
                                     </tr>
                                 </tbody>
                             </table>
                         </tr>
+
+                        <!-- CONTENT, SUMMARY AND ATTRIBUTES SECTION -->
                         <tr>
                             <table id="contents-table" class="table table-bordered">
                                 <thead>
                                     <tr>
                                         <th>Component</th>
                                         <th>Summary</th>
-                                        <th>Other Attributes</th>
-                                        <th></th>
+                                        <th colspan="2">Other Attributes</th>
                                     </tr>
                                 </thead>
                                 <tbody>
@@ -128,18 +167,25 @@
                                         <th>Path 1</th>
                                         <td>path data = M200,300 L400,50 L600,300 L800,550 L1000,30</td>
                                         <td>3</td>
-                                        <td><button class="btn btn-info btn-sm" id="show-attribute" data-toggle="modal" data-target="#show-attr-modal" type="button">Show Attribute(s)</button></td>
+                                        <td>
+                                            <button class="btn btn-info btn-sm" id="show-attribute" data-toggle="modal" data-target="#show-attr-modal" type="button">Show Attribute(s)</button>
+                                        </td>
                                     </tr>
                                     <tr>
                                         <th>Rectangle 3</th>
                                         <td>Upper left corner: x = 0.5cm, y = 0.5cm Width: 1cm, Height: 0.5cm</td>
                                         <td>2</td>
-                                        <td><button class="btn btn-info btn-sm" id="show-attribute" data-toggle="modal" data-target="#show-attr-modal" type="button">Show Attribute(s)</button></td>
+                                        <td>
+                                            <button class="btn btn-info btn-sm" id="show-attribute" data-toggle="modal" data-target="#show-attr-modal" type="button">Show Attribute(s)</button>
+                                        </td>
                                     </tr>
                                 </tbody>
                             </table>
                         </tr>
+
+                        <!-- OTHER UTILITIES SECTION (Add shape and scale shape) -->
                         <tr>
+                            <!-- CIRCLE UTILITIES SECTION -->
                             <div class="row">
                                 <button class="btn btn-secondary btn-space col-2" data-toggle="modal" data-target="#add-circle-modal" id="add-circle" type="button">Add Circle</button>
                                 <button class="btn btn-secondary btn-space col-2" id="add-circle" type="button">Scale Circle</button>
@@ -147,15 +193,16 @@
                                 <form class="col-7">
                                     <div class="input-group">
                                         <div class="input-group-prepend">
-                                            <div class="input-group-text" id="btnGroupAddon2">Scale Circle</div>
+                                            <div class="input-group-text" id="scaleCirclePrepend">Scale Circle</div>
                                         </div>
-                                        <input type="text" class="form-control" placeholder="Enter a number" aria-label="Input group example" aria-describedby="btnGroupAddon2">
+                                        <input type="number" class="form-control" placeholder="Enter a number" aria-label="Input group example" aria-describedby="scaleCirclePrepend">
                                         </div>
                                 </form>
                             </div>
                             
                         </tr>
-                        
+
+                        <!-- RECTANGLE UTILITIES SECTION -->                        
                         <tr>
                             <div class="row">
                                 <button class="btn btn-secondary btn-space col-2" data-toggle="modal" data-target="#add-rectangle-modal" id="add-rect" type="button">Add Rectangle</button>
@@ -163,32 +210,31 @@
                                 <form class="col-7">
                                     <div class="input-group">
                                         <div class="input-group-prepend">
-                                            <div class="input-group-text" id="btnGroupAddon2">Scale Rectangle</div>
+                                            <div class="input-group-text" id="scaleRectPrepend">Scale Rectangle</div>
                                         </div>
-                                        <input type="text" class="form-control" placeholder="Enter a number" aria-label="Input group example" aria-describedby="btnGroupAddon2">
+                                        <input type="text" class="form-control" placeholder="Enter a number" aria-label="Input group example" aria-describedby="scaleRectPrepend">
                                     </div>
                                 </form>
                             </div>
                         </tr>
                     </tbody>
-    
                 </table>
             </div>
         </div>
     </div>
 
     <!-- SHOW ATTRIBUTE MODAL -->
-    <div class="modal fade" id="show-attr-modal" tabindex="-1" role="dialog" data-backdrop="static" aria-labelledby="staticBackdropLabel" aria-hidden="true">
-        <div class="modal-dialog" role="document">
+    <div class="modal fade" id="show-attr-modal" tabindex="-1" role="dialog" data-backdrop="static" aria-labelledby="showAttrModal" aria-hidden="true">
+        <div class="modal-dialog modal-dialog-scrollable" role="document">
           <div class="modal-content">
             <div class="modal-header">
-              <h5 class="modal-title" id="exampleModalLabel">Rectangle 1</h5>
-              <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                <h5 class="modal-title" id="showAttrModal">Rectangle 1</h5>
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
                 <span aria-hidden="true">&times;</span>
-              </button>
+                </button>
             </div>
             <div class="modal-body">
-                <form ref='someform' id='someform'>
+                <form ref='someform' id='addAtributeInModal'>
                         <!-- <div class="form-group">
                             <label for="entryBox">Last Name</label>
                             <input type="text" class="form-control" id="entryBox" value="Value" placeholder="Placeholder">
@@ -197,13 +243,13 @@
                         <input type='submit' class="btn btn-secondary">
                     </div> -->
                     <div class="form-group row">
-                        <label for="inputEmail3" class="col-sm-2 col-form-label">Fill</label>
+                        <label for="FillRect1" class="col-sm-2 col-form-label">Fill</label>
                         <div class="col-sm-10">
-                          <input type="text" class="form-control" placeholder="White" id="inputEmail3">
+                          <input type="text" class="form-control" placeholder="White" id="FillRect1">
                         </div>
                     </div>
-                    <button type="button" class="btn btn-info">Add Attribute</button>
                 </form>
+                <button type="button" id="add-attribute-btn" class="btn btn-info">Add Attribute</button>
             </div>
             <div class="modal-footer">
               <button type="button" class="btn btn-danger" data-dismiss="modal">Close</button>
@@ -215,7 +261,7 @@
 
     <!-- ADD CIRCLE MODAL -->
     <div class="modal fade" id="add-circle-modal" tabindex="-1" role="dialog" data-backdrop="static" aria-labelledby="staticBackdropLabel" aria-hidden="true">
-        <div class="modal-dialog" role="document">
+        <div class="modal-dialog modal-dialog-scrollable" role="document">
           <div class="modal-content">
             <div class="modal-header">
               <h5 class="modal-title" id="exampleModalLabel">Adding a Circle</h5>
@@ -272,7 +318,7 @@
 
     <!-- ADD RECTANGLE MODAL -->
     <div class="modal fade" id="add-rectangle-modal" tabindex="-1" role="dialog" data-backdrop="static" aria-labelledby="staticBackdropLabel" aria-hidden="true">
-        <div class="modal-dialog" role="document">
+        <div class="modal-dialog modal-dialog-scrollable" role="document">
           <div class="modal-content">
             <div class="modal-header">
               <h5 class="modal-title" id="exampleModalLabel">Adding a Rectangle</h5>
@@ -341,29 +387,30 @@
             </div>
             <div class="modal-body">
                 <form ref='someform' id='someform'>
-                    <div class="form-group">
-                        <div class="form-group row">
-                            <label for="fileName" class="col-sm-2 col-form-label">File Name</label>
-                            <div class="col-sm-10">
+                    <div class="form-group row">
+                        <label for="fileName" class="col-sm-3 col-form-label">File Name</label>
+                        <div class="input-group col-sm-9">
+                            <div>
                               <input type="text" class="form-control" placeholder="" id="fileName">
+                            </div>
+                            <div class="input-group-append">
+                                <label for="fileName" class="input-group-text">.svg</label>
                             </div>
                         </div>
                         <!-- <input type='submit' class="btn btn-secondary"> -->
-                        <button type="button" class="btn btn-info">Add Attribute</button>
-
                     </div>
                 </form>
             </div>
             <div class="modal-footer">
               <button type="button" class="btn btn-danger" data-dismiss="modal">Close</button>
-              <button type="button" class="btn btn-primary">Create SVG</button>
+              <button type="button" id="create-svg-modal-btn" class="btn btn-primary">Create SVG</button>
             </div>
           </div>
         </div>
     </div>
 
     <hr>
-    <p>CIS*2750 Assignment 3</p>
+    <p>Winter 2020 CIS*2750 Assignment 3 - Darren Chay Loong</p>
 
     <!-- Leave me at the bottom of body -->
     <script src="/index.js"></script>

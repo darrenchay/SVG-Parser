@@ -84,9 +84,65 @@ $(document).ready(function() {
             //Create an object for connecting to another waypoint
         });
     });
+
+    $(".custom-file-input").on("change", function() {
+        var fileName = $(this).val().split("\\").pop();
+        $(this).siblings(".custom-file-label").addClass("selected").html(fileName);
+    });
+
+    $("#chooseSVGDropdown").change(function(){
+        var selectedSVG = $(this).children("option:selected").val();
+        console.log("Selected: " + selectedSVG);
+    });
+    
+    $("#add-attribute-btn").click(function() {
+        $('#addAtributeInModal').append('<div class="form-group row">\
+                                        <label for="FillRect2" class="col-sm-2 col-form-label">New</label>\
+                                        <div class="col-sm-10">\
+                                        <input type="text" class="form-control" placeholder="Val" id="FillRect2">\
+                                        </div>\
+                                        </div>')
+    })
+
+    $('#create-svg-modal-btn').click(function() {
+        var fileName = $('#fileName').val();
+        console.log("Created File: " + fileName + ".svg");
+    });
+    
 });
 
-$(".custom-file-input").on("change", function() {
-    var fileName = $(this).val().split("\\").pop();
-    $(this).siblings(".custom-file-label").addClass("selected").html(fileName);
-  });
+
+
+
+
+document.getElementById('edit-title').onclick = function () {
+    document.getElementById('titleInput').readOnly = false;
+    $("#titleInput").addClass("border border-dark");
+    document.getElementById('edit-title').style.display = "none";
+    document.getElementById('confirm-edit-title').style.display = "block";
+    console.log("Title can now be edited");
+};
+
+document.getElementById('confirm-edit-title').onclick = function() {
+    document.getElementById('titleInput').readOnly = true;
+    $("#titleInput").removeClass("border border-dark");
+    document.getElementById('edit-title').style.display = "block";
+    document.getElementById('confirm-edit-title').style.display = "none";
+    console.log("Title saved");
+} 
+
+document.getElementById('edit-desc').onclick = function () {
+    document.getElementById('descInput').readOnly = false;
+    $("#descInput").addClass("border border-dark");
+    document.getElementById('edit-desc').style.display = "none";
+    document.getElementById('confirm-edit-desc').style.display = "block";
+    console.log("Desc can now be edited");
+};
+
+document.getElementById('confirm-edit-desc').onclick = function() {
+    document.getElementById('descInput').readOnly = true;
+    $("#descInput").removeClass("border border-dark");
+    document.getElementById('edit-desc').style.display = "block";
+    document.getElementById('confirm-edit-desc').style.display = "none";
+    console.log("Desc saved");
+} 
