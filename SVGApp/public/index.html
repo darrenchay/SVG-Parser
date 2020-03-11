@@ -78,11 +78,42 @@
         </div>
     </div>
 
-      
-    <!-- <a href="rects.svg">rects.svg</a>
-    <p></p>
-    <img src="rects.svg"> -->
-
+    <!-- CREATE SVG MODAL -->
+    <div class="modal fade" id="create-svg-modal" tabindex="-1" role="dialog" data-backdrop="static" aria-labelledby="staticBackdropLabel" aria-hidden="true">
+        <div class="modal-dialog" role="document">
+          <div class="modal-content">
+            <div class="modal-header">
+              <h5 class="modal-title" id="exampleModalLabel">Create new SVG</h5>
+              <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                <span aria-hidden="true">&times;</span>
+              </button>
+            </div>
+            <div class="modal-body">
+                <form ref='someform' id='someform' class="needs-validation" novalidate>
+                    <div class="form-group row">
+                        <label for="fileName" class="col-sm-3 col-form-label">File Name</label>
+                        <div class="input-group col-sm-9">
+                            <div>
+                              <input type="text" class="form-control" id="fileName" required>
+                              <div class="invalid-feedback">
+                                Invalid file format name.
+                              </div>
+                            </div>
+                            <div class="input-group-append">
+                                <label for="fileName" class="input-group-text">.svg</label>
+                            </div>
+                        </div>
+                        <!-- <input type='submit' class="btn btn-secondary"> -->
+                    </div>
+                </form>
+            </div>
+            <div class="modal-footer">
+              <button type="button" class="btn btn-danger" data-dismiss="modal">Close</button>
+              <button type="submit" id="create-svg-modal-btn" class="btn btn-primary">Create SVG</button>
+            </div>
+          </div>
+        </div>
+    </div>
     <hr>
 
     <!-- DROPDOWN MENU FOR SELECTING SVG TO DISPLAY -->
@@ -106,39 +137,7 @@
         </select>
     </div> -->
 
-    <!-- CREATE SVG MODAL -->
-    <div class="modal fade" id="create-svg-modal" tabindex="-1" role="dialog" data-backdrop="static" aria-labelledby="staticBackdropLabel" aria-hidden="true">
-        <div class="modal-dialog" role="document">
-          <div class="modal-content">
-            <div class="modal-header">
-              <h5 class="modal-title" id="exampleModalLabel">Create new SVG</h5>
-              <button type="button" class="close" data-dismiss="modal" aria-label="Close">
-                <span aria-hidden="true">&times;</span>
-              </button>
-            </div>
-            <div class="modal-body">
-                <form ref='someform' id='someform'>
-                    <div class="form-group row">
-                        <label for="fileName" class="col-sm-3 col-form-label">File Name</label>
-                        <div class="input-group col-sm-9">
-                            <div>
-                              <input type="text" class="form-control" placeholder="" id="fileName">
-                            </div>
-                            <div class="input-group-append">
-                                <label for="fileName" class="input-group-text">.svg</label>
-                            </div>
-                        </div>
-                        <!-- <input type='submit' class="btn btn-secondary"> -->
-                    </div>
-                </form>
-            </div>
-            <div class="modal-footer">
-              <button type="button" class="btn btn-danger" data-dismiss="modal">Close</button>
-              <button type="button" id="create-svg-modal-btn" class="btn btn-primary">Create SVG</button>
-            </div>
-          </div>
-        </div>
-    </div>
+    
 
     <!-- SVG VIEW PANEL -->
     <div class="card">
@@ -238,7 +237,7 @@
                         <hr>                     
                         <tr>
                             <div>
-                                <button class="btn btn-secondary btn-space col-2" data-toggle="modal" data-target="#add-rectangle-modal" id="add-rect" type="button">Add Rectangle</button>
+                                <button class="btn btn-secondary btn-space col-2" data-toggle="modal" data-target="#add-rect-modal" id="add-rect" type="button">Add Rectangle</button>
                                 <button class="btn btn-secondary btn-space col-2" id="scale-rect-btn" type="button">Scale Rectangle</button>
                                 <form class="col-10">
                                     <div class="form-group form-inline">
@@ -304,26 +303,33 @@
 
                 <div class="modal-body">
                     <form ref='someform' id='someform'>
-                        <!-- Setting X, Y, width, height -->
+                        <!-- Setting X, Y, width, height, unit -->
                         <div class="input-group mb-3">
                             <div class="input-group-prepend">
                                 <span class="input-group-text">CX:</span>
                             </div>
-                            <input type="text" class="form-control" placeholder="0" aria-label="Example text with button addon" aria-describedby="button-addon1">
+                            <input type="number" id="cx-input" min="0" class="form-control" value="0" aria-label="Example text with button addon" aria-describedby="button-addon1">
                         </div>
                         
                         <div class="input-group mb-3">
                             <div class="input-group-prepend">
                                 <span class="input-group-text">CY:</span>
                             </div>
-                            <input type="text" class="form-control" placeholder="0" aria-label="Example text with button addon" aria-describedby="button-addon1">
+                            <input type="number" id="cy-input" min="0" class="form-control" value="0" aria-label="Example text with button addon" aria-describedby="button-addon1">
                         </div>
 
                         <div class="input-group mb-3">
                             <div class="input-group-prepend">
                                 <span class="input-group-text">Radius:</span>
                             </div>
-                            <input type="text" class="form-control" placeholder="0" aria-label="Example text with button addon" aria-describedby="button-addon1">
+                            <input type="number" id="r-input" min="0" class="form-control" value="0" aria-label="Example text with button addon" aria-describedby="button-addon1">
+                        </div>
+
+                        <div class="input-group mb-3">
+                            <div class="input-group-prepend">
+                                <span class="input-group-text">Unit:</span>
+                            </div>
+                            <input type="text" id="unit-circ-input" class="form-control" value="cm" aria-label="Example text with button addon" aria-describedby="button-addon1">
                         </div>
 
                         <form>
@@ -344,14 +350,14 @@
                 </div>
                 <div class="modal-footer">
                     <button type="button" class="btn btn-danger" data-dismiss="modal">Close</button>
-                    <button type="button" class="btn btn-primary">Add Circle</button>
+                    <button type="button" id="add-circle-modal-btn" class="btn btn-primary">Add Circle</button>
                 </div>
             </div>
         </div>
     </div>
 
     <!-- ADD RECTANGLE MODAL -->
-    <div class="modal fade" id="add-rectangle-modal" tabindex="-1" role="dialog" data-backdrop="static" aria-labelledby="staticBackdropLabel" aria-hidden="true">
+    <div class="modal fade" id="add-rect-modal" tabindex="-1" role="dialog" data-backdrop="static" aria-labelledby="staticBackdropLabel" aria-hidden="true">
         <div class="modal-dialog modal-dialog-scrollable" role="document">
           <div class="modal-content">
             <div class="modal-header">
@@ -367,28 +373,35 @@
                         <div class="input-group-prepend">
                             <span class="input-group-text">X:</span>
                         </div>
-                        <input type="text" class="form-control" placeholder="0" aria-label="Example text with button addon" aria-describedby="button-addon1">
+                        <input type="number" id="x-input" min="0" class="form-control" value="0" aria-label="Example text with button addon" aria-describedby="button-addon1">
                     </div>
                     
                     <div class="input-group mb-3">
                         <div class="input-group-prepend">
                             <span class="input-group-text">Y:</span>
                         </div>
-                        <input type="text" class="form-control" placeholder="0" aria-label="Example text with button addon" aria-describedby="button-addon1">
+                        <input type="number" id="y-input" min="0" class="form-control" value="0" aria-label="Example text with button addon" aria-describedby="button-addon1">
                     </div>
 
                     <div class="input-group mb-3">
                         <div class="input-group-prepend">
                             <span class="input-group-text">Width:</span>
                         </div>
-                        <input type="text" class="form-control" placeholder="0" aria-label="Example text with button addon" aria-describedby="button-addon1">
+                        <input type="number" id="width-input" min="0" class="form-control" value="0" aria-label="Example text with button addon" aria-describedby="button-addon1">
                     </div>
 
                     <div class="input-group mb-3">
                         <div class="input-group-prepend">
                             <span class="input-group-text">Height:</span>
                         </div>
-                        <input type="text" class="form-control" placeholder="0" aria-label="Example text with button addon" aria-describedby="button-addon1">
+                        <input type="number" id="height-input" min="0" class="form-control" value="0" aria-label="Example text with button addon" aria-describedby="button-addon1">
+                    </div>
+
+                    <div class="input-group mb-3">
+                        <div class="input-group-prepend">
+                            <span class="input-group-text">Unit:</span>
+                        </div>
+                        <input type="text" id="unit-rect-input" class="form-control" value="cm" aria-label="Example text with button addon" aria-describedby="button-addon1">
                     </div>
 
                     <form>
@@ -408,7 +421,7 @@
             </div>
             <div class="modal-footer">
               <button type="button" class="btn btn-danger" data-dismiss="modal">Close</button>
-              <button type="button" class="btn btn-primary">Add Rectangle</button>
+              <button type="button" class="btn btn-primary" id="add-rect-modal-btn">Add Rectangle</button>
             </div>
           </div>
         </div>

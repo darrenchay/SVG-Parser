@@ -106,7 +106,13 @@ $(document).ready(function() {
 
     $('#create-svg-modal-btn').click(function() {
         var fileName = $('#fileName').val();
-        console.log("Created File: " + fileName + ".svg");
+        if(!fileName) {
+            console.log("invalid file name");
+
+        } else {
+            console.log("Created File: " + fileName + ".svg");
+            $('#create-svg-modal').modal('toggle');
+        }
     });
 
     /* Scaling circle */
@@ -133,40 +139,76 @@ $(document).ready(function() {
         console.log("val: " + scaleVal);
     });
     
+    document.getElementById('edit-title').onclick = function () {
+        document.getElementById('titleInput').readOnly = false;
+        $("#titleInput").addClass("border border-dark");
+        document.getElementById('edit-title').style.display = "none";
+        document.getElementById('confirm-edit-title').style.display = "block";
+        console.log("Title can now be edited");
+    };
+    
+    document.getElementById('confirm-edit-title').onclick = function() {
+        document.getElementById('titleInput').readOnly = true;
+        $("#titleInput").removeClass("border border-dark");
+        document.getElementById('edit-title').style.display = "block";
+        document.getElementById('confirm-edit-title').style.display = "none";
+        console.log("Title saved");
+    } 
+    
+    document.getElementById('edit-desc').onclick = function () {
+        document.getElementById('descInput').readOnly = false;
+        $("#descInput").addClass("border border-dark");
+        document.getElementById('edit-desc').style.display = "none";
+        document.getElementById('confirm-edit-desc').style.display = "block";
+        console.log("Desc can now be edited");
+    };
+    
+    document.getElementById('confirm-edit-desc').onclick = function() {
+        document.getElementById('descInput').readOnly = true;
+        $("#descInput").removeClass("border border-dark");
+        document.getElementById('edit-desc').style.display = "block";
+        document.getElementById('confirm-edit-desc').style.display = "none";
+        console.log("Desc saved");
+    } 
+
+    $('#create-svg-modal-btn').submit(function() {
+        'use strict';
+        window.addEventListener('load', function() {
+            // Fetch all the forms we want to apply custom Bootstrap validation styles to
+            var forms = document.getElementsByClassName('needs-validation');
+            // Loop over them and prevent submission
+            var validation = Array.prototype.filter.call(forms, function(form) {
+            form.addEventListener('submit', function(event) {
+                if (form.checkValidity() === false) {
+                event.preventDefault();
+                event.stopPropagation();
+                }
+                form.classList.add('was-validated');
+            }, false);
+            });
+        }, false);
+    });
+
+    $('#add-circle-modal-btn').click(function() {
+        var cx = $('#cx-input').val();
+        var cy = $('#cy-input').val();
+        var r = $('#r-input').val();
+        var unit = $('#unit-circ-input').val();
+
+        console.log("Created circle with cx:" + cx + ", cy:" + cy + ", r:" + r + ", unit:" + unit);
+        $('#add-circle-modal').modal('toggle');
+
+    });
+
+    $('#add-rect-modal-btn').click(function() {
+        var x = $('#x-input').val();
+        var y = $('#y-input').val();
+        var width = $('#width-input').val();
+        var height = $('#height-input').val();
+        var unit = $('#unit-rect-input').val();
+
+        console.log("Created Rect with x:" + x + ", y:" + y + ", width:" + width + ", height:" + height + ", unit:" + unit);
+        $('#add-rect-modal').modal('toggle');
+
+    });
 });
-
-
-
-
-
-document.getElementById('edit-title').onclick = function () {
-    document.getElementById('titleInput').readOnly = false;
-    $("#titleInput").addClass("border border-dark");
-    document.getElementById('edit-title').style.display = "none";
-    document.getElementById('confirm-edit-title').style.display = "block";
-    console.log("Title can now be edited");
-};
-
-document.getElementById('confirm-edit-title').onclick = function() {
-    document.getElementById('titleInput').readOnly = true;
-    $("#titleInput").removeClass("border border-dark");
-    document.getElementById('edit-title').style.display = "block";
-    document.getElementById('confirm-edit-title').style.display = "none";
-    console.log("Title saved");
-} 
-
-document.getElementById('edit-desc').onclick = function () {
-    document.getElementById('descInput').readOnly = false;
-    $("#descInput").addClass("border border-dark");
-    document.getElementById('edit-desc').style.display = "none";
-    document.getElementById('confirm-edit-desc').style.display = "block";
-    console.log("Desc can now be edited");
-};
-
-document.getElementById('confirm-edit-desc').onclick = function() {
-    document.getElementById('descInput').readOnly = true;
-    $("#descInput").removeClass("border border-dark");
-    document.getElementById('edit-desc').style.display = "block";
-    document.getElementById('confirm-edit-desc').style.display = "none";
-    console.log("Desc saved");
-} 
