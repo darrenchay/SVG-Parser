@@ -87,7 +87,7 @@ app.get('/loadFiles', function(req , res){
 
     /* Creating the array of JSON objects for each SVG file */
     for(var i = 0; i < items.length; i++) {
-      let SVGasJSON = sharedLib.readSVGtoJSON( 'uploads/' + items[i], 'svg.xsd');
+      let SVGasJSON = sharedLib.readSVGtoJSON('uploads/' + items[i], 'svg.xsd');
 
       if(SVGasJSON == "{}") {
         continue;
@@ -103,17 +103,37 @@ app.get('/loadFiles', function(req , res){
 
       let fileData = [items[i], size, currFileData.numRect, currFileData.numCirc, currFileData.numPaths, currFileData.numGroups];
       //console.log("ARRAY");
-      console.log(fileData);
+      //console.log(fileData);
       fileListArray.push(fileData); 
     }
     //console.log("Array:");
     console.log(fileListArray);
     res.send({
-      fileList: fileListArray,
+      fileList: fileListArray
     });
   });
 
   
+});
+
+app.get('/loadFileData', function(req, res) {
+  let sharedLib = ffi.Library('./libsvgparse', {
+    'SVGdetailsToJSON' : [ 'string', [ 'string', 'string' ] ],
+  });
+
+  let fileName = req.query.fileName;
+  console.log(fileName);
+
+  let titleAndDescAsJSON = sharedLib.SVGdetailsToJSON('uploads/' + fileName, 'svg.xsd');
+  console.log(titleAndDescAsJSON);
+
+  let fileData = JSON.parse(titleAndDescAsJSON);
+  console.log(fileData.desc);
+  res.send({
+    title: fileData.title,
+    desc: fileData.desc
+  });
+
 });
 
 app.listen(portNum);

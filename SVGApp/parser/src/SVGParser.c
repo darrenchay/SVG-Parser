@@ -47,7 +47,7 @@ void addGroupsToXMLnode(List* groupList, xmlNode* rootNode);
 void addAttribute(List* attributes, Attribute* newAttribute);
 
 char* readSVGtoJSON(char* fileName, char* schemaFile);
-
+char* SVGdetailsToJSON(char* fileName, char* schemaFile);
 
 /** Function to create an SVG object based on the contents of an SVG file.
  *@pre File name cannot be an empty string or NULL.
@@ -1420,6 +1420,24 @@ char* readSVGtoJSON(char* fileName, char* schemaFile) {
     return JSONstring;
 }
 
+char* SVGdetailsToJSON(char* fileName, char* schemaFile) {
+    SVGimage* img = createValidSVGimage(fileName, schemaFile);
+    if(img == NULL) {
+        return "{}";
+    }
+
+    char* JSONstring = calloc(strlen(img->title) + strlen(img->description) + 30, 1);
+
+    strcpy(JSONstring ,"{\"title\":\"");
+    strcat(JSONstring, img->title);
+    strcat(JSONstring, "\",\"desc\":\"");
+    strcat(JSONstring, img->description);
+    strcat(JSONstring, "\"}");
+
+    deleteSVGimage(img);
+    return JSONstring;
+}
+
 
 /** Function to converting an Attribute into a JSON string
 *@pre Attribute is not NULL
@@ -1437,7 +1455,6 @@ char* attrToJSON(const Attribute *a) {
     
     strcpy(string, "{\"name\":\"");
     strcat(string, a->name);
-    strcat(string, "");
     strcat(string, "\",\"value\":\"");
     strcat(string, a->value);
     strcat(string, "\"}");

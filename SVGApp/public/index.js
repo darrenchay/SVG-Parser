@@ -35,7 +35,6 @@ $(document).ready(function() {
         }
     });
 
-
     // Event listener form example , we can use this instead explicitly listening for events
     // No redirects if possible
     $('#someform').submit(function(e){
@@ -96,7 +95,29 @@ $(document).ready(function() {
     $("#chooseSVGDropdown").change(function(){
         var selectedSVG = $(this).children("option:selected").html();
         $('#view-img').attr("src", selectedSVG);
+        $('#view-img').attr("href", selectedSVG);
         console.log("Selected: " + selectedSVG);
+        $.ajax({
+            type: 'get',            //Request type
+            dataType: 'json',       //Data type - we will use JSON for almost everything 
+            url: '/loadFileData',   //The server endpoint we are connecting to
+            data: {
+                fileName: selectedSVG
+            },
+            success: function (data) {
+                console.log("Title: " + data.title);
+                console.log("Desc: " + data.desc);
+
+                loadInfoSVG(data);
+                
+            },
+            fail: function(error) {
+                // Non-200 return, do something with error
+                //$('#file-log-table').html('<tr><td colspan="7">No files</td></tr>');
+                console.log(error); 
+            }
+    
+        });
     });
     
     $("#add-attribute-btn").click(function() {
@@ -262,4 +283,9 @@ function loadDropdownData(data) {
     }
     $('#chooseSVGDropdown').append('<option value="" disabled selected hidden>Choose an SVG file</option>');
     console.log("created dropdown with " + files.length + " items");
+}
+
+function loadInfoSVG(data) {
+    $('#titleInput').attr('value', data.title);
+    $('#descInput').attr('value', data.desc);
 }
