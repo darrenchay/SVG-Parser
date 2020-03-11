@@ -209,6 +209,15 @@ $(document).ready(function() {
 
         console.log("Created Rect with x:" + x + ", y:" + y + ", width:" + width + ", height:" + height + ", unit:" + unit);
         $('#add-rect-modal').modal('toggle');
+    });
 
+    /* Display the right attribute modal for the specific component */
+    $(document).on("click", ".show-att-btn", function() {
+        $(this).parents("tr").find("th").each(function() {
+            var componentName = $(this).text();
+            var componentParts = componentName.split(' ');
+            $('#showAttrModal').html(componentName);
+            console.log(componentName + "parts: " + componentParts[0] + "::" + componentParts[1]);
+        })
     });
 });
