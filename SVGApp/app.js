@@ -119,6 +119,10 @@ app.get('/loadFiles', function(req , res){
 app.get('/loadFileData', function(req, res) {
   let sharedLib = ffi.Library('./libsvgparse', {
     'SVGdetailsToJSON' : [ 'string', [ 'string', 'string' ] ],
+    'getRectJSONlist' : [ 'string', [ 'string', 'string' ] ],
+    'getCircJSONlist' : [ 'string', [ 'string', 'string' ] ],
+    'getPathJSONlist' : [ 'string', [ 'string', 'string' ] ],
+    'getGroupJSONlist' : [ 'string', [ 'string', 'string' ] ],
   });
 
   let fileName = req.query.fileName;
@@ -127,11 +131,32 @@ app.get('/loadFileData', function(req, res) {
   let titleAndDescAsJSON = sharedLib.SVGdetailsToJSON('uploads/' + fileName, 'svg.xsd');
   console.log(titleAndDescAsJSON);
 
+  let rectListJSON = sharedLib.getRectJSONlist('uploads/' + fileName, 'svg.xsd');
+  let rectList = JSON.parse(rectListJSON);
+  console.log(rectList);
+
+  let circListJSON = sharedLib.getCircJSONlist('uploads/' + fileName, 'svg.xsd');
+  let circList = JSON.parse(circListJSON);
+  console.log(circList);
+
+  let pathListJSON = sharedLib.getPathJSONlist('uploads/' + fileName, 'svg.xsd');
+  let pathList = JSON.parse(pathListJSON);
+  console.log(pathList);
+
+  let groupListJSON = sharedLib.getGroupJSONlist('uploads/' + fileName, 'svg.xsd');
+  let groupList = JSON.parse(groupListJSON);
+  console.log(groupList);
+
+
   let fileData = JSON.parse(titleAndDescAsJSON);
   console.log(fileData.desc);
   res.send({
     title: fileData.title,
-    desc: fileData.desc
+    desc: fileData.desc,
+    rects: rectList,
+    circs: circList,
+    paths: pathList,
+    groups: groupList
   });
 
 });

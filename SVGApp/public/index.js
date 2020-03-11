@@ -251,6 +251,7 @@ $(document).ready(function() {
     });
 });
 
+/* Adds a new row to the file log table for the file input */
 function appendNewSVGFile(file) {
     $('#file-table-body').append('<tr> \
                                 <td class="img-cell"><img src="' + file[0] + '" href="' + file[0] + '" class="img-responsive img-thumbnail image" alt="Responsive image"></td> \
@@ -264,6 +265,7 @@ function appendNewSVGFile(file) {
 
 }
 
+/* generates the file log table */
 function loadFileLogTable(data) {
     if(data.fileList.length === 0) {
         console.log("No files");
@@ -276,6 +278,7 @@ function loadFileLogTable(data) {
     }
 } 
 
+/* Loads all options in the dropdown upon page load */
 function loadDropdownData(data) {
     let files = data.fileList;
     for(var i = 0; i < files.length; i++) {
@@ -285,7 +288,57 @@ function loadDropdownData(data) {
     console.log("created dropdown with " + files.length + " items");
 }
 
+/* Load data into svg view panel */
 function loadInfoSVG(data) {
-    $('#titleInput').attr('value', data.title);
-    $('#descInput').attr('value', data.desc);
+    /* Resets title and desc input */
+    $('#titleInput').val('');
+    $('#descInput').val('');
+    $('#contents-table-body').html('');
+
+    if(data.title === "") {
+        $('#titleInput').attr('placeholder', 'No Title');
+    } else {
+        $('#titleInput').val(data.title);
+    }
+    if(data.desc === "") {
+        $('#descInput').attr('placeholder', 'No Description');
+    } else {
+        $('#descInput').val(data.desc);
+    }
+
+    for(var i = 0; i < data.rects.length; i++) {
+        let rectangle = data.rects[i];
+        $('#contents-table-body').append('<tr style="text-align: center">\
+                                            <th class="col-component">Rectangle ' + (i - (-1)) + '</th>\
+                                            <td class="col-summary">Upper left corner: x = ' + rectangle.x + rectangle.units + ', y = ' + rectangle.y + rectangle.units + 'Width: ' + rectangle.w + rectangle.units + ', Height: ' + rectangle.h + rectangle.units + '</td>\
+                                            <td class="col-attributes"> ' + rectangle.numAttr + '  <button class="btn btn-info btn-sm show-att-btn" data-toggle="modal" data-target="#show-attr-modal" type="button">Show</button></td>\
+                                        </tr>');
+    }
+
+    for(var i = 0; i < data.circs.length; i++) {
+        let circle = data.circs[i];
+        $('#contents-table-body').append('<tr style="text-align: center">\
+                                            <th class="col-component">Circle ' + (i - (-1)) + '</th>\
+                                            <td class="col-summary">Center: x = ' + circle.cx + circle.units + ', y = ' + circle.cy + circle.units + ', radius = ' + circle.r + circle.units +'</td>\
+                                            <td class="col-attributes"> ' + circle.numAttr + '  <button class="btn btn-info btn-sm show-att-btn" data-toggle="modal" data-target="#show-attr-modal" type="button">Show</button></td>\
+                                        </tr>');
+    }
+
+    for(var i = 0; i < data.paths.length; i++) {
+        let path = data.paths[i];
+        $('#contents-table-body').append('<tr style="text-align: center">\
+                                            <th class="col-component">Path ' + (i - (-1)) + '</th>\
+                                            <td class="col-summary">path data = ' + path.d + '</td>\
+                                            <td class="col-attributes"> ' + path.numAttr + '  <button class="btn btn-info btn-sm show-att-btn" data-toggle="modal" data-target="#show-attr-modal" type="button">Show</button></td>\
+                                        </tr>');
+    }
+
+    for(var i = 0; i < data.groups.length; i++) {
+        let group = data.groups[i];
+        $('#contents-table-body').append('<tr style="text-align: center">\
+                                            <th class="col-component">Group ' + (i - (-1)) + '</th>\
+                                            <td class="col-summary"> ' + group.children + ' child elements</td>\
+                                            <td class="col-attributes"> ' + group.numAttr + '  <button class="btn btn-info btn-sm show-att-btn" data-toggle="modal" data-target="#show-attr-modal" type="button">Show</button></td>\
+                                        </tr>');
+    }
 }

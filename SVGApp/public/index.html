@@ -146,10 +146,10 @@
         <div class="card-body">
             <div class="table-responsive">
                 <table id="view-table" class="table table-bordered w-auto">
-                    <tbody id="file-table-body">
+                    <tbody id="file-table-body" style="text-align: center">
                         <!-- IMAGE SECTION -->
                         <tr>
-                            <td><img src="" href="" id="view-img" class="img-fluid img-view align-middle"></td>
+                            <td><img src="" href="" id="view-img" class="img-fluid img-view" alt="Image will go here"></td>
                         </tr>
 
                         <!-- TITLE AND DESCRIPTION SECTION -->
@@ -164,10 +164,10 @@
                                 <tbody>
                                     <tr>
                                         <td>
-                                            <input type="text" readonly class="form-control-plaintext" id="titleInput" value="">
+                                            <input type="text" readonly class="form-control-plaintext" id="titleInput" placeholder="Title will go here">
                                         </td>
                                         <td>
-                                            <input type="text" readonly class="form-control-plaintext" id="descInput" value="">
+                                            <input type="text" readonly class="form-control-plaintext" id="descInput" placeholder="Description will go here">
                                         </td>
                                     </tr>
                                     <tr>
@@ -187,16 +187,16 @@
                         <!-- CONTENT, SUMMARY AND ATTRIBUTES SECTION -->
                         <tr>
                             <div id="contents-table-div">
-                                <table id="contents-table" class="table header-fixed table-bordered">
+                                <table id="contents-table" class="table header-fixed table-bordered table-responsive">
                                     <thead>
-                                        <tr>
+                                        <tr style="text-align: center">
                                             <th class="col-component">Component</th>
                                             <th class="col-summary">Summary</th>
                                             <th class="col-attributes">Other Attributes</th>
                                         </tr>
                                     </thead>
                                     <tbody id="contents-table-body">
-                                        <tr>
+                                        <!-- <tr>
                                             <th class="col-component">Path 1</th>
                                             <td class="col-summary">path data = M200,300 L400,50 L600,300 L800,550 L1000,30</td>
                                             <td class="col-attributes">3<button class="btn btn-info btn-sm show-att-btn" data-toggle="modal" data-target="#show-attr-modal" type="button">Show</button></td>
@@ -207,7 +207,7 @@
                                             <td class="col-attributes">2
                                                 <button class="btn btn-info btn-sm show-att-btn" data-toggle="modal" data-target="#show-attr-modal" type="button">Show</button>
                                             </td>
-                                        </tr>
+                                        </tr> -->
                                     </tbody>
                                 </table>
                             </div>

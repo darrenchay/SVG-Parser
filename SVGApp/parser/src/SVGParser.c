@@ -48,6 +48,10 @@ void addAttribute(List* attributes, Attribute* newAttribute);
 
 char* readSVGtoJSON(char* fileName, char* schemaFile);
 char* SVGdetailsToJSON(char* fileName, char* schemaFile);
+char* getRectJSONlist(char* fileName, char* schemaFile);
+char* getCircJSONlist(char* fileName, char* schemaFile);
+char* getPathJSONlist(char* fileName, char* schemaFile);
+char* getGroupJSONlist(char* fileName, char* schemaFile);
 
 /** Function to create an SVG object based on the contents of an SVG file.
  *@pre File name cannot be an empty string or NULL.
@@ -1420,10 +1424,13 @@ char* readSVGtoJSON(char* fileName, char* schemaFile) {
     return JSONstring;
 }
 
+/* Returns a JSON string containing the title and description of the img */
 char* SVGdetailsToJSON(char* fileName, char* schemaFile) {
     SVGimage* img = createValidSVGimage(fileName, schemaFile);
     if(img == NULL) {
-        return "{}";
+        char *temp = calloc(10, sizeof(char));
+        strcpy(temp, "{}");
+        return temp;
     }
 
     char* JSONstring = calloc(strlen(img->title) + strlen(img->description) + 30, 1);
@@ -1438,6 +1445,37 @@ char* SVGdetailsToJSON(char* fileName, char* schemaFile) {
     return JSONstring;
 }
 
+char* getRectJSONlist(char* fileName, char* schemaFile) {
+    SVGimage* img = createValidSVGimage(fileName, schemaFile);
+
+    char* JSONstring = rectListToJSON(img->rectangles);
+    deleteSVGimage(img);
+    return JSONstring;
+}
+
+char* getCircJSONlist(char* fileName, char* schemaFile) {
+    SVGimage* img = createValidSVGimage(fileName, schemaFile);
+
+    char* JSONstring = circListToJSON(img->circles);
+    deleteSVGimage(img);
+    return JSONstring;
+}
+
+char* getPathJSONlist(char* fileName, char* schemaFile) {
+    SVGimage* img = createValidSVGimage(fileName, schemaFile);
+
+    char* JSONstring = pathListToJSON(img->paths);
+    deleteSVGimage(img);
+    return JSONstring;
+}
+
+char* getGroupJSONlist(char* fileName, char* schemaFile) {
+    SVGimage* img = createValidSVGimage(fileName, schemaFile);
+
+    char* JSONstring = groupListToJSON(img->groups);
+    deleteSVGimage(img);
+    return JSONstring;
+}
 
 /** Function to converting an Attribute into a JSON string
 *@pre Attribute is not NULL
@@ -1549,9 +1587,9 @@ char* pathToJSON(const Path *p){
     
     char buffer[100];
 
-    strcpy(string, "{\"d\":");
+    strcpy(string, "{\"d\":\"");
     strncat(string, p->data, 64);
-    strcat(string, ",\"numAttr\":\"");
+    strcat(string, "\",\"numAttr\":\"");
     sprintf(buffer, "%d", getLength(p->otherAttributes));
     strcat(string, buffer);
     strcat(string, "\"}");

@@ -137,3 +137,7 @@ input[type=submit], button {
 .img-view {
     max-width: 800px;
 }
+
+.table {
+    width: 100%;
+}
