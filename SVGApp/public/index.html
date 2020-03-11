@@ -59,7 +59,7 @@
 
             <!-- UPLOAD NEW FILE BUTTON AND CREATE NEW SVG BUTTON -->
             <form >
-                <div class="form-row">
+                <div class="form-row form-group">
                     <!-- UPLOAD NEW FILE BUTTON -->
                     <div class="col-7 input-group">
                         <div class="custom-file">
@@ -67,7 +67,7 @@
                             <label class="custom-file-label" for="uploadFileInput">Choose file</label>
                         </div>
                         <div class="input-group-append">
-                            <button class="btn btn-dark" type="submit" id="upload-file-btn">Upload Existing SVG</button>
+                            <button class="btn btn-dark" type="button" id="upload-file-btn">Upload Existing SVG</button>
                         </div>
                     </div>
                     <!-- CREATE SVG BUTTON -->
@@ -121,12 +121,11 @@
         <div class="input-group-prepend">
           <label class="input-group-text" for="chooseSVGDropdown">Choose SVG file</label>
         </div>
-        <select class="custom-select" id="chooseSVGDropdown" required>
-          <option selected>Choose...</option>
-          <option value="">Open this select menu</option>
-          <option value="Rects.svg">Rects.svg</option>
-          <option value="Quad01_A2.svg">Quad01_A2.svg</option>
-          <option value="Quad01_A2.svg">Three</option>
+        <select class="custom-select" id="chooseSVGDropdown" placeholder="Choose SVG..." required>
+          <!-- <option selected>Choose...</option> -->
+          <option value="Rects.svg">rects.svg</option>
+          <option value="Quad01_A2.svg">quad01_A2.svg</option>
+          <option value="Quad01_A2.svg">beer.svg</option>
         </select>
         <!-- <div class="invalid-feedback">Example invalid custom select feedback</div> -->
     </div>
@@ -150,7 +149,7 @@
                     <tbody id="file-table-body">
                         <!-- IMAGE SECTION -->
                         <tr>
-                            <td><img src="quad01_A2.svg" href="quad01_A2.svg" class="img-fluid" alt="Responsive image"></td>
+                            <td><img src="quad01_A2.svg" href="quad01_A2.svg" id="view-img" class="img-fluid" alt="Responsive image"></td>
                         </tr>
 
                         <!-- TITLE AND DESCRIPTION SECTION -->
@@ -187,33 +186,32 @@
 
                         <!-- CONTENT, SUMMARY AND ATTRIBUTES SECTION -->
                         <tr>
-                            <table id="contents-table" class="table table-bordered">
-                                <thead>
-                                    <tr>
-                                        <th>Component</th>
-                                        <th>Summary</th>
-                                        <th colspan="2">Other Attributes</th>
-                                    </tr>
-                                </thead>
-                                <tbody>
-                                    <tr id="p1">
-                                        <th>Path 1</th>
-                                        <td>path data = M200,300 L400,50 L600,300 L800,550 L1000,30</td>
-                                        <td>3</td>
-                                        <td>
-                                            <button class="btn btn-info btn-sm show-att-btn" data-toggle="modal" data-target="#show-attr-modal" type="button">Show Attribute(s)</button>
-                                        </td>
-                                    </tr>
-                                    <tr id="r3">
-                                        <th>Rectangle 3</th>
-                                        <td>Upper left corner: x = 0.5cm, y = 0.5cm Width: 1cm, Height: 0.5cm</td>
-                                        <td>2</td>
-                                        <td>
-                                            <button class="btn btn-info btn-sm show-att-btn" data-toggle="modal" data-target="#show-attr-modal" type="button">Show Attribute(s)</button>
-                                        </td>
-                                    </tr>
-                                </tbody>
-                            </table>
+                            <div id="contents-table-div">
+                                <table id="contents-table" class="table header-fixed table-bordered">
+                                    <thead>
+                                        <tr>
+                                            <th class="col-component">Component</th>
+                                            <th class="col-summary">Summary</th>
+                                            <th class="col-attributes">Other Attributes</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody id="contents-table-body">
+                                        <tr>
+                                            <th class="col-component">Path 1</th>
+                                            <td class="col-summary">path data = M200,300 L400,50 L600,300 L800,550 L1000,30</td>
+                                            <td class="col-attributes">3<button class="btn btn-info btn-sm show-att-btn" data-toggle="modal" data-target="#show-attr-modal" type="button">Show</button></td>
+                                        </tr>
+                                        <tr id="r3">
+                                            <th class="col-component">Rectangle 3</th>
+                                            <td class="col-summary">Upper left corner: x = 0.5cm, y = 0.5cm Width: 1cm, Height: 0.5cm</td>
+                                            <td class="col-attributes">2
+                                                <button class="btn btn-info btn-sm show-att-btn" data-toggle="modal" data-target="#show-attr-modal" type="button">Show</button>
+                                            </td>
+                                        </tr>
+                                    </tbody>
+                                </table>
+                            </div>
+                            
                         </tr>
 
                         <!-- OTHER UTILITIES SECTION (Add shape and scale shape) -->

@@ -3,24 +3,16 @@ $(document).ready(function() {
     // On page-load AJAX Example
     $.ajax({
         type: 'get',            //Request type
-        dataType: 'json',       //Data type - we will use JSON for almost everything 
-        url: '/someendpoint',   //The server endpoint we are connecting to
-        data: {
-            file: "rects.svg",
-            size: "1KB",
-            rects: "1",
-            circs: "2",
-            paths: "5",
-            groups: "4",
-        },
+        //dataType: 'json',       //Data type - we will use JSON for almost everything 
+        url: '/loadFiles',   //The server endpoint we are connecting to
         success: function (data) {
             /*  Do something with returned object
                 Note that what we get is an object, not a string, 
                 so we do not need to parse it on the server.
                 JavaScript really does handle JSONs seamlessly
             */
-
-            $('#file-table-body').append('<tr> \
+            $('#file-table-body').append(loadFileLogTable(data));
+            /* $('#file-table-body').append('<tr> \
                                             <td><img src="' + data.getFileName + '" href="' + data.getFileName + '" class="img-fluid" alt="Responsive image"></td> \
                                             <td><a href="' + data.getFileName + '">' + data.getFileName + '</a></td> \
                                             <td>' + data.getFileSize + '</td> \
@@ -28,36 +20,7 @@ $(document).ready(function() {
                                             <td>' + data.getNumCircs + '</td> \
                                             <td>' + data.getNumPaths + '</td> \
                                             <td>' + data.getNumGroups + '</td> \
-                                            </tr>');
-            $('#file-table-body').append('<tr> \
-                                            <td><img src="' + data.getFileName + '" href="' + data.getFileName + '" class="img-fluid" alt="Responsive image"></td> \
-                                            <td><a href="' + data.getFileName + '">' + data.getFileName + '</a></td> \
-                                            <td>' + data.getFileSize + '</td> \
-                                            <td>' + data.getNumRects + '</td> \
-                                            <td>' + data.getNumCircs + '</td> \
-                                            <td>' + data.getNumPaths + '</td> \
-                                            <td>' + data.getNumGroups + '</td> \
-                                            </tr>');
-
-            $('#file-table-body').append('<tr> \
-                                            <td><img src="' + data.getFileName + '" href="' + data.getFileName + '" class="img-fluid" alt="Responsive image"></td> \
-                                            <td><a href="' + data.getFileName + '">' + data.getFileName + '</a></td> \
-                                            <td>' + data.getFileSize + '</td> \
-                                            <td>' + data.getNumRects + '</td> \
-                                            <td>' + data.getNumCircs + '</td> \
-                                            <td>' + data.getNumPaths + '</td> \
-                                            <td>' + data.getNumGroups + '</td> \
-                                            </tr>');
-            
-            $('#file-table-body').append('<tr> \
-                                            <td><img src="' + data.getFileName + '" href="' + data.getFileName + '" class="img-fluid" alt="Responsive image"></td> \
-                                            <td><a href="' + data.getFileName + '">' + data.getFileName + '</a></td> \
-                                            <td>' + data.getFileSize + '</td> \
-                                            <td>' + data.getNumRects + '</td> \
-                                            <td>' + data.getNumCircs + '</td> \
-                                            <td>' + data.getNumPaths + '</td> \
-                                            <td>' + data.getNumGroups + '</td> \
-                                            </tr>');
+                                            </tr>'); */
 
             
             //We write the object to the console to show that the request was successful
@@ -69,7 +32,7 @@ $(document).ready(function() {
         },
         fail: function(error) {
             // Non-200 return, do something with error
-            $('#file-log-table').html('<p>No files</p>');
+            $('#file-log-table').html('<tr><td colspan="7">No files</td></tr>');
             console.log(error); 
         }
     });
@@ -91,7 +54,8 @@ $(document).ready(function() {
     });
 
     $("#chooseSVGDropdown").change(function(){
-        var selectedSVG = $(this).children("option:selected").val();
+        var selectedSVG = $(this).children("option:selected").html();
+        $('#view-img').attr("src", selectedSVG);
         console.log("Selected: " + selectedSVG);
     });
     
@@ -113,6 +77,28 @@ $(document).ready(function() {
             console.log("Created File: " + fileName + ".svg");
             $('#create-svg-modal').modal('toggle');
         }
+    });
+
+    $('#upload-file-btn').click(function() {
+        var fileInput = document.getElementById('uploadFileInput');
+        if (!fileInput) {
+            alert("Um, couldn't find the fileinput element.");
+          }
+          else if (!fileInput.files) {
+            alert("This browser doesn't seem to support the `files` property of file inputs.");
+          }
+          else if (!fileInput.files[0]) {
+            alert("Please select a file before clicking 'Load'");               
+          }
+          else {
+            var file = fileInput.files[0];
+            //var fr = new FileReader();
+            //fr.onload = receivedText;
+            //fr.readAsText(file);
+            //fr.readAsDataURL(file);
+            console.log(file);
+            //appendNewSVGFile(file);
+          }
     });
 
     /* Scaling circle */
@@ -197,7 +183,14 @@ $(document).ready(function() {
 
         console.log("Created circle with cx:" + cx + ", cy:" + cy + ", r:" + r + ", unit:" + unit);
         $('#add-circle-modal').modal('toggle');
-
+        $('#contents-table-body').append('<tr>\
+                            <th class="col-component">Circle 3</th>\
+                            <td class="col-summary"> cx: ' + cx + unit + ' cy:' + cy + unit + ' r:' + r + unit + '</td>\
+                            <td class="col-attributes">0\
+                                <button class="btn btn-info btn-sm show-att-btn" data-toggle="modal" data-target="#show-attr-modal" type="button">Show</button>\
+                            </td>\
+                            </tr>');
+        //alert("Sucessfully created circle!");
     });
 
     $('#add-rect-modal-btn').click(function() {
@@ -209,6 +202,14 @@ $(document).ready(function() {
 
         console.log("Created Rect with x:" + x + ", y:" + y + ", width:" + width + ", height:" + height + ", unit:" + unit);
         $('#add-rect-modal').modal('toggle');
+        $('#contents-table-body').append('<tr>\
+                            <th class="col-component">Rectangle 3</th>\
+                            <td class="col-summary"> Upper left corner: x = ' + x + unit + ', y = ' + y + unit + ', Width:' + width + unit + ', Height:' + height + unit + '</td>\
+                            <td class="col-attributes">0\
+                                <button class="btn btn-info btn-sm show-att-btn" data-toggle="modal" data-target="#show-attr-modal" type="button">Show</button>\
+                            </td>\
+                            </tr>');
+        //alert("Sucessfully created rectangle!");
     });
 
     /* Display the right attribute modal for the specific component */
@@ -216,8 +217,34 @@ $(document).ready(function() {
         $(this).parents("tr").find("th").each(function() {
             var componentName = $(this).text();
             var componentParts = componentName.split(' ');
-            $('#showAttrModal').html(componentName);
+            $('#showAttrModal').html("Other attributes of " + componentName);
             console.log(componentName + "parts: " + componentParts[0] + "::" + componentParts[1]);
         })
     });
 });
+
+function appendNewSVGFile(file) {
+    $('#file-table-body').append('<tr> \
+                                <td><img src="' + file[0] + '" href="' + file[0] + '" class="img-responsive img-thumbnail" alt="Responsive image"></td> \
+                                <td><a href="' + file[0] + '">' + file[0] + '</a></td> \
+                                <td>' + file[1] + 'KB</td> \
+                                <td>' + file[2] + '</td> \
+                                <td>' + file[3] + '</td> \
+                                <td>' + file[4] + '</td> \
+                                <td>' + file[5] + '</td> \
+                                </tr>');
+
+}
+
+function loadFileLogTable(data) {
+    if(!data) {
+        console.log("No files");
+        $('#file-table-body').append('<tr> <td colspan= "7">No files </td> </tr>');
+    }
+    console.log(data.fileList);
+    for(var i = 0; i < data.fileList.length; i++) {
+        console.log("1:");
+        console.log(data.fileList[i])
+        appendNewSVGFile(data.fileList[i]);
+    }
+} 

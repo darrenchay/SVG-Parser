@@ -71,24 +71,55 @@ app.get('/uploads/:name', function(req , res){
 
 //******************** Your code goes here ******************** 
 
-//Sample endpoint
-app.get('/someendpoint', function(req , res){
-  let retStr = req.query.file + " " + req.query.size;
-  let fileName = req.query.file;
-  let fileSize = req.query.size;
-  let numRects = req.query.rects;
-  let numCircs = req.query.circs;
-  let numPaths = req.query.paths;
-  let numGroups = req.query.groups;
-  res.send({
-    foo: retStr,
-    getFileName: fileName,
-    getFileSize: fileSize,
-    getNumRects: numRects,
-    getNumCircs: numCircs,
-    getNumPaths: numPaths,
-    getNumGroups: numGroups
+//Reading all files into memory
+app.get('/loadFiles', function(req , res){
+
+  let sharedLib = ffi.Library('./libsvgparse', {
+    'readSVGtoJSON' : [ 'string', [ 'string', 'string' ] ],
   });
+
+  const fs = require('fs');
+
+  let fileListArray = [];
+  /* Reading all svg files into items */
+  fs.readdir('uploads/', function(err, items) {
+    //console.log(items);
+
+    /* Creating the array of JSON objects for each SVG file */
+    for(var i = 0; i < items.length; i++) {
+      let SVGasJSON = sharedLib.readSVGtoJSON( 'uploads/' + items[i], 'svg.xsd');
+
+      if(SVGasJSON == "{}") {
+        continue;
+      }
+
+      let currFileData = JSON.parse(SVGasJSON);
+
+      //console.log(SVGasString);
+      //console.log(currFileData);
+
+      let stats = fs.statSync('uploads/' + items[i]);
+      let size = stats.size/1000;
+
+      let fileData = [items[i], size, currFileData.numRect, currFileData.numCirc, currFileData.numPaths, currFileData.numGroups];
+      //console.log("ARRAY");
+      console.log(fileData);
+      fileListArray.push(fileData); 
+    }
+    //console.log("Array:");
+    console.log(fileListArray);
+    res.send({
+      fileList: fileListArray,
+      /* getFileName: fileName,
+      getFileSize: fileSize,
+      getNumRects: numRects,
+      getNumCircs: numCircs,
+      getNumPaths: numPaths,
+      getNumGroups: numGroups */
+    });
+  });
+
+  
 });
 
 app.listen(portNum);

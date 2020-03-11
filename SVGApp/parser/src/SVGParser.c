@@ -44,8 +44,11 @@ void addRectanglesToXMLnode(List* rectList, xmlNode* rootNode);
 void addPathsToXMLnode(List* pathList, xmlNode* rootNode);
 void addCirclesToXMLnode(List* circList, xmlNode* rootNode);
 void addGroupsToXMLnode(List* groupList, xmlNode* rootNode); 
+void addAttribute(List* attributes, Attribute* newAttribute);
 
-void addAttribute(List* attributes, Attribute* newAttribute); 
+char* readSVGtoJSON(char* fileName, char* schemaFile);
+
+
 /** Function to create an SVG object based on the contents of an SVG file.
  *@pre File name cannot be an empty string or NULL.
        File represented by this name must exist and must be readable.
@@ -1404,6 +1407,17 @@ void addComponent(SVGimage* image, elementType type, void* newElement) {
     } else if (type == PATH) {
         insertBack(image->paths, newElement);
     }
+}
+
+/* Creates an SVGimage from file and converts it to a JSON string */
+char* readSVGtoJSON(char* fileName, char* schemaFile) {
+    SVGimage* img = createValidSVGimage(fileName, schemaFile);
+    /* if(img == NULL) {
+        return "error creating svg";
+    } */
+    char* JSONstring = SVGtoJSON(img);
+    deleteSVGimage(img);
+    return JSONstring;
 }
 
 
