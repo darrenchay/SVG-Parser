@@ -108,6 +108,30 @@ $(document).ready(function() {
         var fileName = $('#fileName').val();
         console.log("Created File: " + fileName + ".svg");
     });
+
+    /* Scaling circle */
+    $(document).on('input', '#scale-circ-range', function() {
+        $('#circ-range-lbl').html("Scale Circle:" + $(this).val());
+        //console.log("val: " + $(this).val());
+    });
+
+    /* Updating scale circle */
+    $('#scale-circle-btn').click(function(){
+        var scaleVal = $('#scale-circ-range').val();
+        console.log("val: " + scaleVal);
+    });
+
+    /* Scaling rect */
+    $(document).on('input', '#scale-rect-range', function() {
+        $('#rect-range-lbl').html("Scale Rectangle:" + $(this).val());
+        //console.log("val: " + $(this).val());
+    });
+
+    /* Updating scale rect */
+    $('#scale-rect-btn').click(function(){
+        var scaleVal = $('#scale-rect-range').val();
+        console.log("val: " + scaleVal);
+    });
     
 });
 
