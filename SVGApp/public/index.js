@@ -1,9 +1,9 @@
 // Put all onload AJAX calls here, and event listeners
 $(document).ready(function() {
-    // On page-load AJAX Example
+    // On page-load AJAX
     $.ajax({
         type: 'get',            //Request type
-        //dataType: 'json',       //Data type - we will use JSON for almost everything 
+        dataType: 'json',       //Data type - we will use JSON for almost everything 
         url: '/loadFiles',   //The server endpoint we are connecting to
         success: function (data) {
             /*  Do something with returned object
@@ -11,7 +11,8 @@ $(document).ready(function() {
                 so we do not need to parse it on the server.
                 JavaScript really does handle JSONs seamlessly
             */
-            $('#file-table-body').append(loadFileLogTable(data));
+            loadFileLogTable(data);
+            loadDropdownData(data);
             /* $('#file-table-body').append('<tr> \
                                             <td><img src="' + data.getFileName + '" href="' + data.getFileName + '" class="img-fluid" alt="Responsive image"></td> \
                                             <td><a href="' + data.getFileName + '">' + data.getFileName + '</a></td> \
@@ -25,10 +26,7 @@ $(document).ready(function() {
             
             //We write the object to the console to show that the request was successful
             console.log("Successfully loaded table"); 
-            console.log(data);
-            
-            //$('#file-log-table').html('<p>No files</p>');
-
+            //console.log(data);
         },
         fail: function(error) {
             // Non-200 return, do something with error
@@ -48,25 +46,14 @@ $(document).ready(function() {
         });
     });
 
+    /* 
+     * FILE LOG PANEL FUNCTIONS
+     */
+
     $(".custom-file-input").on("change", function() {
         var fileName = $(this).val().split("\\").pop();
         $(this).siblings(".custom-file-label").addClass("selected").html(fileName);
     });
-
-    $("#chooseSVGDropdown").change(function(){
-        var selectedSVG = $(this).children("option:selected").html();
-        $('#view-img').attr("src", selectedSVG);
-        console.log("Selected: " + selectedSVG);
-    });
-    
-    $("#add-attribute-btn").click(function() {
-        $('#addAtributeInModal').append('<div class="form-group row">\
-                                        <label for="FillRect2" class="col-sm-2 col-form-label">New</label>\
-                                        <div class="col-sm-10">\
-                                        <input type="text" class="form-control" placeholder="Val" id="FillRect2">\
-                                        </div>\
-                                        </div>')
-    })
 
     $('#create-svg-modal-btn').click(function() {
         var fileName = $('#fileName').val();
@@ -100,6 +87,26 @@ $(document).ready(function() {
             //appendNewSVGFile(file);
           }
     });
+
+
+    /* 
+     * SVG VIEW PANEL FUNCTIONS
+     */
+
+    $("#chooseSVGDropdown").change(function(){
+        var selectedSVG = $(this).children("option:selected").html();
+        $('#view-img').attr("src", selectedSVG);
+        console.log("Selected: " + selectedSVG);
+    });
+    
+    $("#add-attribute-btn").click(function() {
+        $('#addAtributeInModal').append('<div class="form-group row">\
+                                        <label for="FillRect2" class="col-sm-2 col-form-label">New</label>\
+                                        <div class="col-sm-10">\
+                                        <input type="text" class="form-control" placeholder="Val" id="FillRect2">\
+                                        </div>\
+                                        </div>')
+    })
 
     /* Scaling circle */
     $(document).on('input', '#scale-circ-range', function() {
@@ -225,7 +232,7 @@ $(document).ready(function() {
 
 function appendNewSVGFile(file) {
     $('#file-table-body').append('<tr> \
-                                <td><img src="' + file[0] + '" href="' + file[0] + '" class="img-responsive img-thumbnail" alt="Responsive image"></td> \
+                                <td class="img-cell"><img src="' + file[0] + '" href="' + file[0] + '" class="img-responsive img-thumbnail image" alt="Responsive image"></td> \
                                 <td><a href="' + file[0] + '">' + file[0] + '</a></td> \
                                 <td>' + file[1] + 'KB</td> \
                                 <td>' + file[2] + '</td> \
@@ -237,14 +244,22 @@ function appendNewSVGFile(file) {
 }
 
 function loadFileLogTable(data) {
-    if(!data) {
+    if(data.fileList.length === 0) {
         console.log("No files");
-        $('#file-table-body').append('<tr> <td colspan= "7">No files </td> </tr>');
+        $('#file-table-body').append('<tr> <td colspan= "7" class="align-middle"><b>No files to show</b></td> </tr>');
     }
     console.log(data.fileList);
     for(var i = 0; i < data.fileList.length; i++) {
-        console.log("1:");
-        console.log(data.fileList[i])
+        /* console.log(data.fileList[i]) */
         appendNewSVGFile(data.fileList[i]);
     }
 } 
+
+function loadDropdownData(data) {
+    let files = data.fileList;
+    for(var i = 0; i < files.length; i++) {
+        $('#chooseSVGDropdown').append('<option value="' + files[i][0] + '">' + files[i][0] + '</option>');
+    }
+    $('#chooseSVGDropdown').append('<option value="" disabled selected hidden>Choose an SVG file</option>');
+    console.log("created dropdown with " + files.length + " items");
+}

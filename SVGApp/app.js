@@ -71,7 +71,7 @@ app.get('/uploads/:name', function(req , res){
 
 //******************** Your code goes here ******************** 
 
-//Reading all files into memory
+//Sending all file and the data for file log panel and dropdown
 app.get('/loadFiles', function(req , res){
 
   let sharedLib = ffi.Library('./libsvgparse', {
@@ -110,12 +110,6 @@ app.get('/loadFiles', function(req , res){
     console.log(fileListArray);
     res.send({
       fileList: fileListArray,
-      /* getFileName: fileName,
-      getFileSize: fileSize,
-      getNumRects: numRects,
-      getNumCircs: numCircs,
-      getNumPaths: numPaths,
-      getNumGroups: numGroups */
     });
   });
 

@@ -51,7 +51,7 @@ input[type=submit], button {
 
 #file-table-body {
     overflow-y: scroll;
-    height: 300px;
+    max-height: 300px;
 }
 
 .btn-space {
@@ -123,4 +123,17 @@ input[type=submit], button {
 
 .header-fixed > thead > tr > th{
     white-space: nowrap;
+}
+
+.image {
+    width: 100%;
+    height: auto;
+}
+
+.img-cell {
+    max-width: 200px;
+}
+
+.img-view {
+    max-width: 800px;
 }
