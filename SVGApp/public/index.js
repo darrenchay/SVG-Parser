@@ -394,15 +394,60 @@ $(document).ready(function() {
                 });
 
                 $('#save-attribute-changes').click(function() {
-                    let data_array1 = $('#addAtributeInModal').serialize();
-                    console.log(data_array1);
-                    let data_array2 = $('#addNewAttForm').serialize();
-                    console.log(data_array2);
-            
-                    var data = document.getElementById("addAttributeInModal").elements;
-                    for(let elem in data) {
-                        console.log(elem.value);
+                    var selectedShape = $('#selectShapeAttribute').children("option:selected").html();
+                    console.log(selectedShape);
+                    var selectedSVG = $('#chooseSVGDropdown').children("option:selected").html();
+                    var componentParts = selectedShape.split(" ");
+
+                    let JSONstring;
+                    if(componentParts[0] == "Rectangle") {
+                        let x = $('#x-input-attr').val();
+                        let y = $('#y-input-attr').val();
+                        let h = $('#height-input-attr').val();
+                        let w = $('#width-input-attr').val();
+                        //console.log(x + "," + y + "," + w + "," + h);
+                        let JSONx = '{"name":"x","value":"' + x +'"}';
+                        let JSONy = '{"name":"y","value":"' + y +'"}';
+                        let JSONw = '{"name":"width","value":"' + w +'"}';
+                        let JSONh = '{"name":"height","value":"' + h +'"}';
+                        JSONstring = '[' + JSONx + "," + JSONy + "," + JSONw + "," + JSONh + "]";
+                        
+                    } else if (componentParts[0] == "Circle") {
+                        let cx = $('#cx-input-attr').val();
+                        let cy = $('#cy-input-attr').val();
+                        let r = $('#r-input-attr').val();
+                        let JSONcx = '{"name":"cx","value":"' + cx +'"}';
+                        let JSONcy = '{"name":"cy","value":"' + cy +'"}';
+                        let JSONr = '{"name":"r","value":"' + r +'"}';
+                        JSONstring = '[' + JSONcx + "," + JSONcy + "," + JSONr + "]";
+                    } else if (componentParts[0] == "Path") {
+                        let path = $('#data-input-attr').val();
+                        let JSONpath = '{"name":"d","value":"' + path +'"}';
+                        JSONstring = '[' + JSONpath + "]";
                     }
+
+                    console.log(JSONstring)
+                    $.ajax({
+                        type: 'get',            //Request type
+                        dataType: 'json',       //Data type - we will use JSON for almost everything 
+                        url: '/saveAttr',   //The server endpoint we are connecting to
+                        data: {
+                            type: componentParts[0],
+                            index: componentParts[1] - 1,
+                            fileName: selectedSVG,
+                            JSONdata: JSONstring
+                        },
+                        success: function(data) {
+                            returnVal = data.val;
+                            console.log(data.val);
+                            if(returnVal == 0) {
+                                location.reload();
+                            } else {
+                                alert("Wrong data");
+                            }
+                        }
+                    });
+                    //location.reload();
                 });
                 console.log(data.attrList);
             },
@@ -456,7 +501,7 @@ $(document).ready(function() {
         }
 
         console.log(name + "," + val);
-        let JSONstring = '{"name":"' + name + '","value":"' + val +'"}';
+        let JSONstring = '[{"name":"' + name + '","value":"' + val +'"}]';
 
         var selectedShape = $('#selectShapeAttribute').children("option:selected").html();
         console.log(selectedShape);
@@ -557,6 +602,8 @@ $(document).ready(function() {
             }
         }
     });
+
+
 
     /* 
      * ADD CIRCLE 

@@ -269,5 +269,48 @@ app.get('/addShape', function(req, res) {
 
 });
 
+
+app.get('/saveAttr', function(req, res) {
+  let sharedLib = ffi.Library('./libsvgparse', {
+    'writeExistingShapeFromJSON' : [ 'int', [ 'string', 'string', 'string', 'int', 'int' ] ],
+    'writeAttrFromJSON' : [ 'int', [ 'string', 'string', 'int', 'int', 'string' ] ],
+
+  });
+
+  let fileName = req.query.fileName;
+  console.log(fileName);
+
+  let data = req.query.JSONdata;
+  let JSONdata = JSON.parse(data);
+  console.log(JSONdata);
+
+  let typeRet = req.query.type;
+  let type;
+  if(typeRet == "Rectangle") {
+    type = 1;
+  } else if (typeRet == "Circle") {
+    type = 2;
+  } else if (typeRet == "Path") {
+    type = 3;
+  } else if (typeRet == "Group") {
+    type = 4;
+  } else if (typeRet == "SVG") {
+    type = 0;
+  }
+
+  let returnVal;
+  
+  for(var i = 0; i < JSONdata.length; i++) {
+    console.log("For: " + JSON.stringify(JSONdata[i]));
+    returnVal = sharedLib.writeAttrFromJSON('uploads/' + fileName, 'svg.xsd', req.query.index, type, JSON.stringify(JSONdata[i]));
+    console.log(returnVal);
+  }
+
+  res.send({
+    val: returnVal
+  });
+
+});
+
 app.listen(portNum);
 console.log('Running app at localhost: ' + portNum);
