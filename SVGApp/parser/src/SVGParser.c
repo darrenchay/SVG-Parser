@@ -56,6 +56,13 @@ char* getGroupJSONlist(char* fileName, char* schemaFile);
 char* getAttrJSONlist(char* fileName, char* schemaFile, int index, int type);
 int writeJSONSVGtoSVGFile(char* svgJSON, char* fileName, char* schemaFile);
 int addShapeToSVGFile(char* fileName, char* schemaFile, char* JSONstring, int type);
+int writeExistingShapeFromJSON(char* fileName, char* schemaFile, char* JSONstring, int type, int index);
+int writeAttrFromJSON(char* fileName, char* schemaFile, int index, int type, char* JSONattr); 
+Attribute* JSONtoAttr(const char* JSONstring);
+int updateCircle(Circle* oldCirc, Circle* newCirc);
+int updateRect(Rectangle* oldRect, Rectangle* newRect);
+
+
 /** Function to create an SVG object based on the contents of an SVG file.
  *@pre File name cannot be an empty string or NULL.
        File represented by this name must exist and must be readable.
@@ -2141,6 +2148,168 @@ Circle* JSONtoCircle(const char* svgString) {
     printf("[%s]\n", circleToString(circle));
     return circle;
 }
+
+Attribute* JSONtoAttr(const char* JSONstring) {
+    if(JSONstring == NULL) {
+        return NULL;
+    }
+
+    Attribute* attr = calloc(1, sizeof(Attribute));
+
+    char bufferName[1024];
+    char bufferVal[1024];
+
+    sscanf(JSONstring, "{\"name\":\"%[^\",\",\"value\":\"]s", bufferName);
+    sscanf(JSONstring, "{\"name\":\"%[^\"]\",\"value\":\"%[^\"]s\"}", bufferName, bufferVal);
+
+    attr->name = calloc(strlen(bufferName), sizeof(char));
+    attr->value = calloc(strlen(bufferVal), sizeof(char));
+    printf("[%s],[%s]\n", bufferName, bufferVal);
+
+    strcpy(attr->name, bufferName);
+    strcpy(attr->value, bufferVal);
+
+    return attr;
+}
+
+int writeAttrFromJSON(char* fileName, char* schemaFile, int index, int type, char* JSONattr) {
+    SVGimage* img = createValidSVGimage(fileName, schemaFile);
+    if(img == NULL) {
+        return -1;
+    }
+
+    if(index < 0 || type < 0 || type > 4) {
+        return -2;
+    }
+
+    Attribute* attr = JSONtoAttr(JSONattr);
+    if(attr == NULL) {
+        return -3;
+    }
+    if(type == 0) {
+        type = SVG_IMAGE; 
+    } else if (type == 1) {
+        type = RECT;
+    } else if (type == 2) {
+        type = CIRC;
+    } else if (type == 3) {
+        type = PATH;
+    } else if (type == 4) {
+        type = GROUP;
+    }
+    setAttribute(img, type, index, attr);
+
+    if(validateSVGimage(img, schemaFile) == true) {
+        if(writeSVGimage(img, fileName) == true) {
+            deleteSVGimage(img);
+            return 0;
+        } else {
+            deleteSVGimage(img);
+            return -4;
+        }
+    } else {
+        deleteSVGimage(img);
+        return -5;
+    }
+    
+}
+
+int writeExistingShapeFromJSON(char* fileName, char* schemaFile, char* JSONstring, int type, int index) {
+    SVGimage* img = createValidSVGimage(fileName, schemaFile);
+    if(img == NULL) {
+        return -1;
+    } 
+    if(type < 0 || index < 0 || type > 4) {
+        return -1;
+    }
+    void* elem;
+
+    if(type == 1) {
+        Rectangle* newRect = JSONtoRect(JSONstring);
+        if(newRect == NULL) {
+            return -2;
+        }
+        if(getLength(img->rectangles) <= index) {
+            return -1;
+        }
+        //getting the element at the right index
+        ListIterator iter = createIterator(img->rectangles);
+        for(int i = 0; i <= index; i++) {
+            elem = nextElement(&iter);            
+        }
+        Rectangle* oldRect = (Rectangle *)elem;
+        updateRect(oldRect, newRect);
+    } else if (type == 2) {
+        Circle* newCirc = JSONtoCircle(JSONstring);
+        if(newCirc == NULL) {
+            return -2;
+        }
+        if(getLength(img->circles) <= index) {
+            return -1;
+        }
+        //getting the element at the right index
+        ListIterator iter = createIterator(img->circles);
+        for(int i = 0; i <= index; i++) {
+            elem = nextElement(&iter);            
+        }
+        Circle* oldCirc = (Circle *)elem;
+        updateCircle(oldCirc, newCirc);
+    } else if (type == 3) {
+        if(getLength(img->paths) <= index) {
+            return -1;
+        }
+        //getting the element at the right index
+        ListIterator iter = createIterator(img->circles);
+        for(int i = 0; i <= index; i++) {
+            elem = nextElement(&iter);            
+        }
+        Path* path = (Path *)elem;
+        free(path->data);
+        path->data = malloc(strlen(JSONstring) * sizeof(char));
+        strcpy(path->data, JSONstring);
+    }
+
+    if(validateSVGimage(img, schemaFile) == true) {
+        if(writeSVGimage(img, fileName) == true) {
+            deleteSVGimage(img);
+            return 0;
+        } else {
+            deleteSVGimage(img);
+            return -4;
+        }
+    } else {
+        deleteSVGimage(img);
+        return -5;
+    }
+}
+
+int updateCircle(Circle* oldCirc, Circle* newCirc) {
+    if(oldCirc == NULL || newCirc == NULL) {
+        return -1;
+    } 
+
+    oldCirc->cx = newCirc->cx;
+    oldCirc->cy = newCirc->cy;
+    oldCirc->r = newCirc->r;
+
+    deleteCircle(newCirc);
+    return 0;
+}
+
+int updateRect(Rectangle* oldRect, Rectangle* newRect) {
+    if(oldRect == NULL || newRect == NULL) {
+        return -1;
+    }
+
+    oldRect->x = newRect->x;
+    oldRect->y = newRect->y;
+    oldRect->width = newRect->width;
+    oldRect->height = newRect->height;
+
+    deleteRectangle(newRect);
+    return 0;
+}
+
 
 /* ******************************* List helper functions  - MUST be implemented *************************** */
 

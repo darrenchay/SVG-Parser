@@ -260,7 +260,150 @@ $(document).ready(function() {
             success: function (data) {
                 console.log(data.shape);
                 console.log(data.attrList);
-                loadAttributesList(data.attrList, data.shape, data.typeRet);
+                //loadAttributesList(data.attrList, data.shape, data.typeRet);
+                var attrList = data.attrList;
+                var shape = data.shape;
+                var type = data.typeRet;
+                $('#addAtributeInModal').html(' ');
+    
+                if(type == "Circle") {
+                $('#addAtributeInModal').html('<h6><b> Shape Data </b></h6>');
+                    $('#addAtributeInModal').append('<div class="row">\
+                            <div class="col">\
+                                <div class="input-group mb-3">\
+                                    <div class="input-group-prepend">\
+                                        <span class="input-group-text">CX:</span>\
+                                    </div>\
+                                    <input type="number" id="cx-input-attr" min="0" class="form-control" value="' + shape.cx + '">\
+                                </div>\
+                            </div>\
+                        </div>');
+                    $('#addAtributeInModal').append('<div class="row">\
+                            <div class="col">\
+                                <div class="input-group mb-3">\
+                                    <div class="input-group-prepend">\
+                                        <span class="input-group-text">CY:</span>\
+                                    </div>\
+                                    <input type="number" id="cy-input-attr" min="0" class="form-control" value="' + shape.cy + '">\
+                                </div>\
+                            </div>');
+                    $('#addAtributeInModal').append('<div class="row">\
+                            <div class="col">\
+                                <div class="input-group mb-3">\
+                                    <div class="input-group-prepend">\
+                                        <span class="input-group-text">Radius:</span>\
+                                    </div>\
+                                    <input type="number" id="r-input-attr" min="0" class="form-control" value="' + shape.r + '">\
+                                </div>\
+                            </div>\
+                        </div>');
+                } else if(type == "Rectangle") {
+                    $('#addAtributeInModal').html('<h6><b> Shape Data </b></h6>');
+                    $('#addAtributeInModal').append('<div class="row">\
+                                                        <div class="col">\
+                                                            <div class="input-group mb-3">\
+                                                                <div class="input-group-prepend">\
+                                                                    <span class="input-group-text">X:</span>\
+                                                                </div>\
+                                                                <input type="number" id="x-input-attr" min="0" class="form-control" value="' + shape.x + '">\
+                                                            </div>\
+                                                        </div>\
+                                                    </div>');
+                    $('#addAtributeInModal').append('<div class="row">\
+                            <div class="col">\
+                                <div class="input-group mb-3">\
+                                    <div class="input-group-prepend">\
+                                        <span class="input-group-text">Y:</span>\
+                                    </div>\
+                                    <input type="number" id="y-input-attr" min="0" class="form-control" value="' + shape.y + '">\
+                                </div>\
+                            </div>\
+                        </div>');
+                    $('#addAtributeInModal').append('<div class="row">\
+                            <div class="col">\
+                                <div class="input-group mb-3">\
+                                    <div class="input-group-prepend">\
+                                        <span class="input-group-text">Width:</span>\
+                                    </div>\
+                                    <input type="number" id="width-input-attr" min="0" class="form-control" value="' + shape.w + '">\
+                                </div>\
+                            </div>\
+                        </div>');
+
+                    $('#addAtributeInModal').append('<div class="row">\
+                            <div class="col">\
+                                <div class="input-group mb-3">\
+                                    <div class="input-group-prepend">\
+                                        <span class="input-group-text">Height:</span>\
+                                    </div>\
+                                    <input type="number" id="height-input-attr" min="0" class="form-control" value="' + shape.h + '">\
+                                </div>\
+                            </div>\
+                        </div>');
+                } else if (type == "Path") {
+                    $('#addAtributeInModal').html('<h6><b> Shape Data </b></h6>');
+                    $('#addAtributeInModal').append('<div class="row">\
+                            <div class="col">\
+                                <div class="input-group mb-3">\
+                                    <div class="input-group-prepend">\
+                                        <span class="input-group-text">Data:</span>\
+                                    </div>\
+                                    <input type="text" id="data-input-attr" maxlength="255" class="form-control" value="' + shape.d + '">\
+                                </div>\
+                            </div>\
+                        </div>');
+                }
+
+                $('#addNewAttForm').html('<div class="row">\
+                                                    <div class="col-4">\
+                                                        <label><b>Name</b></label>\
+                                                    </div>\
+                                                    <div class="col-1">\
+                                                        <label><b>:</b></label>\
+                                                    </div>\
+                                                    <div class="col-4">\
+                                                        <label><b>Value</b></label>\
+                                                    </div>\
+                                                </div>');
+
+                for(var i = 0; i < attrList.length; i++) {
+                    $('#addNewAttForm').append('<div class="row">\
+                                                <input type="text" readonly class="form-control-plaintext col-4" id="' + attrList[i].name + '" value="'+ attrList[i].name +'">\
+                                                <label class="col-1"> : </label>\
+                                                <input type="text" readonly class="form-control-plaintext col-4" id="value-' + attrList[i].name  + '" value="'+ attrList[i].value +'">\
+                                            <div class="col-3">\
+                                                <button type="button" id="' + attrList[i].name  + '--edit-btn" class="btn btn-outline-secondary edit-attr-btns ">Edit</button>\
+                                                <button type="button" id="' + attrList[i].name  + '--save-btn" class="btn btn-success save-edit-attr-btns ">Save</button>\
+                                            </div>\
+                                        </div>');
+                }
+
+                $('#addNewAttForm').append('<button type="button" id="add-attribute-btn" class="btn btn-info">Add Attribute</button>');
+                $("#add-attribute-btn").click(function() {
+                    console.log("clicked add");
+                    $('#addNewAttForm').append('<div class="row">\
+                                                        <input type="text" id="tempNameInput" class="form-control-plaintext col-4 border border-dark">\
+                                                        <label class="col-1"> : </label>\
+                                                        <input type="text" id="tempValueInput" class="form-control-plaintext col-4 border border-dark">\
+                                                        <div class="col-3">\
+                                                            <button type="button" id="tempEditAttBtnID" style="display: none" class="btn btn-outline-secondary edit-attr-btns ">Edit</button>\
+                                                            <button type="button" id="tempSaveAttBtnID" style="display: block" class="btn btn-success save-edit-attr-btns ">Save</button>\
+                                                        </div>\
+                                                    </div>');
+                    $('#add-attribute-btn').prop('disabled', true);
+                });
+
+                $('#save-attribute-changes').click(function() {
+                    let data_array1 = $('#addAtributeInModal').serialize();
+                    console.log(data_array1);
+                    let data_array2 = $('#addNewAttForm').serialize();
+                    console.log(data_array2);
+            
+                    var data = document.getElementById("addAttributeInModal").elements;
+                    for(let elem in data) {
+                        console.log(elem.value);
+                    }
+                });
                 console.log(data.attrList);
             },
             fail: function(error) {
@@ -278,6 +421,7 @@ $(document).ready(function() {
             
         }) */
     });
+    
 
     $(document).on("click", ".edit-attr-btns", function() {
 
@@ -299,72 +443,120 @@ $(document).ready(function() {
 
     $(document).on("click", ".save-edit-attr-btns", function() {
         let name;
+        let val;
         if(this.id == "tempSaveAttBtnID") {
             name = $('#tempNameInput').val();
+            val = $('#tempValueInput').val();
             //console.log("new: [" + name);
         } else {
             let temp = this.id;
             let data = temp.split('--');
             name = data[0];
+            val = $('#value-'+ name).val();
         }
 
-        console.log(name);
+        console.log(name + "," + val);
+        let JSONstring = '{"name":"' + name + '","value":"' + val +'"}';
+
+        var selectedShape = $('#selectShapeAttribute').children("option:selected").html();
+        console.log(selectedShape);
+        var selectedSVG = $('#chooseSVGDropdown').children("option:selected").html();
+        var componentParts = selectedShape.split(" ");
+
         if(this.id == "tempSaveAttBtnID") {
             //console.log("here");
             if(document.getElementById('tempValueInput').value.length == 0 || document.getElementById('tempNameInput').value.length == 0 ) {
                 alert("Please enter a name and value");
             } else {
-                $('#tempSaveAttBtnID').attr("id", name + "--save-btn");
-                $('#tempNameInput').attr("id", name);
-                $('#tempValueInput').attr("id", "value-" + name);
-                $('#tempEditAttBtnID').attr("id", name + "--edit-btn");
-                //console.log(this.id);
-                /* Making texts readonly */
-                document.getElementById('value-' + name).readOnly = true;
-                $("#value-"+name).removeClass("border border-dark");
-                document.getElementById(name).readOnly = true;
-                $("#"+name).removeClass("border border-dark");
+                let returnVal;
+                $.ajax({
+                    type: 'get',            //Request type
+                    dataType: 'json',       //Data type - we will use JSON for almost everything 
+                    url: '/saveAttr',   //The server endpoint we are connecting to
+                    data: {
+                        type: componentParts[0],
+                        index: componentParts[1] - 1,
+                        fileName: selectedSVG,
+                        JSONdata: JSONstring
+                    },
+                    success: function(data) {
+                        returnVal = data.val;
+                        console.log("COMPLETED SAVING ATT");
+                        console.log(data.val);
+                        if(data.val < 0) {
+                            alert("ERROR, wrong attribute name or value");
+                        } else {
+                            $('#tempSaveAttBtnID').attr("id", name + "--save-btn");
+                            $('#tempNameInput').attr("id", name);
+                            $('#tempValueInput').attr("id", "value-" + name);
+                            $('#tempEditAttBtnID').attr("id", name + "--edit-btn");
+                            //console.log(this.id);
 
-                /* Hiding save btn, showing edit btn */
-                document.getElementById(name + "--save-btn").style.display = "none";
-                document.getElementById(name + "--edit-btn").style.display = "block";
-                $('#add-attribute-btn').prop('disabled', false);
-                
-                console.log(this.id + " can no longer be edited");
+                            /* Making texts readonly */
+                            document.getElementById('value-' + name).readOnly = true;
+                            $("#value-"+name).removeClass("border border-dark");
+                            document.getElementById(name).readOnly = true;
+                            $("#"+name).removeClass("border border-dark");
+
+                            /* Hiding save btn, showing edit btn */
+                            document.getElementById(name + "--save-btn").style.display = "none";
+                            document.getElementById(name + "--edit-btn").style.display = "block";
+                            $('#add-attribute-btn').prop('disabled', false);
+                            
+                            console.log(this.id + " can no longer be edited");
+                        }
+                    },
+                    fail: function(error) {
+                        //alert(error);
+                        //console.log(error); 
+                    }
+            
+                });
             }
         } else {
             if(document.getElementById('value-' + name).value.length == 0 || document.getElementById(name).value.length == 0 ) {
                 alert("Please enter a name and value");
             } else {
-                /* Making texts readonly */
-                document.getElementById('value-' + name).readOnly = true;
-                $("#value-"+name).removeClass("border border-dark");
-                document.getElementById(name).readOnly = true;
-                $("#"+name).removeClass("border border-dark");
-    
-                /* Hiding save btn, showing edit btn */
-                document.getElementById(name + "--save-btn").style.display = "none";
-                document.getElementById(name + "--edit-btn").style.display = "block";
-                $('#add-attribute-btn').prop('disabled', false);
+                $.ajax({
+                    type: 'get',            //Request type
+                    dataType: 'json',       //Data type - we will use JSON for almost everything 
+                    url: '/saveAttr',   //The server endpoint we are connecting to
+                    data: {
+                        type: componentParts[0],
+                        index: componentParts[1] - 1,
+                        fileName: selectedSVG,
+                        JSONdata: JSONstring
+                    },
+                    success: function(data) {
+                        returnVal = data.val;
+                        console.log("COMPLETED SAVING ATT");
+                        console.log(data.val);
+                        if(data.val < 0) {
+                            alert("ERROR, wrong attribute name or value");
+                            
+                        } else {
+                            /* Making texts readonly */
+                            document.getElementById('value-' + name).readOnly = true;
+                            $("#value-"+name).removeClass("border border-dark");
+                            document.getElementById(name).readOnly = true;
+                            $("#"+name).removeClass("border border-dark");
                 
-                console.log(this.id + " can no longer be edited");
+                            /* Hiding save btn, showing edit btn */
+                            document.getElementById(name + "--save-btn").style.display = "none";
+                            document.getElementById(name + "--edit-btn").style.display = "block";
+                            $('#add-attribute-btn').prop('disabled', false);
+                            
+                            console.log(this.id + " can no longer be edited");
+                        }
+                    },
+                    fail: function(error) {
+                        //console.log(error); 
+                    }
+            
+                });
             }
         }
     });
-
-    $("#add-attribute-btn").click(function() {
-        $('#addAtributeInModal').append('<div class="row">\
-                                            <input type="text" id="tempNameInput" class="form-control-plaintext col-4 border border-dark">\
-                                            <label class="col-1"> : </label>\
-                                            <input type="text" id="tempValueInput" class="form-control-plaintext col-4 border border-dark">\
-                                            <div class="col-3">\
-                                                <button type="button" id="tempEditAttBtnID" style="display: none" class="btn btn-outline-secondary edit-attr-btns ">Edit</button>\
-                                                <button type="button" id="tempSaveAttBtnID" style="display: block" class="btn btn-success save-edit-attr-btns ">Save</button>\
-                                            </div>\
-                                        </div>');
-        $('#add-attribute-btn').prop('disabled', true);
-    });
-
 
     /* 
      * ADD CIRCLE 
@@ -612,6 +804,7 @@ function loadAttributesList(attrList, shape, type) {
     $('#addAtributeInModal').html(' ');
     
     if(type == "Circle") {
+    $('#addAtributeInModal').html('<h6><b> Shape Data </b></h6>');
         $('#addAtributeInModal').append('<div class="row">\
                 <div class="col">\
                     <div class="input-group mb-3">\
@@ -642,7 +835,7 @@ function loadAttributesList(attrList, shape, type) {
                 </div>\
             </div>');
     } else if(type == "Rectangle") {
-        console.log("here");
+        $('#addAtributeInModal').html('<h6><b> Shape Data </b></h6>');
         $('#addAtributeInModal').append('<div class="row">\
                                             <div class="col">\
                                                 <div class="input-group mb-3">\
@@ -684,9 +877,21 @@ function loadAttributesList(attrList, shape, type) {
                     </div>\
                 </div>\
             </div>');
+    } else if (type == "Path") {
+        $('#addAtributeInModal').html('<h6><b> Shape Data </b></h6>');
+        $('#addAtributeInModal').append('<div class="row">\
+                <div class="col">\
+                    <div class="input-group mb-3">\
+                        <div class="input-group-prepend">\
+                            <span class="input-group-text">Data:</span>\
+                        </div>\
+                        <input type="text" id="data-input-attr" maxlength="255" class="form-control" value="' + shape.d + '">\
+                    </div>\
+                </div>\
+            </div>');
     }
 
-    $('#addAtributeInModal').append('<div class="row">\
+    $('#addNewAttForm').html('<div class="row">\
                                         <div class="col-4">\
                                             <label><b>Name</b></label>\
                                         </div>\
@@ -699,7 +904,7 @@ function loadAttributesList(attrList, shape, type) {
                                     </div>');
 
     for(var i = 0; i < attrList.length; i++) {
-        $('#addAtributeInModal').append('<div class="row">\
+        $('#addNewAttForm').append('<div class="row">\
                                     <input type="text" readonly class="form-control-plaintext col-4" id="' + attrList[i].name + '" value="'+ attrList[i].name +'">\
                                     <label class="col-1"> : </label>\
                                     <input type="text" readonly class="form-control-plaintext col-4" id="value-' + attrList[i].name  + '" value="'+ attrList[i].value +'">\
@@ -709,6 +914,33 @@ function loadAttributesList(attrList, shape, type) {
                                 </div>\
                             </div>');
     }
+
+    $('#addNewAttForm').append('<button type="button" id="add-attribute-btn" class="btn btn-info">Add Attribute</button>');
+    $("#add-attribute-btn").click(function() {
+        console.log("clicked add");
+        $('#addNewAttForm').append('<div class="row">\
+                                            <input type="text" id="tempNameInput" class="form-control-plaintext col-4 border border-dark">\
+                                            <label class="col-1"> : </label>\
+                                            <input type="text" id="tempValueInput" class="form-control-plaintext col-4 border border-dark">\
+                                            <div class="col-3">\
+                                                <button type="button" id="tempEditAttBtnID" style="display: none" class="btn btn-outline-secondary edit-attr-btns ">Edit</button>\
+                                                <button type="button" id="tempSaveAttBtnID" style="display: block" class="btn btn-success save-edit-attr-btns ">Save</button>\
+                                            </div>\
+                                        </div>');
+        $('#add-attribute-btn').prop('disabled', true);
+    });
+    /* $('#addNewAttrForm').append('<div class="row">\
+                                    <div class="col-4">\
+                                        <input type="text" readonly class="form-control-plaintext">\
+                                    </div>\
+                                    <div class="col-1">\
+                                        <label>  </label>\
+                                    </div>\
+                                    <div class="col-4">\
+                                        <input type="text" readonly class="form-control-plaintext">\
+                                    </div>\
+                                </div>\
+                                <button type="button" id="add-attribute-btn" class="btn btn-info">Add Attribute</button>'); */
 }
 
 function convertTitleAndDesc(title, desc) {
