@@ -208,44 +208,50 @@
                             </div>
                             
                         </tr>
-
-                        <!-- OTHER UTILITIES SECTION (Add shape and scale shape) -->
-                        <tr>
-                            <!-- CIRCLE UTILITIES SECTION -->
-                            <div>
-                                <button class="btn btn-secondary btn-space col-2" data-toggle="modal" data-target="#add-circle-modal" id="add-circle" type="button">Add Circle</button>
-                                <button class="btn btn-secondary btn-space col-2" id="scale-circle-btn" type="button">Scale Circle</button>
-
-                                <form class="col-10">
-                                    <div class="form-group form-inline">
-                                        <label for="scale-circ-range" id="circ-range-lbl">Example range</label>
-                                        <input type="range" class="form-control-range" min="0" max="10" step="0.5" id="scale-circ-range">
-                                    </div>
-                                </form>
-                            </div>
-                            
-                        </tr>
-
-                        <!-- RECTANGLE UTILITIES SECTION -->   
-                        <hr>                     
-                        <tr>
-                            <div>
-                                <button class="btn btn-secondary btn-space col-2" data-toggle="modal" data-target="#add-rect-modal" id="add-rect" type="button">Add Rectangle</button>
-                                <button class="btn btn-secondary btn-space col-2" id="scale-rect-btn" type="button">Scale Rectangle</button>
-                                <form class="col-10">
-                                    <div class="form-group form-inline">
-                                        <label for="scale-rect-range" id="rect-range-lbl">Example range</label>
-                                        <input type="range" class="form-control-range" min="0" max="10" step="0.5" id="scale-rect-range">
-                                    </div>
-                                </form>
-                            </div>
-                        </tr>
                     </tbody>
                 </table>
             </div>
         </div>
     </div>
 
+    <hr>
+
+
+        <!-- OTHER UTILITIES SECTION (Add shape and scale shape) -->
+        <div class="card">
+        <div class="card-header">
+            <h5 class="card-title">Utility Panel</h5>
+        </div>
+        <div class="card-body">
+            <div class="table-responsive">
+                <div>
+                    <!-- CIRCLE UTILITIES SECTION -->
+                    <button class="btn btn-secondary btn-space col-2" data-toggle="modal" data-target="#add-circle-modal" id="add-circle" type="button">Add Circle</button>
+                    <button class="btn btn-secondary btn-space col-2" id="scale-circle-btn" type="button">Scale Circle</button>
+        
+                    <form class="col-10">
+                        <div class="form-group form-inline">
+                            <label for="scale-circ-range" id="circ-range-lbl">Example range</label>
+                            <input type="range" class="form-control-range" min="0" max="10" step="0.5" id="scale-circ-range">
+                        </div>
+                    </form>
+                </div>
+                <hr>                     
+                <div>
+                    <!-- RECTANGLE UTILITIES SECTION -->   
+                    <button class="btn btn-secondary btn-space col-2" data-toggle="modal" data-target="#add-rect-modal" id="add-rect" type="button">Add Rectangle</button>
+                    <button class="btn btn-secondary btn-space col-2" id="scale-rect-btn" type="button">Scale Rectangle</button>
+                    <form class="col-10">
+                        <div class="form-group form-inline">
+                            <label for="scale-rect-range" id="rect-range-lbl">Example range</label>
+                            <input type="range" class="form-control-range" min="0" max="10" step="0.5" id="scale-rect-range">
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+        
+    </div>
     <!-- SHOW ATTRIBUTE MODAL -->
     <div class="modal fade" id="show-attr-modal" tabindex="-1" role="dialog" data-backdrop="static" aria-labelledby="showAttrModal" aria-hidden="true">
         <div class="modal-dialog modal-dialog-scrollable" role="document">

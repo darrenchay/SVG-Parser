@@ -34,50 +34,6 @@ $(document).ready(function() {
             console.log(error); 
         }
     });
-    
-
-    // Event listener form example , we can use this instead explicitly listening for events
-    // No redirects if possible
-    /* $(document).on('submit', '#upload-existing-SVG', (function(e){
-        var form = document.getElementById('upload-existing-SVG');
-        let formData = new formData(form);
-
-        formData.append('file', file);
-
-
-        var fileInput = document.getElementById('uploadFileInput');
-        var file;
-        if (!fileInput) {
-            alert("Couldn't find the fileinput element.");
-        } else if (!fileInput.files) {
-            alert("This browser doesn't seem to support the `files` property of file inputs.");
-        } else if (!fileInput.files[0]) {
-            alert("Please select a file before clicking 'Load'");               
-        } else {
-        file = fileInput.files[0];
-        console.log(file);
-        }
-
-        //let files = new formData();
-        //files.append('uploadFile',file)
-        e.preventDefault();
-        console.log(formData);
-        //Pass data to the Ajax call, so it gets passed to the server
-        $.ajax({
-            //Create an object for connecting to another waypoint
-            type: 'POST',
-            url: '/upload',
-            processData: false,
-            contentType: false,
-            data: formData,
-            success:function() {
-                console.log("Uploaded");
-            },
-            fail: function(error) {
-                console.log(error);
-            }
-        });
-    })); */
 
     /* 
      * FILE LOG PANEL FUNCTIONS
@@ -246,7 +202,8 @@ $(document).ready(function() {
                 },
                 success: function (data) {
                     console.log("created file successfully");  
-                    $.ajax({
+                    location.reload();
+                    /* $.ajax({
                         type: 'get',            //Request type
                         dataType: 'json',       //Data type - we will use JSON for almost everything 
                         url: '/loadFiles',   //The server endpoint we are connecting to
@@ -261,7 +218,7 @@ $(document).ready(function() {
                         fail: function(error) {
                             console.log(error); 
                         }
-                    });               
+                    });       */         
                 },
                 fail: function(error) {
                     console.log(error); 
@@ -269,6 +226,7 @@ $(document).ready(function() {
             });
             $('#create-svg-modal').modal('toggle');
             console.log("Created File: " + fileName + ".svg");
+            //location.reload();
         }
     });
 
@@ -434,28 +392,29 @@ $(document).ready(function() {
                 type: 2,
                 fileName: selectedSVG
             },
-            success: function (data) {
-                $.ajax({
-                    type: 'get',            //Request type
-                    dataType: 'json',       //Data type - we will use JSON for almost everything 
-                    url: '/loadFiles',   //The server endpoint we are connecting to
-                    success: function (data) {
-                        loadFileLogTable(data);
-                        loadDropdownData(data);
-                        
-                        //We write the object to the console to show that the request was successful
-                        console.log("Successfully loaded table"); 
-                        //console.log(data);
-                    },
-                    fail: function(error) {
-                        console.log(error); 
-                    }
-                });      
+            success: function (data) {      
             },
             fail: function(error) {
                 console.log(error); 
             }
     
+        });
+
+        $.ajax({
+            type: 'get',            //Request type
+            dataType: 'json',       //Data type - we will use JSON for almost everything 
+            url: '/loadFiles',   //The server endpoint we are connecting to
+            success: function (data) {
+                loadFileLogTable(data);
+                loadDropdownData(data);
+                
+                //We write the object to the console to show that the request was successful
+                console.log("Successfully loaded table"); 
+                //console.log(data);
+            },
+            fail: function(error) {
+                console.log(error); 
+            }
         });
 
         $('#add-circle-modal').modal('toggle');
@@ -467,6 +426,7 @@ $(document).ready(function() {
                             </td>\
                             </tr>'); */
         //alert("Sucessfully created circle!");
+        location.reload(true);
     });
 
 
@@ -495,22 +455,7 @@ $(document).ready(function() {
                 fileName: selectedSVG
             },
             success: function (data) {
-                $.ajax({
-                    type: 'get',            //Request type
-                    dataType: 'json',       //Data type - we will use JSON for almost everything 
-                    url: '/loadFiles',   //The server endpoint we are connecting to
-                    success: function (data) {
-                        loadFileLogTable(data);
-                        loadDropdownData(data);
-                        
-                        //We write the object to the console to show that the request was successful
-                        console.log("Successfully loaded table"); 
-                        //console.log(data);
-                    },
-                    fail: function(error) {
-                        console.log(error); 
-                    }
-                });      
+                
             },
             fail: function(error) {
                 console.log(error); 
@@ -518,6 +463,22 @@ $(document).ready(function() {
     
         });
 
+        $.ajax({
+            type: 'get',            //Request type
+            dataType: 'json',       //Data type - we will use JSON for almost everything 
+            url: '/loadFiles',   //The server endpoint we are connecting to
+            success: function (data) {
+                loadFileLogTable(data);
+                loadDropdownData(data);
+                
+                //We write the object to the console to show that the request was successful
+                console.log("Successfully loaded table"); 
+                //console.log(data);
+            },
+            fail: function(error) {
+                console.log(error); 
+            }
+        });      
         $('#add-rect-modal').modal('toggle');
         /* $('#contents-table-body').append('<tr>\
                             <th class="col-component">Rectangle 3</th>\
@@ -527,6 +488,8 @@ $(document).ready(function() {
                             </td>\
                             </tr>'); */
         //alert("Sucessfully created rectangle!");
+        location.reload(true);
+
     });
 
 });
