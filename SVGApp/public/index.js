@@ -424,6 +424,8 @@ $(document).ready(function() {
                         let path = $('#data-input-attr').val();
                         let JSONpath = '{"name":"d","value":"' + path +'"}';
                         JSONstring = '[' + JSONpath + "]";
+                    } else {
+                        JSONstring = '[]';
                     }
 
                     console.log(JSONstring)

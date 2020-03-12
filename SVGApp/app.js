@@ -299,7 +299,10 @@ app.get('/saveAttr', function(req, res) {
   }
 
   let returnVal;
-  
+  if(JSONdata.length == 0) {
+    returnVal = 0;
+  }
+  console.log(JSONdata.length);
   for(var i = 0; i < JSONdata.length; i++) {
     console.log("For: " + JSON.stringify(JSONdata[i]));
     returnVal = sharedLib.writeAttrFromJSON('uploads/' + fileName, 'svg.xsd', req.query.index, type, JSON.stringify(JSONdata[i]));
