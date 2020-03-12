@@ -177,7 +177,7 @@ app.get('/loadAttributes', function(req, res) {
   console.log(fileName);
 
   let attrListAsString;
-  let attrList;
+  let shapeData;
   if(type === "Rectangle") {
     attrListAsString = sharedLib.getAttrJSONlist('uploads/' + fileName, 'svg.xsd', index, 1);
   } else if(type === "Circle") {
@@ -186,12 +186,33 @@ app.get('/loadAttributes', function(req, res) {
     attrListAsString = sharedLib.getAttrJSONlist('uploads/' + fileName, 'svg.xsd', index, 3);
   } else if(type === "Group") {
     attrListAsString = sharedLib.getAttrJSONlist('uploads/' + fileName, 'svg.xsd', index, 4);
+  } else if (type === "SVG") {
+      attrListAsString = sharedLib.getAttrJSONlist('uploads/' + fileName, 'svg.xsd', 0, 0);
   }
 
-  attrList = JSON.parse(attrListAsString);
-  console.log(attrList);
+  console.log("retrieved JSON");
+  //console.log(attrListAsString);
+
+  let retAttList;
+  let shapeRet;
+  shapeData = JSON.parse(attrListAsString);
+  if(type === "SVG" || type === "Group") {
+    shapeRet = "[]";
+    retAttList = shapeData[0];
+  } else {
+    shapeRet = shapeData[0];
+    retAttList = shapeData[1];
+  }
+
+  console.log("Shape data: ");
+  console.log(shapeRet);
+  console.log("Shape attributes: ");
+  console.log(retAttList);
+
   res.send({
-    attrList: attrList,
+    shape: shapeRet,
+    attrList: retAttList,
+    typeRet: type
   });
 
 });

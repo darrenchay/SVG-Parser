@@ -1,6 +1,8 @@
 // Put all onload AJAX calls here, and event listeners
 $(document).ready(function() {
     // On page-load AJAX
+    $('#show-attr-btn').prop('disabled', true);
+
     $.ajax({
         type: 'get',            //Request type
         dataType: 'json',       //Data type - we will use JSON for almost everything 
@@ -99,6 +101,33 @@ $(document).ready(function() {
         });
     });
 
+    $("#selectShapeAttribute").change(function(){
+        var selectedSVG = $(this).children("option:selected").html();
+        $('#show-attr-btn').prop('disabled', false);
+        console.log("Selected: " + selectedSVG);
+        /* $.ajax({
+            type: 'get',            //Request type
+            dataType: 'json',       //Data type - we will use JSON for almost everything 
+            url: '/loadFileData',   //The server endpoint we are connecting to
+            data: {
+                fileName: selectedSVG
+            },
+            success: function (data) {
+                console.log("Title: " + data.title);
+                console.log("Desc: " + data.desc);
+
+                //loadInfoSVG(data);
+                
+            },
+            fail: function(error) {
+                // Non-200 return, do something with error
+                //$('#file-log-table').html('<tr><td colspan="7">No files</td></tr>');
+                console.log(error); 
+            }
+    
+        }); */
+    });
+
     /* Scaling circle */
     $(document).on('input', '#scale-circ-range', function() {
         $('#circ-range-lbl').html("Scale Circle:" + $(this).val());
@@ -165,26 +194,6 @@ $(document).ready(function() {
      * SHOW ATTRIBUTE MODAL FUNCTIONS
      */
 
-
-    /* $('#create-svg-modal-btn').submit(function() {
-        'use strict';
-        window.addEventListener('load', function() {
-            // Fetch all the forms we want to apply custom Bootstrap validation styles to
-            var forms = document.getElementsByClassName('needs-validation');
-            // Loop over them and prevent submission
-            var validation = Array.prototype.filter.call(forms, function(form) {
-            form.addEventListener('submit', function(event) {
-                if (form.checkValidity() === false) {
-                event.preventDefault();
-                event.stopPropagation();
-                alert("No file name");
-                }
-                form.classList.add('was-validated');
-            }, false);
-            });
-        }, false);
-    }); */
-
     $('#create-svg-modal-btn').click(function() {
         var fileName = $('#fileName').val();
         if(!fileName) {
@@ -232,45 +241,42 @@ $(document).ready(function() {
 
     /* Display the right attribute modal for the specific component */
     $(document).on("click", ".show-att-btn", function() {
-        $('#addAtributeInModal').html('<div class="row">\
-                                        <div class="col-4">\
-                                            <label><b>Name</b></label>\
-                                        </div>\
-                                        <div class="col-1">\
-                                            <label><b>:</b></label>\
-                                        </div>\
-                                        <div class="col-4">\
-                                            <label><b>Value</b></label>\
-                                        </div>\
-                                    </div>');
-        var selectedSVG = $('#chooseSVGDropdown').children("option:selected").html();
+        var selectedShape = $('#selectShapeAttribute').children("option:selected").html();
+        console.log(selectedShape);
 
-        $(this).parents("tr").find("th").each(function() {
+        var componentParts = selectedShape.split(" ");
+        var selectedSVG = $('#chooseSVGDropdown').children("option:selected").html();
+        console.log(selectedSVG);
+
+        $.ajax({
+            type: 'get',            //Request type
+            dataType: 'json',       //Data type - we will use JSON for almost everything 
+            url: '/loadAttributes',   //The server endpoint we are connecting to
+            data: {
+                type: componentParts[0],
+                index: componentParts[1] - 1,
+                fileName: selectedSVG
+            },
+            success: function (data) {
+                console.log(data.shape);
+                console.log(data.attrList);
+                loadAttributesList(data.attrList, data.shape, data.typeRet);
+                console.log(data.attrList);
+            },
+            fail: function(error) {
+                console.log(error); 
+            }
+    
+        });
+        
+
+        /* $(this).parents("tr").find("th").each(function() {
             var componentName = $(this).text();
             var componentParts = componentName.split(' ');
             $('#showAttrModal').html("Attribute List of " + componentName);
             console.log(componentName + "parts: " + componentParts[0] + "::" + componentParts[1]);
-            $.ajax({
-                type: 'get',            //Request type
-                dataType: 'json',       //Data type - we will use JSON for almost everything 
-                url: '/loadAttributes',   //The server endpoint we are connecting to
-                data: {
-                    type: componentParts[0],
-                    index: componentParts[1] - 1,
-                    fileName: selectedSVG
-                },
-                success: function (data) {
-                    if(data.attrList.length != 0) {
-                        loadAttributesList(data.attrList);
-                        console.log(data.attrList);
-                    }
-                },
-                fail: function(error) {
-                    console.log(error); 
-                }
-        
-            });
-        })
+            
+        }) */
     });
 
     $(document).on("click", ".edit-attr-btns", function() {
@@ -295,7 +301,7 @@ $(document).ready(function() {
         let name;
         if(this.id == "tempSaveAttBtnID") {
             name = $('#tempNameInput').val();
-            console.log("new: [" + name);
+            //console.log("new: [" + name);
         } else {
             let temp = this.id;
             let data = temp.split('--');
@@ -304,7 +310,7 @@ $(document).ready(function() {
 
         console.log(name);
         if(this.id == "tempSaveAttBtnID") {
-            console.log("here");
+            //console.log("here");
             if(document.getElementById('tempValueInput').value.length == 0 || document.getElementById('tempNameInput').value.length == 0 ) {
                 alert("Please enter a name and value");
             } else {
@@ -312,7 +318,7 @@ $(document).ready(function() {
                 $('#tempNameInput').attr("id", name);
                 $('#tempValueInput').attr("id", "value-" + name);
                 $('#tempEditAttBtnID').attr("id", name + "--edit-btn");
-                console.log(this.id);
+                //console.log(this.id);
                 /* Making texts readonly */
                 document.getElementById('value-' + name).readOnly = true;
                 $("#value-"+name).removeClass("border border-dark");
@@ -540,6 +546,13 @@ function loadInfoSVG(data) {
     $('#descInput').val('');
     $('#contents-table-body').html('');
 
+    $('#selectShapeAttribute').html('');
+    /* for(var i = 0; i < files.length; i++) {
+        $('#selectShapeAttribute').append('<option value="' + files[i][0] + '">' + files[i][0] + '</option>');
+    } */
+    $('#selectShapeAttribute').append('<option value="" disabled selected hidden>Select Shape</option>');
+    $('#selectShapeAttribute').append('<option value="svg-select">SVG</option>');
+
     if(data.title === "") {
         $('#titleInput').attr('placeholder', 'No Title');
     } else {
@@ -556,8 +569,10 @@ function loadInfoSVG(data) {
         $('#contents-table-body').append('<tr style="text-align: center">\
                                             <th class="col-component">Rectangle ' + (i - (-1)) + '</th>\
                                             <td class="col-summary">Upper left corner: x = ' + rectangle.x + rectangle.units + ', y = ' + rectangle.y + rectangle.units + ', Width: ' + rectangle.w + rectangle.units + ', Height: ' + rectangle.h + rectangle.units + '</td>\
-                                            <td class="col-attributes"> ' + rectangle.numAttr + '  <button class="btn btn-info btn-sm show-att-btn" id="show-attr-btn" data-toggle="modal" data-target="#show-attr-modal" type="button">Show</button></td>\
+                                            <td class="col-attributes"> ' + rectangle.numAttr + '</td>\
                                         </tr>');
+        $('#selectShapeAttribute').append('<option value="Rectangle ' + (i - (-1)) + '">' + 'Rectangle ' + (i - (-1))+ '</option>');
+
     }
 
     for(var i = 0; i < data.circs.length; i++) {
@@ -565,8 +580,10 @@ function loadInfoSVG(data) {
         $('#contents-table-body').append('<tr style="text-align: center">\
                                             <th class="col-component">Circle ' + (i - (-1)) + '</th>\
                                             <td class="col-summary">Center: x = ' + circle.cx + circle.units + ', y = ' + circle.cy + circle.units + ', radius = ' + circle.r + circle.units +'</td>\
-                                            <td class="col-attributes"> ' + circle.numAttr + '  <button class="btn btn-info btn-sm show-att-btn" id="show-attr-btn" data-toggle="modal" data-target="#show-attr-modal" type="button">Show</button></td>\
+                                            <td class="col-attributes"> ' + circle.numAttr + '</td>\
                                         </tr>');
+        $('#selectShapeAttribute').append('<option value="Circle ' + (i - (-1)) + '">' + 'Circle ' + (i - (-1))+ '</option>');
+
     }
 
     for(var i = 0; i < data.paths.length; i++) {
@@ -574,8 +591,9 @@ function loadInfoSVG(data) {
         $('#contents-table-body').append('<tr style="text-align: center">\
                                             <th class="col-component">Path ' + (i - (-1)) + '</th>\
                                             <td class="col-summary">path data = ' + path.d + '</td>\
-                                            <td class="col-attributes"> ' + path.numAttr + '  <button class="btn btn-info btn-sm show-att-btn" id="show-attr-btn" data-toggle="modal" data-target="#show-attr-modal" type="button">Show</button></td>\
+                                            <td class="col-attributes"> ' + path.numAttr + '</td>\
                                         </tr>');
+        $('#selectShapeAttribute').append('<option value="Path ' + (i - (-1)) + '">' + 'Path ' + (i - (-1))+ '</option>');
     }
 
     for(var i = 0; i < data.groups.length; i++) {
@@ -583,12 +601,103 @@ function loadInfoSVG(data) {
         $('#contents-table-body').append('<tr style="text-align: center">\
                                             <th class="col-component">Group ' + (i - (-1)) + '</th>\
                                             <td class="col-summary"> ' + group.children + ' child elements</td>\
-                                            <td class="col-attributes"> ' + group.numAttr + '  <button class="btn btn-info btn-sm show-att-btn" id="show-attr-btn" data-toggle="modal" data-target="#show-attr-modal" type="button">Show</button></td>\
+                                            <td class="col-attributes"> ' + group.numAttr + '</td>\
                                         </tr>');
+        $('#selectShapeAttribute').append('<option value="Group ' + (i - (-1)) + '">' + 'Group ' + (i - (-1))+ '</option>');
     }
 }
 
-function loadAttributesList(attrList) {
+function loadAttributesList(attrList, shape, type) {
+    console.log(type + " -- " + shape.numAttr + "/");
+    $('#addAtributeInModal').html(' ');
+    
+    if(type == "Circle") {
+        $('#addAtributeInModal').append('<div class="row">\
+                <div class="col">\
+                    <div class="input-group mb-3">\
+                        <div class="input-group-prepend">\
+                            <span class="input-group-text">CX:</span>\
+                        </div>\
+                        <input type="number" id="cx-input-attr" min="0" class="form-control" value="' + shape.cx + '">\
+                    </div>\
+                </div>\
+            </div>');
+        $('#addAtributeInModal').append('<div class="row">\
+                <div class="col">\
+                    <div class="input-group mb-3">\
+                        <div class="input-group-prepend">\
+                            <span class="input-group-text">CY:</span>\
+                        </div>\
+                        <input type="number" id="cy-input-attr" min="0" class="form-control" value="' + shape.cy + '">\
+                    </div>\
+                </div>');
+        $('#addAtributeInModal').append('<div class="row">\
+                <div class="col">\
+                    <div class="input-group mb-3">\
+                        <div class="input-group-prepend">\
+                            <span class="input-group-text">Radius:</span>\
+                        </div>\
+                        <input type="number" id="r-input-attr" min="0" class="form-control" value="' + shape.r + '">\
+                    </div>\
+                </div>\
+            </div>');
+    } else if(type == "Rectangle") {
+        console.log("here");
+        $('#addAtributeInModal').append('<div class="row">\
+                                            <div class="col">\
+                                                <div class="input-group mb-3">\
+                                                    <div class="input-group-prepend">\
+                                                        <span class="input-group-text">X:</span>\
+                                                    </div>\
+                                                    <input type="number" id="x-input-attr" min="0" class="form-control" value="' + shape.x + '">\
+                                                </div>\
+                                            </div>\
+                                        </div>');
+        $('#addAtributeInModal').append('<div class="row">\
+                <div class="col">\
+                    <div class="input-group mb-3">\
+                        <div class="input-group-prepend">\
+                            <span class="input-group-text">Y:</span>\
+                        </div>\
+                        <input type="number" id="y-input-attr" min="0" class="form-control" value="' + shape.y + '">\
+                    </div>\
+                </div>\
+            </div>');
+        $('#addAtributeInModal').append('<div class="row">\
+                <div class="col">\
+                    <div class="input-group mb-3">\
+                        <div class="input-group-prepend">\
+                            <span class="input-group-text">Width:</span>\
+                        </div>\
+                        <input type="number" id="width-input-attr" min="0" class="form-control" value="' + shape.w + '">\
+                    </div>\
+                </div>\
+            </div>');
+
+        $('#addAtributeInModal').append('<div class="row">\
+                <div class="col">\
+                    <div class="input-group mb-3">\
+                        <div class="input-group-prepend">\
+                            <span class="input-group-text">Height:</span>\
+                        </div>\
+                        <input type="number" id="height-input-attr" min="0" class="form-control" value="' + shape.h + '">\
+                    </div>\
+                </div>\
+            </div>');
+    }
+
+    $('#addAtributeInModal').append('<div class="row">\
+                                        <div class="col-4">\
+                                            <label><b>Name</b></label>\
+                                        </div>\
+                                        <div class="col-1">\
+                                            <label><b>:</b></label>\
+                                        </div>\
+                                        <div class="col-4">\
+                                            <label><b>Value</b></label>\
+                                        </div>\
+                                    </div>');
+
     for(var i = 0; i < attrList.length; i++) {
         $('#addAtributeInModal').append('<div class="row">\
                                     <input type="text" readonly class="form-control-plaintext col-4" id="' + attrList[i].name + '" value="'+ attrList[i].name +'">\

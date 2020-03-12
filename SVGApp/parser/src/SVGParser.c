@@ -1553,7 +1553,8 @@ char* getAttrJSONlist(char* fileName, char* schemaFile, int index, int type) {
         return temp;
     }
     void* elem;
-    char* JSONstring;
+    char* JSONstring = calloc(1000, sizeof(char));
+    strcpy(JSONstring, "[");
 
     if(type == 1) {
         if(getLength(img->rectangles) <= index) {
@@ -1569,7 +1570,9 @@ char* getAttrJSONlist(char* fileName, char* schemaFile, int index, int type) {
         Rectangle* rect = (Rectangle *)elem;
         //printf("[%s]\n", rectangleToString(rect));
         //return rectangleToString(rect);
-        JSONstring = attrListToJSON(rect->otherAttributes);
+        strcat(JSONstring, rectToJSON(rect));
+        strcat(JSONstring, ",");
+        strcat(JSONstring, attrListToJSON(rect->otherAttributes));
     } else if (type == 2) {
         if(getLength(img->circles) <= index) {
             char *temp = calloc(10, sizeof(char));
@@ -1582,7 +1585,9 @@ char* getAttrJSONlist(char* fileName, char* schemaFile, int index, int type) {
             elem = nextElement(&iter);            
         }
         Circle* circle = (Circle *)elem;
-        JSONstring = attrListToJSON(circle->otherAttributes);
+        strcat(JSONstring, circleToJSON(circle));
+        strcat(JSONstring, ",");
+        strcat(JSONstring, attrListToJSON(circle->otherAttributes));
     } else if (type == 3) {
         if(getLength(img->paths) <= index) {
             char *temp = calloc(10, sizeof(char));
@@ -1595,7 +1600,9 @@ char* getAttrJSONlist(char* fileName, char* schemaFile, int index, int type) {
             elem = nextElement(&iter);            
         }
         Path* path = (Path *)elem;
-        JSONstring = attrListToJSON(path->otherAttributes);
+        strcat(JSONstring, pathToJSON(path));
+        strcat(JSONstring, ",");
+        strcat(JSONstring, attrListToJSON(path->otherAttributes));
     } else if (type == 4) {
         if(getLength(img->groups) <= index) {
             char *temp = calloc(10, sizeof(char));
@@ -1608,8 +1615,16 @@ char* getAttrJSONlist(char* fileName, char* schemaFile, int index, int type) {
             elem = nextElement(&iter);            
         }
         Group* group = (Group *)elem;
-        JSONstring = attrListToJSON(group->otherAttributes);
+        /* strcat(JSONstring, groupToJSON(group));
+        strcat(JSONstring, ",");
+        strcat(JSONstring, attrListToJSON(group->otherAttributes)); */
+        strcat(JSONstring, attrListToJSON(group->otherAttributes));
+        //JSONstring = attrListToJSON(group->otherAttributes);
+    } else if (type == 0) {
+        strcat(JSONstring, attrListToJSON(img->otherAttributes));
     }
+    strcat(JSONstring, "]");
+    //printf("%s\n", JSONstring);
 
     deleteSVGimage(img);
     return JSONstring;
