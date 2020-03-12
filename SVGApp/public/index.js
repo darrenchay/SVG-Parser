@@ -185,6 +185,18 @@ $(document).ready(function() {
         console.log("Desc saved");
     } 
 
+
+    /* 
+     * MODAL FUNCTIONS
+     */
+
+
+    /* 
+     * SHOW ATTRIBUTE MODAL FUNCTIONS
+     */
+
+
+
     $('#create-svg-modal-btn').submit(function() {
         'use strict';
         window.addEventListener('load', function() {
@@ -242,11 +254,42 @@ $(document).ready(function() {
 
     /* Display the right attribute modal for the specific component */
     $(document).on("click", ".show-att-btn", function() {
+        $('#addAtributeInModal').html('<div class="row">\
+                                        <div class="col-4">\
+                                            <label><b>Name</b></label>\
+                                        </div>\
+                                        <div class="col-1">\
+                                            <label><b>:</b></label>\
+                                        </div>\
+                                        <div class="col-4">\
+                                            <label><b>Value</b></label>\
+                                        </div>\
+                                    </div>');
+        var selectedSVG = $('#chooseSVGDropdown').children("option:selected").html();
+
         $(this).parents("tr").find("th").each(function() {
             var componentName = $(this).text();
             var componentParts = componentName.split(' ');
-            $('#showAttrModal').html("Other attributes of " + componentName);
+            $('#showAttrModal').html("Attribute List of " + componentName);
             console.log(componentName + "parts: " + componentParts[0] + "::" + componentParts[1]);
+            $.ajax({
+                type: 'get',            //Request type
+                dataType: 'json',       //Data type - we will use JSON for almost everything 
+                url: '/loadAttributes',   //The server endpoint we are connecting to
+                data: {
+                    type: componentParts[0],
+                    index: componentParts[1] - 1,
+                    fileName: selectedSVG
+                },
+                success: function (data) {
+                    loadAttributesList(data.attrList);
+                    console.log(data,attrList);
+                },
+                fail: function(error) {
+                    console.log(error); 
+                }
+        
+            });
         })
     });
 });
@@ -311,7 +354,7 @@ function loadInfoSVG(data) {
         $('#contents-table-body').append('<tr style="text-align: center">\
                                             <th class="col-component">Rectangle ' + (i - (-1)) + '</th>\
                                             <td class="col-summary">Upper left corner: x = ' + rectangle.x + rectangle.units + ', y = ' + rectangle.y + rectangle.units + 'Width: ' + rectangle.w + rectangle.units + ', Height: ' + rectangle.h + rectangle.units + '</td>\
-                                            <td class="col-attributes"> ' + rectangle.numAttr + '  <button class="btn btn-info btn-sm show-att-btn" data-toggle="modal" data-target="#show-attr-modal" type="button">Show</button></td>\
+                                            <td class="col-attributes"> ' + rectangle.numAttr + '  <button class="btn btn-info btn-sm show-att-btn" id="show-attr-btn" data-toggle="modal" data-target="#show-attr-modal" type="button">Show</button></td>\
                                         </tr>');
     }
 
@@ -320,7 +363,7 @@ function loadInfoSVG(data) {
         $('#contents-table-body').append('<tr style="text-align: center">\
                                             <th class="col-component">Circle ' + (i - (-1)) + '</th>\
                                             <td class="col-summary">Center: x = ' + circle.cx + circle.units + ', y = ' + circle.cy + circle.units + ', radius = ' + circle.r + circle.units +'</td>\
-                                            <td class="col-attributes"> ' + circle.numAttr + '  <button class="btn btn-info btn-sm show-att-btn" data-toggle="modal" data-target="#show-attr-modal" type="button">Show</button></td>\
+                                            <td class="col-attributes"> ' + circle.numAttr + '  <button class="btn btn-info btn-sm show-att-btn" id="show-attr-btn" data-toggle="modal" data-target="#show-attr-modal" type="button">Show</button></td>\
                                         </tr>');
     }
 
@@ -329,7 +372,7 @@ function loadInfoSVG(data) {
         $('#contents-table-body').append('<tr style="text-align: center">\
                                             <th class="col-component">Path ' + (i - (-1)) + '</th>\
                                             <td class="col-summary">path data = ' + path.d + '</td>\
-                                            <td class="col-attributes"> ' + path.numAttr + '  <button class="btn btn-info btn-sm show-att-btn" data-toggle="modal" data-target="#show-attr-modal" type="button">Show</button></td>\
+                                            <td class="col-attributes"> ' + path.numAttr + '  <button class="btn btn-info btn-sm show-att-btn" id="show-attr-btn" data-toggle="modal" data-target="#show-attr-modal" type="button">Show</button></td>\
                                         </tr>');
     }
 
@@ -338,7 +381,26 @@ function loadInfoSVG(data) {
         $('#contents-table-body').append('<tr style="text-align: center">\
                                             <th class="col-component">Group ' + (i - (-1)) + '</th>\
                                             <td class="col-summary"> ' + group.children + ' child elements</td>\
-                                            <td class="col-attributes"> ' + group.numAttr + '  <button class="btn btn-info btn-sm show-att-btn" data-toggle="modal" data-target="#show-attr-modal" type="button">Show</button></td>\
+                                            <td class="col-attributes"> ' + group.numAttr + '  <button class="btn btn-info btn-sm show-att-btn" id="show-attr-btn" data-toggle="modal" data-target="#show-attr-modal" type="button">Show</button></td>\
                                         </tr>');
+    }
+}
+
+function loadAttributesList(attrList) {
+    for(var i = 0; i < attrList.length; i++) {
+        $('#addAtributeInModal').append('<div class="row">\
+                                            <div class="col-4">\
+                                                <input type="text" readonly class="form-control-plaintext" id="' + attrList[i].name  + '" value="'+ attrList[i].name +'">\
+                                            </div>\
+                                            <div class="col-1">\
+                                                <label> : </label>\
+                                            </div>\
+                                            <div class="col-4">\
+                                                <input type="text" readonly class="form-control-plaintext" id="' + attrList[i].value  + '" value="'+ attrList[i].value +'">\
+                                            </div>\
+                                            <div class="col-3">\
+                                                <button type="button" id="' + attrList[i].name  + " " + attrList[i].value  + '" class="btn btn-outline-secondary">Edit</button>\
+                                            </div>\
+                                        </div>');
     }
 }

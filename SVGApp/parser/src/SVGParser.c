@@ -46,12 +46,14 @@ void addCirclesToXMLnode(List* circList, xmlNode* rootNode);
 void addGroupsToXMLnode(List* groupList, xmlNode* rootNode); 
 void addAttribute(List* attributes, Attribute* newAttribute);
 
+/* Getters to JSON */
 char* readSVGtoJSON(char* fileName, char* schemaFile);
 char* SVGdetailsToJSON(char* fileName, char* schemaFile);
 char* getRectJSONlist(char* fileName, char* schemaFile);
 char* getCircJSONlist(char* fileName, char* schemaFile);
 char* getPathJSONlist(char* fileName, char* schemaFile);
 char* getGroupJSONlist(char* fileName, char* schemaFile);
+char* getAttrJSONlist(char* fileName, char* schemaFile, int index, int type);
 
 /** Function to create an SVG object based on the contents of an SVG file.
  *@pre File name cannot be an empty string or NULL.
@@ -998,7 +1000,7 @@ SVGimage* createValidSVGimage(char* fileName, char* schemaFile) {
     }
     if(validateXMLtree(doc, schemaFile) == false) {
         /*free the document */
-        xmlFreeDoc(doc);
+        //xmlFreeDoc(doc);
         xmlCleanupParser();
         return NULL;
     }
@@ -1416,12 +1418,17 @@ void addComponent(SVGimage* image, elementType type, void* newElement) {
 /* Creates an SVGimage from file and converts it to a JSON string */
 char* readSVGtoJSON(char* fileName, char* schemaFile) {
     SVGimage* img = createValidSVGimage(fileName, schemaFile);
-    /* if(img == NULL) {
-        return "error creating svg";
-    } */
-    char* JSONstring = SVGtoJSON(img);
-    deleteSVGimage(img);
-    return JSONstring;
+    if(img == NULL) {
+        char *temp = calloc(10, sizeof(char));
+        //printf("test\n");
+        strcpy(temp, "{}");
+        return temp;
+    } else {
+        char* JSONstring = SVGtoJSON(img);
+        deleteSVGimage(img);
+        return JSONstring;
+    }
+    
 }
 
 /* Returns a JSON string containing the title and description of the img */
@@ -1431,18 +1438,18 @@ char* SVGdetailsToJSON(char* fileName, char* schemaFile) {
         char *temp = calloc(10, sizeof(char));
         strcpy(temp, "{}");
         return temp;
-    }
+    } else {
+        char* JSONstring = calloc(strlen(img->title) + strlen(img->description) + 30, 1);
 
-    char* JSONstring = calloc(strlen(img->title) + strlen(img->description) + 30, 1);
+        strcpy(JSONstring ,"{\"title\":\"");
+        strcat(JSONstring, img->title);
+        strcat(JSONstring, "\",\"desc\":\"");
+        strcat(JSONstring, img->description);
+        strcat(JSONstring, "\"}");
 
-    strcpy(JSONstring ,"{\"title\":\"");
-    strcat(JSONstring, img->title);
-    strcat(JSONstring, "\",\"desc\":\"");
-    strcat(JSONstring, img->description);
-    strcat(JSONstring, "\"}");
-
-    deleteSVGimage(img);
-    return JSONstring;
+        deleteSVGimage(img);
+        return JSONstring;
+    }    
 }
 
 char* getRectJSONlist(char* fileName, char* schemaFile) {
@@ -1473,6 +1480,78 @@ char* getGroupJSONlist(char* fileName, char* schemaFile) {
     SVGimage* img = createValidSVGimage(fileName, schemaFile);
 
     char* JSONstring = groupListToJSON(img->groups);
+    deleteSVGimage(img);
+    return JSONstring;
+}
+
+char* getAttrJSONlist(char* fileName, char* schemaFile, int index, int type) {
+    SVGimage* img = createValidSVGimage(fileName, schemaFile);
+
+    /* Check if index is valid */
+    if(index < 0 || type < 0 || type > 4 || img == NULL) {
+        char *temp = calloc(30, sizeof(char));
+        strcpy(temp, "invalid input");
+        return temp;
+    }
+    void* elem;
+    char* JSONstring;
+
+    if(type == 1) {
+        if(getLength(img->rectangles) <= index) {
+            char *temp = calloc(10, sizeof(char));
+            strcpy(temp, "index");
+            return temp;
+        }
+        //getting the element at the right index
+        ListIterator iter = createIterator(img->rectangles);
+        for(int i = 0; i <= index; i++) {
+            elem = nextElement(&iter);            
+        }
+        Rectangle* rect = (Rectangle *)elem;
+        //printf("[%s]\n", rectangleToString(rect));
+        //return rectangleToString(rect);
+        JSONstring = attrListToJSON(rect->otherAttributes);
+    } else if (type == 2) {
+        if(getLength(img->circles) <= index) {
+            char *temp = calloc(10, sizeof(char));
+            strcpy(temp, "{}");
+            return temp;
+        }
+        //getting the element at the right index
+        ListIterator iter = createIterator(img->circles);
+        for(int i = 0; i <= index; i++) {
+            elem = nextElement(&iter);            
+        }
+        Circle* circle = (Circle *)elem;
+        JSONstring = attrListToJSON(circle->otherAttributes);
+    } else if (type == 3) {
+        if(getLength(img->paths) <= index) {
+            char *temp = calloc(10, sizeof(char));
+            strcpy(temp, "{}");
+            return temp;
+        }
+        //getting the element at the right index
+        ListIterator iter = createIterator(img->paths);
+        for(int i = 0; i <= index; i++) {
+            elem = nextElement(&iter);            
+        }
+        Path* path = (Path *)elem;
+        JSONstring = attrListToJSON(path->otherAttributes);
+    } else if (type == 4) {
+        if(getLength(img->groups) <= index) {
+            char *temp = calloc(10, sizeof(char));
+            strcpy(temp, "{}");
+            return temp;
+        }
+        //getting the element at the right index
+        ListIterator iter = createIterator(img->groups);
+        for(int i = 0; i <= index; i++) {
+            elem = nextElement(&iter);            
+        }
+        Group* group = (Group *)elem;
+        JSONstring = attrListToJSON(group->otherAttributes);
+    }
+
     deleteSVGimage(img);
     return JSONstring;
 }

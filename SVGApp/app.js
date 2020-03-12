@@ -161,5 +161,37 @@ app.get('/loadFileData', function(req, res) {
 
 });
 
+app.get('/loadAttributes', function(req, res) {
+  let sharedLib = ffi.Library('./libsvgparse', {
+    'getAttrJSONlist' : [ 'string', [ 'string', 'string', 'int', 'int' ] ]
+  });
+
+  let type = req.query.type;
+  let index = req.query.index;
+  let fileName = req.query.fileName;
+
+  console.log(type + " // " +index);
+  console.log(fileName);
+
+  let attrListAsString;
+  let attrList;
+  if(type === "Rectangle") {
+    attrListAsString = sharedLib.getAttrJSONlist('uploads/' + fileName, 'svg.xsd', index, 1);
+  } else if(type === "Circle") {
+    attrListAsString = sharedLib.getAttrJSONlist('uploads/' + fileName, 'svg.xsd', index, 2);
+  } else if(type === "Path") {
+    attrListAsString = sharedLib.getAttrJSONlist('uploads/' + fileName, 'svg.xsd', index, 3);
+  } else if(type === "Group") {
+    attrListAsString = sharedLib.getAttrJSONlist('uploads/' + fileName, 'svg.xsd', index, 4);
+  }
+
+  attrList = JSON.parse(attrListAsString);
+  console.log(attrList);
+  res.send({
+    attrList: attrList,
+  });
+
+});
+
 app.listen(portNum);
 console.log('Running app at localhost: ' + portNum);

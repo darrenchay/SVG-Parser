@@ -249,7 +249,7 @@
         <div class="modal-dialog modal-dialog-scrollable" role="document">
           <div class="modal-content">
             <div class="modal-header">
-                <h5 class="modal-title" id="showAttrModal">Rectangle 1</h5>
+                <h5 class="modal-title" id="showAttrModal">Attributes</h5>
                 <button type="button" class="close" data-dismiss="modal" aria-label="Close">
                 <span aria-hidden="true">&times;</span>
                 </button>
@@ -270,7 +270,22 @@
                         </div>
                     </div>
                 </form>
-                <button type="button" id="add-attribute-btn" class="btn btn-info">Add Attribute</button>
+                <!-- TODO: Adds 2 text input, disabled until press add attribute -->
+                <form id="addNewAttForm">
+                    <div class="row">
+                        <div class="col-4">
+                            <input type="text" readonly class="form-control-plaintext">
+                        </div>
+                        <div class="col-1">
+                            <label>  </label>
+                        </div>
+                        <div class="col-4">
+                            <input type="text" readonly class="form-control-plaintext">
+                        </div>
+                    </div>
+                    <button type="button" id="add-attribute-btn" class="btn btn-info">Add Attribute</button>
+                </form>
+                
             </div>
             <div class="modal-footer">
               <button type="button" class="btn btn-danger" data-dismiss="modal">Close</button>
