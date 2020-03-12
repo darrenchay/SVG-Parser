@@ -46,6 +46,9 @@ app.post('/upload', function(req, res) {
   }
  
   let uploadFile = req.files.uploadFile;
+
+  /* console.log(uploadFile);
+  console.log("TESTING"); */
  
   // Use the mv() method to place the file somewhere on your server
   uploadFile.mv('uploads/' + uploadFile.name, function(err) {
@@ -106,8 +109,8 @@ app.get('/loadFiles', function(req , res){
       //console.log(fileData);
       fileListArray.push(fileData); 
     }
-    //console.log("Array:");
-    console.log(fileListArray);
+    console.log("Created Array");
+    //console.log(fileListArray);
     res.send({
       fileList: fileListArray
     });
@@ -214,6 +217,33 @@ app.get('/createFile', function(req, res) {
   console.log(fileData.desc); */
   res.send({
     success: 1
+  });
+
+});
+
+app.get('/addShape', function(req, res) {
+  let sharedLib = ffi.Library('./libsvgparse', {
+    'addShapeToSVGFile' : [ 'int', [ 'string', 'string', 'string', 'int' ] ],
+  });
+
+  let fileName = req.query.fileName;
+  console.log(fileName);
+
+  let data = req.query.JSONdata;
+  console.log(data);
+
+  let type = req.query.type;
+
+  let returnVal = sharedLib.addShapeToSVGFile('uploads/' + fileName, 'svg.xsd', data, type);
+  console.log(returnVal);
+
+  /* let titleAndDescAsJSON = sharedLib.SVGdetailsToJSON('uploads/' + fileName, 'svg.xsd');
+  console.log(titleAndDescAsJSON);
+
+  let fileData = JSON.parse(titleAndDescAsJSON);
+  console.log(fileData.desc); */
+  res.send({
+    success: returnVal
   });
 
 });

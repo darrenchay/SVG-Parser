@@ -55,7 +55,7 @@ char* getPathJSONlist(char* fileName, char* schemaFile);
 char* getGroupJSONlist(char* fileName, char* schemaFile);
 char* getAttrJSONlist(char* fileName, char* schemaFile, int index, int type);
 int writeJSONSVGtoSVGFile(char* svgJSON, char* fileName, char* schemaFile);
-
+int addShapeToSVGFile(char* fileName, char* schemaFile, char* JSONstring, int type);
 /** Function to create an SVG object based on the contents of an SVG file.
  *@pre File name cannot be an empty string or NULL.
        File represented by this name must exist and must be readable.
@@ -1473,6 +1473,44 @@ char* SVGdetailsToJSON(char* fileName, char* schemaFile) {
     }    
 }
 
+int addShapeToSVGFile(char* fileName, char* schemaFile, char* JSONstring, int type) {
+    SVGimage* img = createValidSVGimage(fileName, schemaFile);
+    if(img == NULL) {
+        return -1;
+    }
+
+    if(type == 1) {
+        Rectangle* rect = JSONtoRect(JSONstring);
+        if(rect == NULL) {
+            return -2;
+        }
+        addComponent(img, RECT, rect);
+
+    } else if(type == 2) {
+        Circle* circle = JSONtoCircle(JSONstring);
+        if(circle == NULL) {
+            return -2;
+        }
+        addComponent(img, CIRC, circle);
+    }
+    
+
+    if(validateSVGimage(img, schemaFile) == false) {
+        deleteSVGimage(img);
+        return -3;
+    } else {
+        if(writeSVGimage(img, fileName) == false) {
+            deleteSVGimage(img);
+            return -4;
+        } else {
+            deleteSVGimage(img);
+            return 0;
+        }
+    }
+
+    
+}
+
 char* getRectJSONlist(char* fileName, char* schemaFile) {
     SVGimage* img = createValidSVGimage(fileName, schemaFile);
 
@@ -2085,6 +2123,7 @@ Circle* JSONtoCircle(const char* svgString) {
     if(circle->r < 0) {
         circle->r = 0;
     }
+    printf("[%s]\n", circleToString(circle));
     return circle;
 }
 

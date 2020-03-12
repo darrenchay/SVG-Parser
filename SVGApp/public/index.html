@@ -58,17 +58,19 @@
             <hr>
 
             <!-- UPLOAD NEW FILE BUTTON AND CREATE NEW SVG BUTTON -->
-            <form >
+            <form>
                 <div class="form-row form-group">
                     <!-- UPLOAD NEW FILE BUTTON -->
                     <div class="col-7 input-group">
-                        <div class="custom-file">
-                            <input type="file" class="custom-file-input" id="uploadFileInput" aria-describedby="upload-file-btn">
-                            <label class="custom-file-label" for="uploadFileInput">Choose file</label>
-                        </div>
-                        <div class="input-group-append">
-                            <button class="btn btn-dark" type="button" id="upload-file-btn">Upload Existing SVG</button>
-                        </div>
+                        <form id="upload-existing-SVG">
+                            <div class="custom-file">
+                                <input type="file" class="custom-file-input" id="uploadFileInput" aria-describedby="upload-file-btn">
+                                <label class="custom-file-label" for="uploadFileInput">Choose file</label>
+                            </div>
+                            <div class="input-group-append">
+                                <button class="btn btn-dark" type="submit" id="upload-file-btn">Upload Existing SVG</button>
+                            </div>
+                        </form>
                     </div>
                     <!-- CREATE SVG BUTTON -->
                     <button class="btn btn-primary col-2" data-toggle="modal" data-target="#create-svg-modal" id="create-svg-btn" type="button">Create New SVG</button>
@@ -157,10 +159,10 @@
                                 <tbody>
                                     <tr>
                                         <td>
-                                            <input type="text" readonly class="form-control-plaintext" id="titleInput" placeholder="Title will go here">
+                                            <input type="text" maxlength="255" readonly class="form-control-plaintext" id="titleInput" placeholder="Title will go here">
                                         </td>
                                         <td>
-                                            <input type="text" readonly class="form-control-plaintext" id="descInput" placeholder="Description will go here">
+                                            <input type="text" maxlength="255" readonly class="form-control-plaintext" id="descInput" placeholder="Description will go here">
                                         </td>
                                     </tr>
                                     <tr>
@@ -308,7 +310,7 @@
                 </div>
 
                 <div class="modal-body">
-                    <form ref='someform' id='someform'>
+                    <form ref='someform' id='add-circle-form'>
                         <!-- Setting X, Y, width, height, unit -->
                         <div class="input-group mb-3">
                             <div class="input-group-prepend">

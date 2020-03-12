@@ -38,13 +38,46 @@ $(document).ready(function() {
 
     // Event listener form example , we can use this instead explicitly listening for events
     // No redirects if possible
-    $('#someform').submit(function(e){
+    $(document).on('submit', '#upload-existing-SVG', (function(e){
+        var form = document.getElementById('upload-existing-SVG');
+        let formData = new formData(form);
+
+        formData.append('file', file);
+
+
+       /*  var fileInput = document.getElementById('uploadFileInput');
+        var file;
+        if (!fileInput) {
+            alert("Couldn't find the fileinput element.");
+        } else if (!fileInput.files) {
+            alert("This browser doesn't seem to support the `files` property of file inputs.");
+        } else if (!fileInput.files[0]) {
+            alert("Please select a file before clicking 'Load'");               
+        } else {
+        file = fileInput.files[0];
+        console.log(file);
+        } */
+
+        //let files = new formData();
+        //files.append('uploadFile',file)
         e.preventDefault();
+        console.log(formData);
         //Pass data to the Ajax call, so it gets passed to the server
-        $.ajax({
+        /* $.ajax({
             //Create an object for connecting to another waypoint
-        });
-    });
+            type: 'POST',
+            url: '/upload',
+            processData: false,
+            contentType: false,
+            data: formData,
+            success:function() {
+                console.log("Uploaded");
+            },
+            fail: function(error) {
+                console.log(error);
+            }
+        }); */
+    }));
 
     /* 
      * FILE LOG PANEL FUNCTIONS
@@ -55,7 +88,7 @@ $(document).ready(function() {
         $(this).siblings(".custom-file-label").addClass("selected").html(fileName);
     });
 
-    $('#upload-file-btn').click(function() {
+    /* $('#upload-file-btn').click(function() {
         var fileInput = document.getElementById('uploadFileInput');
         if (!fileInput) {
             alert("Um, couldn't find the fileinput element.");
@@ -75,7 +108,7 @@ $(document).ready(function() {
             console.log(file);
             //appendNewSVGFile(file);
           }
-    });
+    }); */
 
 
     /* 
@@ -177,7 +210,6 @@ $(document).ready(function() {
      */
 
 
-
     /* $('#create-svg-modal-btn').submit(function() {
         'use strict';
         window.addEventListener('load', function() {
@@ -238,24 +270,6 @@ $(document).ready(function() {
             $('#create-svg-modal').modal('toggle');
             console.log("Created File: " + fileName + ".svg");
         }
-    });
-
-    $('#add-circle-modal-btn').click(function() {
-        var cx = $('#cx-input').val();
-        var cy = $('#cy-input').val();
-        var r = $('#r-input').val();
-        var unit = $('#unit-circ-input').val();
-
-        console.log("Created circle with cx:" + cx + ", cy:" + cy + ", r:" + r + ", unit:" + unit);
-        $('#add-circle-modal').modal('toggle');
-        $('#contents-table-body').append('<tr>\
-                            <th class="col-component">Circle 3</th>\
-                            <td class="col-summary"> cx: ' + cx + unit + ' cy:' + cy + unit + ' r:' + r + unit + '</td>\
-                            <td class="col-attributes">0\
-                                <button class="btn btn-info btn-sm show-att-btn" data-toggle="modal" data-target="#show-attr-modal" type="button">Show</button>\
-                            </td>\
-                            </tr>');
-        //alert("Sucessfully created circle!");
     });
 
     $('#add-rect-modal-btn').click(function() {
@@ -404,6 +418,74 @@ $(document).ready(function() {
                                             </div>\
                                         </div>');
         $('#add-attribute-btn').prop('disabled', true);
+    });
+
+
+    /* 
+     * ADD CIRCLE 
+     */
+
+    $('#add-circle-modal-btn').click(function() {
+        var cx = $('#cx-input').val();
+        var cy = $('#cy-input').val();
+        var r = $('#r-input').val();
+        var unit = $('#unit-circ-input').val();
+
+        console.log("Created circle with cx:" + cx + ", cy:" + cy + ", r:" + r + ", unit:" + unit);
+        /* let circle;
+        circle.append('cx', cx);
+        circle.append('cy', cy);
+        circle.append('r', r);
+        circle.append('units', unit); */
+        let string = '{"cx":' + cx + ',"cy":' + cy + ',"r":' + r + ',"units":"' + unit + '"}';
+        console.log(string);
+        /* let JSONString = string.stringify(string);
+        console.log(JSONString); */
+
+        var selectedSVG = $('#chooseSVGDropdown').children("option:selected").html();
+        console.log(selectedSVG);
+        $.ajax({
+            type: 'get',            //Request type
+            dataType: 'int',       //Data type - we will use JSON for almost everything 
+            url: '/addShape',   //The server endpoint we are connecting to
+            data: {
+                JSONdata: string,
+                type: 2,
+                fileName: selectedSVG
+            },
+            success: function (data) {
+                $.ajax({
+                    type: 'get',            //Request type
+                    dataType: 'json',       //Data type - we will use JSON for almost everything 
+                    url: '/loadFiles',   //The server endpoint we are connecting to
+                    success: function (data) {
+                        loadFileLogTable(data);
+                        loadDropdownData(data);
+                        
+                        //We write the object to the console to show that the request was successful
+                        console.log("Successfully loaded table"); 
+                        //console.log(data);
+                    },
+                    fail: function(error) {
+                        console.log(error); 
+                    }
+                });      
+            },
+            fail: function(error) {
+                console.log(error); 
+            }
+    
+        });
+
+        $('#add-circle-modal').modal('toggle');
+        $('#contents-table-body').append('<tr>\
+                            <th class="col-component">Circle 3</th>\
+                            <td class="col-summary"> cx: ' + cx + unit + ' cy:' + cy + unit + ' r:' + r + unit + '</td>\
+                            <td class="col-attributes">0\
+                                <button class="btn btn-info btn-sm show-att-btn" data-toggle="modal" data-target="#show-attr-modal" type="button">Show</button>\
+                            </td>\
+                            </tr>');
+        //alert("Sucessfully created circle!");
     });
 
 });
