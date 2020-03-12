@@ -119,15 +119,6 @@ $(document).ready(function() {
     
         });
     });
-    
-    $("#add-attribute-btn").click(function() {
-        $('#addAtributeInModal').append('<div class="form-group row">\
-                                        <label for="FillRect2" class="col-sm-2 col-form-label">New</label>\
-                                        <div class="col-sm-10">\
-                                        <input type="text" class="form-control" placeholder="Val" id="FillRect2">\
-                                        </div>\
-                                        </div>')
-    })
 
     /* Scaling circle */
     $(document).on('input', '#scale-circ-range', function() {
@@ -294,41 +285,89 @@ $(document).ready(function() {
     });
 
     $(document).on("click", ".edit-attr-btns", function() {
-        console.log(this.id);
-        console.log("clicked: " + this.id);
-        let string = this.id;
-        let data = string.split('---');
+
+        let temp = this.id;
+        let data = temp.split('--');
+        let name = data[0];
 
         /* Making texts editable */
-        document.getElementById(data[0]).readOnly = false;
-        $("#"+data[0]).addClass("border border-dark");
-        document.getElementById(data[1]).readOnly = false;
-        $("#"+data[1]).addClass("border border-dark");
+        document.getElementById('value-' + name).readOnly = false;
+        $("#value-"+ name).addClass("border border-dark");
 
         /* Hiding edit btn, showing save btn */
         document.getElementById(this.id).style.display = "none";
-        document.getElementById(data[0] + "-----" + data[1]).style.display = "block";
-        console.log(this.id + " can now be edited");
+        document.getElementById(name + "--save-btn").style.display = "block";
+        $('#add-attribute-btn').prop('disabled', true);
+        console.log(name+ " can now be edited");
         
     });
 
     $(document).on("click", ".save-edit-attr-btns", function() {
-        console.log(this.id);
-        console.log("clicked: " + this.id);
-        let string = this.id;
-        let data = string.split('-----');
+        let name;
+        if(this.id == "tempSaveAttBtnID") {
+            name = $('#tempNameInput').val();
+            console.log("new: [" + name);
+        } else {
+            let temp = this.id;
+            let data = temp.split('--');
+            name = data[0];
+        }
 
-        /* Making texts editable */
-        document.getElementById(data[0]).readOnly = true;
-        $("#"+data[0]).removeClass("border border-dark");
-        document.getElementById(data[1]).readOnly = true;
-        $("#"+data[1]).removeClass("border border-dark");
+        console.log(name);
+        if(this.id == "tempSaveAttBtnID") {
+            console.log("here");
+            if(document.getElementById('tempValueInput').value.length == 0 || document.getElementById('tempNameInput').value.length == 0 ) {
+                alert("Please enter a name and value");
+            } else {
+                $('#tempSaveAttBtnID').attr("id", name + "--save-btn");
+                $('#tempNameInput').attr("id", name);
+                $('#tempValueInput').attr("id", "value-" + name);
+                $('#tempEditAttBtnID').attr("id", name + "--edit-btn");
+                console.log(this.id);
+                /* Making texts readonly */
+                document.getElementById('value-' + name).readOnly = true;
+                $("#value-"+name).removeClass("border border-dark");
+                document.getElementById(name).readOnly = true;
+                $("#"+name).removeClass("border border-dark");
 
-        /* Hiding save btn, showing edit btn */
-        document.getElementById(this.id).style.display = "none";
-        document.getElementById(data[0] + "---" + data[1]).style.display = "block";
-        console.log(this.id + " can no longer be edited");
-        
+                /* Hiding save btn, showing edit btn */
+                document.getElementById(name + "--save-btn").style.display = "none";
+                document.getElementById(name + "--edit-btn").style.display = "block";
+                $('#add-attribute-btn').prop('disabled', false);
+                
+                console.log(this.id + " can no longer be edited");
+            }
+        } else {
+            if(document.getElementById('value-' + name).value.length == 0 || document.getElementById(name).value.length == 0 ) {
+                alert("Please enter a name and value");
+            } else {
+                /* Making texts readonly */
+                document.getElementById('value-' + name).readOnly = true;
+                $("#value-"+name).removeClass("border border-dark");
+                document.getElementById(name).readOnly = true;
+                $("#"+name).removeClass("border border-dark");
+    
+                /* Hiding save btn, showing edit btn */
+                document.getElementById(name + "--save-btn").style.display = "none";
+                document.getElementById(name + "--edit-btn").style.display = "block";
+                $('#add-attribute-btn').prop('disabled', false);
+                
+                console.log(this.id + " can no longer be edited");
+            }
+        }
+    });
+
+    $("#add-attribute-btn").click(function() {
+        $('#addAtributeInModal').append('<div class="row">\
+                                            <input type="text" id="tempNameInput" class="form-control-plaintext col-4 border border-dark">\
+                                            <label class="col-1"> : </label>\
+                                            <input type="text" id="tempValueInput" class="form-control-plaintext col-4 border border-dark">\
+                                            <div class="col-3">\
+                                                <button type="button" id="tempEditAttBtnID" style="display: none" class="btn btn-outline-secondary edit-attr-btns ">Edit</button>\
+                                                <button type="button" id="tempSaveAttBtnID" style="display: block" class="btn btn-success save-edit-attr-btns ">Save</button>\
+                                            </div>\
+                                        </div>');
+        $('#add-attribute-btn').prop('disabled', true);
     });
 
 });
@@ -428,19 +467,13 @@ function loadInfoSVG(data) {
 function loadAttributesList(attrList) {
     for(var i = 0; i < attrList.length; i++) {
         $('#addAtributeInModal').append('<div class="row">\
-                                            <div class="col-4">\
-                                                <input type="text" readonly class="form-control-plaintext" id="' + attrList[i].name  + '" value="'+ attrList[i].name +'">\
-                                            </div>\
-                                            <div class="col-1">\
-                                                <label> : </label>\
-                                            </div>\
-                                            <div class="col-4">\
-                                                <input type="text" readonly class="form-control-plaintext" id="' + attrList[i].value  + '" value="'+ attrList[i].value +'">\
-                                            </div>\
-                                            <div class="col-3">\
-                                                <button type="button" id="' + attrList[i].name  + "---" + attrList[i].value  + '" class="btn btn-outline-secondary edit-attr-btns ">Edit</button>\
-                                                <button type="button" id="' + attrList[i].name  + "-----" + attrList[i].value  + '" class="btn btn-success save-edit-attr-btns ">Save</button>\
-                                            </div>\
-                                        </div>');
+                                    <input type="text" readonly class="form-control-plaintext col-4" id="' + attrList[i].name + '" value="'+ attrList[i].name +'">\
+                                    <label class="col-1"> : </label>\
+                                    <input type="text" readonly class="form-control-plaintext col-4" id="value-' + attrList[i].name  + '" value="'+ attrList[i].value +'">\
+                                <div class="col-3">\
+                                    <button type="button" id="' + attrList[i].name  + '--edit-btn" class="btn btn-outline-secondary edit-attr-btns ">Edit</button>\
+                                    <button type="button" id="' + attrList[i].name  + '--save-btn" class="btn btn-success save-edit-attr-btns ">Save</button>\
+                                </div>\
+                            </div>');
     }
 }
