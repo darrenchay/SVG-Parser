@@ -292,6 +292,45 @@ $(document).ready(function() {
             });
         })
     });
+
+    $(document).on("click", ".edit-attr-btns", function() {
+        console.log(this.id);
+        console.log("clicked: " + this.id);
+        let string = this.id;
+        let data = string.split('---');
+
+        /* Making texts editable */
+        document.getElementById(data[0]).readOnly = false;
+        $("#"+data[0]).addClass("border border-dark");
+        document.getElementById(data[1]).readOnly = false;
+        $("#"+data[1]).addClass("border border-dark");
+
+        /* Hiding edit btn, showing save btn */
+        document.getElementById(this.id).style.display = "none";
+        document.getElementById(data[0] + "-----" + data[1]).style.display = "block";
+        console.log(this.id + " can now be edited");
+        
+    });
+
+    $(document).on("click", ".save-edit-attr-btns", function() {
+        console.log(this.id);
+        console.log("clicked: " + this.id);
+        let string = this.id;
+        let data = string.split('-----');
+
+        /* Making texts editable */
+        document.getElementById(data[0]).readOnly = true;
+        $("#"+data[0]).removeClass("border border-dark");
+        document.getElementById(data[1]).readOnly = true;
+        $("#"+data[1]).removeClass("border border-dark");
+
+        /* Hiding save btn, showing edit btn */
+        document.getElementById(this.id).style.display = "none";
+        document.getElementById(data[0] + "---" + data[1]).style.display = "block";
+        console.log(this.id + " can no longer be edited");
+        
+    });
+
 });
 
 /* Adds a new row to the file log table for the file input */
@@ -353,7 +392,7 @@ function loadInfoSVG(data) {
         let rectangle = data.rects[i];
         $('#contents-table-body').append('<tr style="text-align: center">\
                                             <th class="col-component">Rectangle ' + (i - (-1)) + '</th>\
-                                            <td class="col-summary">Upper left corner: x = ' + rectangle.x + rectangle.units + ', y = ' + rectangle.y + rectangle.units + 'Width: ' + rectangle.w + rectangle.units + ', Height: ' + rectangle.h + rectangle.units + '</td>\
+                                            <td class="col-summary">Upper left corner: x = ' + rectangle.x + rectangle.units + ', y = ' + rectangle.y + rectangle.units + ', Width: ' + rectangle.w + rectangle.units + ', Height: ' + rectangle.h + rectangle.units + '</td>\
                                             <td class="col-attributes"> ' + rectangle.numAttr + '  <button class="btn btn-info btn-sm show-att-btn" id="show-attr-btn" data-toggle="modal" data-target="#show-attr-modal" type="button">Show</button></td>\
                                         </tr>');
     }
@@ -399,7 +438,8 @@ function loadAttributesList(attrList) {
                                                 <input type="text" readonly class="form-control-plaintext" id="' + attrList[i].value  + '" value="'+ attrList[i].value +'">\
                                             </div>\
                                             <div class="col-3">\
-                                                <button type="button" id="' + attrList[i].name  + " " + attrList[i].value  + '" class="btn btn-outline-secondary">Edit</button>\
+                                                <button type="button" id="' + attrList[i].name  + "---" + attrList[i].value  + '" class="btn btn-outline-secondary edit-attr-btns ">Edit</button>\
+                                                <button type="button" id="' + attrList[i].name  + "-----" + attrList[i].value  + '" class="btn btn-success save-edit-attr-btns ">Save</button>\
                                             </div>\
                                         </div>');
     }

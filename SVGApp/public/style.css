@@ -58,7 +58,7 @@ input[type=submit], button {
     margin-right: 5px;
 }
 
-#confirm-edit-title, #confirm-edit-desc {
+#confirm-edit-title, #confirm-edit-desc, .save-edit-attr-btns {
     display: none;
 }
 
