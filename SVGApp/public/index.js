@@ -38,14 +38,14 @@ $(document).ready(function() {
 
     // Event listener form example , we can use this instead explicitly listening for events
     // No redirects if possible
-    $(document).on('submit', '#upload-existing-SVG', (function(e){
+    /* $(document).on('submit', '#upload-existing-SVG', (function(e){
         var form = document.getElementById('upload-existing-SVG');
         let formData = new formData(form);
 
         formData.append('file', file);
 
 
-       /*  var fileInput = document.getElementById('uploadFileInput');
+        var fileInput = document.getElementById('uploadFileInput');
         var file;
         if (!fileInput) {
             alert("Couldn't find the fileinput element.");
@@ -56,14 +56,14 @@ $(document).ready(function() {
         } else {
         file = fileInput.files[0];
         console.log(file);
-        } */
+        }
 
         //let files = new formData();
         //files.append('uploadFile',file)
         e.preventDefault();
         console.log(formData);
         //Pass data to the Ajax call, so it gets passed to the server
-        /* $.ajax({
+        $.ajax({
             //Create an object for connecting to another waypoint
             type: 'POST',
             url: '/upload',
@@ -76,8 +76,8 @@ $(document).ready(function() {
             fail: function(error) {
                 console.log(error);
             }
-        }); */
-    }));
+        });
+    })); */
 
     /* 
      * FILE LOG PANEL FUNCTIONS

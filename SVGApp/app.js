@@ -45,7 +45,7 @@ app.post('/upload', function(req, res) {
     return res.status(400).send('No files were uploaded.');
   }
  
-  let uploadFile = req.files.uploadFile;
+  let uploadFile = req.files.uploadSVG;
 
   /* console.log(uploadFile);
   console.log("TESTING"); */

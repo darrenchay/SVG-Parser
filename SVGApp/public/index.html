@@ -58,25 +58,25 @@
             <hr>
 
             <!-- UPLOAD NEW FILE BUTTON AND CREATE NEW SVG BUTTON -->
-            <form>
+            <form method="post" action="/upload" enctype="multipart/form-data">
                 <div class="form-row form-group">
                     <!-- UPLOAD NEW FILE BUTTON -->
                     <div class="col-7 input-group">
-                        <form id="upload-existing-SVG">
-                            <div class="custom-file">
-                                <input type="file" class="custom-file-input" id="uploadFileInput" aria-describedby="upload-file-btn">
-                                <label class="custom-file-label" for="uploadFileInput">Choose file</label>
-                            </div>
-                            <div class="input-group-append">
-                                <button class="btn btn-dark" type="submit" id="upload-file-btn">Upload Existing SVG</button>
-                            </div>
-                        </form>
+                        <div class="custom-file">
+                            <input type="file" class="custom-file-input" accept=".svg" name="uploadSVG" id="uploadFileInput" aria-describedby="upload-file-btn">
+                            <label class="custom-file-label" for="uploadFileInput">Choose file</label>
+                        </div>
+                        <div class="input-group-append">
+                            <button class="btn btn-dark" type="submit" id="upload-file-btn">Upload Existing SVG</button>
+                        </div>
                     </div>
                     <!-- CREATE SVG BUTTON -->
                     <button class="btn btn-primary col-2" data-toggle="modal" data-target="#create-svg-modal" id="create-svg-btn" type="button">Create New SVG</button>
                 </div>
-                
             </form>
+                
+                
+        
         </div>
     </div>
 
