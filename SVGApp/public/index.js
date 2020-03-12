@@ -272,25 +272,6 @@ $(document).ready(function() {
         }
     });
 
-    $('#add-rect-modal-btn').click(function() {
-        var x = $('#x-input').val();
-        var y = $('#y-input').val();
-        var width = $('#width-input').val();
-        var height = $('#height-input').val();
-        var unit = $('#unit-rect-input').val();
-
-        console.log("Created Rect with x:" + x + ", y:" + y + ", width:" + width + ", height:" + height + ", unit:" + unit);
-        $('#add-rect-modal').modal('toggle');
-        $('#contents-table-body').append('<tr>\
-                            <th class="col-component">Rectangle 3</th>\
-                            <td class="col-summary"> Upper left corner: x = ' + x + unit + ', y = ' + y + unit + ', Width:' + width + unit + ', Height:' + height + unit + '</td>\
-                            <td class="col-attributes">0\
-                                <button class="btn btn-info btn-sm show-att-btn" data-toggle="modal" data-target="#show-attr-modal" type="button">Show</button>\
-                            </td>\
-                            </tr>');
-        //alert("Sucessfully created rectangle!");
-    });
-
     /* Display the right attribute modal for the specific component */
     $(document).on("click", ".show-att-btn", function() {
         $('#addAtributeInModal').html('<div class="row">\
@@ -478,14 +459,74 @@ $(document).ready(function() {
         });
 
         $('#add-circle-modal').modal('toggle');
-        $('#contents-table-body').append('<tr>\
+        /* $('#contents-table-body').append('<tr>\
                             <th class="col-component">Circle 3</th>\
                             <td class="col-summary"> cx: ' + cx + unit + ' cy:' + cy + unit + ' r:' + r + unit + '</td>\
                             <td class="col-attributes">0\
                                 <button class="btn btn-info btn-sm show-att-btn" data-toggle="modal" data-target="#show-attr-modal" type="button">Show</button>\
                             </td>\
-                            </tr>');
+                            </tr>'); */
         //alert("Sucessfully created circle!");
+    });
+
+
+    /* ADD RECTANGLE MODAL */
+    $('#add-rect-modal-btn').click(function() {
+        var x = $('#x-input').val();
+        var y = $('#y-input').val();
+        var width = $('#width-input').val();
+        var height = $('#height-input').val();
+        var unit = $('#unit-rect-input').val();
+
+        console.log("Created Rect with x:" + x + ", y:" + y + ", width:" + width + ", height:" + height + ", unit:" + unit);
+        let string = '{"x":' + x + ',"y":' + y + ',"w":' + width + ',"h":' + height + ',"units":"' + unit + '"}';
+        console.log(string);
+
+
+        var selectedSVG = $('#chooseSVGDropdown').children("option:selected").html();
+        console.log(selectedSVG);
+        $.ajax({
+            type: 'get',            //Request type
+            dataType: 'int',       //Data type - we will use JSON for almost everything 
+            url: '/addShape',   //The server endpoint we are connecting to
+            data: {
+                JSONdata: string,
+                type: 1,
+                fileName: selectedSVG
+            },
+            success: function (data) {
+                $.ajax({
+                    type: 'get',            //Request type
+                    dataType: 'json',       //Data type - we will use JSON for almost everything 
+                    url: '/loadFiles',   //The server endpoint we are connecting to
+                    success: function (data) {
+                        loadFileLogTable(data);
+                        loadDropdownData(data);
+                        
+                        //We write the object to the console to show that the request was successful
+                        console.log("Successfully loaded table"); 
+                        //console.log(data);
+                    },
+                    fail: function(error) {
+                        console.log(error); 
+                    }
+                });      
+            },
+            fail: function(error) {
+                console.log(error); 
+            }
+    
+        });
+
+        $('#add-rect-modal').modal('toggle');
+        /* $('#contents-table-body').append('<tr>\
+                            <th class="col-component">Rectangle 3</th>\
+                            <td class="col-summary"> Upper left corner: x = ' + x + unit + ', y = ' + y + unit + ', Width:' + width + unit + ', Height:' + height + unit + '</td>\
+                            <td class="col-attributes">0\
+                                <button class="btn btn-info btn-sm show-att-btn" data-toggle="modal" data-target="#show-attr-modal" type="button">Show</button>\
+                            </td>\
+                            </tr>'); */
+        //alert("Sucessfully created rectangle!");
     });
 
 });
