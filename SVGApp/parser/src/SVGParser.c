@@ -54,6 +54,7 @@ char* getCircJSONlist(char* fileName, char* schemaFile);
 char* getPathJSONlist(char* fileName, char* schemaFile);
 char* getGroupJSONlist(char* fileName, char* schemaFile);
 char* getAttrJSONlist(char* fileName, char* schemaFile, int index, int type);
+int writeJSONSVGtoSVGFile(char* svgJSON, char* fileName, char* schemaFile);
 
 /** Function to create an SVG object based on the contents of an SVG file.
  *@pre File name cannot be an empty string or NULL.
@@ -1413,6 +1414,26 @@ void addComponent(SVGimage* image, elementType type, void* newElement) {
     } else if (type == PATH) {
         insertBack(image->paths, newElement);
     }
+}
+
+int writeJSONSVGtoSVGFile(char* svgJSON, char* fileName, char* schemaFile) {
+    SVGimage* img = JSONtoSVG(svgJSON);
+    if(validateSVGimage(img, schemaFile) == true) {
+        if(writeSVGimage(img, fileName) == true) {
+            /* Successfully written */
+            deleteSVGimage(img);
+            return 0;
+        } else {
+            /* Error writing to file */
+            deleteSVGimage(img);
+            return -1;
+        }
+    } else {
+        /* Invalid SVG format */
+        deleteSVGimage(img);
+        return -2;
+    }
+    
 }
 
 /* Creates an SVGimage from file and converts it to a JSON string */

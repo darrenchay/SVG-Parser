@@ -193,5 +193,30 @@ app.get('/loadAttributes', function(req, res) {
 
 });
 
+app.get('/createFile', function(req, res) {
+  let sharedLib = ffi.Library('./libsvgparse', {
+    'writeJSONSVGtoSVGFile' : [ 'int', [ 'string', 'string', 'string' ] ],
+  });
+
+  let fileName = req.query.fileName;
+  console.log(fileName);
+
+  let titleDescJSON = req.query.titleDesc;
+  console.log(titleDescJSON);
+
+  let returnVal = sharedLib.writeJSONSVGtoSVGFile(titleDescJSON, 'uploads/' + fileName + ".svg", 'svg.xsd');
+  console.log(returnVal);
+
+  /* let titleAndDescAsJSON = sharedLib.SVGdetailsToJSON('uploads/' + fileName, 'svg.xsd');
+  console.log(titleAndDescAsJSON);
+
+  let fileData = JSON.parse(titleAndDescAsJSON);
+  console.log(fileData.desc); */
+  res.send({
+    success: 1
+  });
+
+});
+
 app.listen(portNum);
 console.log('Running app at localhost: ' + portNum);

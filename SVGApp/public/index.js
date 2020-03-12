@@ -34,6 +34,7 @@ $(document).ready(function() {
             console.log(error); 
         }
     });
+    
 
     // Event listener form example , we can use this instead explicitly listening for events
     // No redirects if possible
@@ -52,17 +53,6 @@ $(document).ready(function() {
     $(".custom-file-input").on("change", function() {
         var fileName = $(this).val().split("\\").pop();
         $(this).siblings(".custom-file-label").addClass("selected").html(fileName);
-    });
-
-    $('#create-svg-modal-btn').click(function() {
-        var fileName = $('#fileName').val();
-        if(!fileName) {
-            console.log("invalid file name");
-
-        } else {
-            console.log("Created File: " + fileName + ".svg");
-            $('#create-svg-modal').modal('toggle');
-        }
     });
 
     $('#upload-file-btn').click(function() {
@@ -188,7 +178,7 @@ $(document).ready(function() {
 
 
 
-    $('#create-svg-modal-btn').submit(function() {
+    /* $('#create-svg-modal-btn').submit(function() {
         'use strict';
         window.addEventListener('load', function() {
             // Fetch all the forms we want to apply custom Bootstrap validation styles to
@@ -199,11 +189,55 @@ $(document).ready(function() {
                 if (form.checkValidity() === false) {
                 event.preventDefault();
                 event.stopPropagation();
+                alert("No file name");
                 }
                 form.classList.add('was-validated');
             }, false);
             });
         }, false);
+    }); */
+
+    $('#create-svg-modal-btn').click(function() {
+        var fileName = $('#fileName').val();
+        if(!fileName) {
+            console.log("invalid file name");
+            alert("No file name");
+
+        } else {
+            $.ajax({
+                type: 'get',            //Request type
+                dataType: 'json',       //Data type - we will use JSON for almost everything 
+                url: '/createFile',   //The server endpoint we are connecting to
+                data: {
+                    fileName: fileName,
+                    titleDesc: JSON.stringify(convertTitleAndDesc("", ""))
+                },
+                success: function (data) {
+                    console.log("created file successfully");  
+                    $.ajax({
+                        type: 'get',            //Request type
+                        dataType: 'json',       //Data type - we will use JSON for almost everything 
+                        url: '/loadFiles',   //The server endpoint we are connecting to
+                        success: function (data) {
+                            loadFileLogTable(data);
+                            loadDropdownData(data);
+                            
+                            //We write the object to the console to show that the request was successful
+                            console.log("Successfully loaded table"); 
+                            //console.log(data);
+                        },
+                        fail: function(error) {
+                            console.log(error); 
+                        }
+                    });               
+                },
+                fail: function(error) {
+                    console.log(error); 
+                }
+            });
+            $('#create-svg-modal').modal('toggle');
+            console.log("Created File: " + fileName + ".svg");
+        }
     });
 
     $('#add-circle-modal-btn').click(function() {
@@ -273,8 +307,10 @@ $(document).ready(function() {
                     fileName: selectedSVG
                 },
                 success: function (data) {
-                    loadAttributesList(data.attrList);
-                    console.log(data,attrList);
+                    if(data.attrList.length != 0) {
+                        loadAttributesList(data.attrList);
+                        console.log(data.attrList);
+                    }
                 },
                 fail: function(error) {
                     console.log(error); 
@@ -388,6 +424,7 @@ function appendNewSVGFile(file) {
 
 /* generates the file log table */
 function loadFileLogTable(data) {
+    $('#file-table-body').html('');
     if(data.fileList.length === 0) {
         console.log("No files");
         $('#file-table-body').append('<tr> <td colspan= "7" class="align-middle"><b>No files to show</b></td> </tr>');
@@ -401,6 +438,7 @@ function loadFileLogTable(data) {
 
 /* Loads all options in the dropdown upon page load */
 function loadDropdownData(data) {
+    $('#chooseSVGDropdown').html('');
     let files = data.fileList;
     for(var i = 0; i < files.length; i++) {
         $('#chooseSVGDropdown').append('<option value="' + files[i][0] + '">' + files[i][0] + '</option>');
@@ -476,4 +514,9 @@ function loadAttributesList(attrList) {
                                 </div>\
                             </div>');
     }
+}
+
+function convertTitleAndDesc(title, desc) {
+    let JSONString = '{"title":"' + title + '","descr":"' + desc + '"}';
+    return JSONString;
 }
