@@ -236,34 +236,41 @@
     <hr>
 
 
-        <!-- OTHER UTILITIES SECTION (Add shape and scale shape) -->
-        <div class="card">
+    <!-- OTHER UTILITIES SECTION (Add shape and scale shape) -->
+    <div class="card">
         <div class="card-header">
             <h5 class="card-title">Utility Panel</h5>
         </div>
         <div class="card-body">
             <div class="table-responsive">
+                <div class="input-group mb-3">
+                    <div class="input-group-prepend">
+                      <label class="input-group-text" for="addShapeDropDown">Choose SVG file</label>
+                    </div>
+                    <select class="custom-select" id="addShapeDropDown" required>
+                    </select>
+                </div>
                 <div>
                     <!-- CIRCLE UTILITIES SECTION -->
-                    <button class="btn btn-secondary btn-space col-2" data-toggle="modal" data-target="#add-circle-modal" id="add-circle" type="button">Add Circle</button>
-                    <button class="btn btn-secondary btn-space col-2" id="scale-circle-btn" type="button">Scale Circle</button>
+                    <button class="btn btn-secondary btn-space col-2" disabled data-toggle="modal" data-target="#add-circle-modal" id="add-circle-btn" type="button">Add Circle</button>
+                    <button class="btn btn-secondary btn-space col-2" disabled id="scale-circle-btn" type="button">Scale Circle</button>
         
                     <form class="col-10">
                         <div class="form-group form-inline">
-                            <label for="scale-circ-range" id="circ-range-lbl">Example range</label>
-                            <input type="range" class="form-control-range" min="0" max="10" step="0.5" id="scale-circ-range">
+                            <label for="scale-circ-range" id="circ-range-lbl">Scale factor: </label>
+                            <input type="range" class="form-control-range" min="0" max="10" step="0.1" id="scale-circ-range">
                         </div>
                     </form>
                 </div>
-                <hr>                     
+                <hr height="5">                     
                 <div>
                     <!-- RECTANGLE UTILITIES SECTION -->   
-                    <button class="btn btn-secondary btn-space col-2" data-toggle="modal" data-target="#add-rect-modal" id="add-rect" type="button">Add Rectangle</button>
-                    <button class="btn btn-secondary btn-space col-2" id="scale-rect-btn" type="button">Scale Rectangle</button>
+                    <button class="btn btn-secondary btn-space col-2" disabled data-toggle="modal" data-target="#add-rect-modal" id="add-rect-btn" type="button">Add Rectangle</button>
+                    <button class="btn btn-secondary btn-space col-2" disabled id="scale-rect-btn" type="button">Scale Rectangle</button>
                     <form class="col-10">
                         <div class="form-group form-inline">
-                            <label for="scale-rect-range" id="rect-range-lbl">Example range</label>
-                            <input type="range" class="form-control-range" min="0" max="10" step="0.5" id="scale-rect-range">
+                            <label for="scale-rect-range" id="rect-range-lbl">Scale factor: </label>
+                            <input type="range" class="form-control-range" min="0" max="10" step="0.1" id="scale-rect-range">
                         </div>
                     </form>
                 </div>

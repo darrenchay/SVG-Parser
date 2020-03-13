@@ -258,13 +258,30 @@ app.get('/addShape', function(req, res) {
   let returnVal = sharedLib.addShapeToSVGFile('uploads/' + fileName, 'svg.xsd', data, type);
   console.log(returnVal);
 
-  /* let titleAndDescAsJSON = sharedLib.SVGdetailsToJSON('uploads/' + fileName, 'svg.xsd');
-  console.log(titleAndDescAsJSON);
-
-  let fileData = JSON.parse(titleAndDescAsJSON);
-  console.log(fileData.desc); */
   res.send({
-    success: returnVal
+    returnData: returnVal
+  });
+
+});
+
+app.get('/scaleShape', function(req, res) {
+  let sharedLib = ffi.Library('./libsvgparse', {
+    'scaleShape' : [ 'int', [ 'string', 'string', 'string', 'int' ] ],
+  });
+
+  let fileName = req.query.fileName;
+  console.log(fileName);
+
+  let data = req.query.scale;
+  console.log(data);
+
+  let type = req.query.type;
+
+  let returnVal = sharedLib.scaleShape('uploads/' + fileName, 'svg.xsd', data, type);
+  console.log(returnVal);
+
+  res.send({
+    returnData: returnVal
   });
 
 });

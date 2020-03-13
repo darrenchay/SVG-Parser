@@ -2,6 +2,13 @@
 $(document).ready(function() {
     // On page-load AJAX
     $('#show-attr-btn').prop('disabled', true);
+    $('#add-circle-btn').prop('disabled', true);
+    $('#scale-circle-btn').prop('disabled', true);
+    $('#add-rect-btn').prop('disabled', true);
+    $('#scale-rect-btn').prop('disabled', true);
+    $('#edit-title').prop('disabled', true);
+    $('#edit-desc').prop('disabled', true);
+    
 
     $.ajax({
         type: 'get',            //Request type
@@ -46,29 +53,6 @@ $(document).ready(function() {
         $(this).siblings(".custom-file-label").addClass("selected").html(fileName);
     });
 
-    /* $('#upload-file-btn').click(function() {
-        var fileInput = document.getElementById('uploadFileInput');
-        if (!fileInput) {
-            alert("Um, couldn't find the fileinput element.");
-          }
-          else if (!fileInput.files) {
-            alert("This browser doesn't seem to support the `files` property of file inputs.");
-          }
-          else if (!fileInput.files[0]) {
-            alert("Please select a file before clicking 'Load'");               
-          }
-          else {
-            var file = fileInput.files[0];
-            //var fr = new FileReader();
-            //fr.onload = receivedText;
-            //fr.readAsText(file);
-            //fr.readAsDataURL(file);
-            console.log(file);
-            //appendNewSVGFile(file);
-          }
-    }); */
-
-
     /* 
      * SVG VIEW PANEL FUNCTIONS
      */
@@ -88,7 +72,8 @@ $(document).ready(function() {
             success: function (data) {
                 console.log("Title: " + data.title);
                 console.log("Desc: " + data.desc);
-
+                $('#edit-title').prop('disabled', false);
+                $('#edit-desc').prop('disabled', false);
                 loadInfoSVG(data);
                 
             },
@@ -105,52 +90,8 @@ $(document).ready(function() {
         var selectedSVG = $(this).children("option:selected").html();
         $('#show-attr-btn').prop('disabled', false);
         console.log("Selected: " + selectedSVG);
-        /* $.ajax({
-            type: 'get',            //Request type
-            dataType: 'json',       //Data type - we will use JSON for almost everything 
-            url: '/loadFileData',   //The server endpoint we are connecting to
-            data: {
-                fileName: selectedSVG
-            },
-            success: function (data) {
-                console.log("Title: " + data.title);
-                console.log("Desc: " + data.desc);
-
-                //loadInfoSVG(data);
-                
-            },
-            fail: function(error) {
-                // Non-200 return, do something with error
-                //$('#file-log-table').html('<tr><td colspan="7">No files</td></tr>');
-                console.log(error); 
-            }
-    
-        }); */
     });
 
-    /* Scaling circle */
-    $(document).on('input', '#scale-circ-range', function() {
-        $('#circ-range-lbl').html("Scale Circle:" + $(this).val());
-        //console.log("val: " + $(this).val());
-    });
-
-    /* Updating scale circle */
-    $('#scale-circle-btn').click(function(){
-        var scaleVal = $('#scale-circ-range').val();
-        console.log("val: " + scaleVal);
-    });
-
-    /* Scaling rect */
-    $(document).on('input', '#scale-rect-range', function() {
-        $('#rect-range-lbl').html("Scale Rectangle:" + $(this).val());
-        //console.log("val: " + $(this).val());
-    });
-
-    /* Updating scale rect */
-    $('#scale-rect-btn').click(function(){
-        var scaleVal = $('#scale-rect-range').val();
-        console.log("val: " + scaleVal);
-    });
     
     document.getElementById('edit-title').onclick = function () {
         document.getElementById('titleInput').readOnly = false;
@@ -183,7 +124,6 @@ $(document).ready(function() {
         document.getElementById('confirm-edit-desc').style.display = "none";
         console.log("Desc saved");
     } 
-
 
     /* 
      * MODAL FUNCTIONS
@@ -391,6 +331,7 @@ $(document).ready(function() {
                                                         </div>\
                                                     </div>');
                     $('#add-attribute-btn').prop('disabled', true);
+                    $('#save-attribute-changes').prop('disabled', true);
                 });
 
                 $('#save-attribute-changes').click(function() {
@@ -459,14 +400,6 @@ $(document).ready(function() {
     
         });
         
-
-        /* $(this).parents("tr").find("th").each(function() {
-            var componentName = $(this).text();
-            var componentParts = componentName.split(' ');
-            $('#showAttrModal').html("Attribute List of " + componentName);
-            console.log(componentName + "parts: " + componentParts[0] + "::" + componentParts[1]);
-            
-        }) */
     });
     
 
@@ -484,6 +417,7 @@ $(document).ready(function() {
         document.getElementById(this.id).style.display = "none";
         document.getElementById(name + "--save-btn").style.display = "block";
         $('#add-attribute-btn').prop('disabled', true);
+        $('#save-attribute-changes').prop('disabled', true);
         console.log(name+ " can now be edited");
         
     });
@@ -551,6 +485,8 @@ $(document).ready(function() {
                             $('#add-attribute-btn').prop('disabled', false);
                             
                             console.log(this.id + " can no longer be edited");
+                            $('#save-attribute-changes').prop('disabled', false);
+
                         }
                     },
                     fail: function(error) {
@@ -594,6 +530,7 @@ $(document).ready(function() {
                             $('#add-attribute-btn').prop('disabled', false);
                             
                             console.log(this.id + " can no longer be edited");
+                            $('#save-attribute-changes').prop('disabled', false);
                         }
                     },
                     fail: function(error) {
@@ -605,7 +542,90 @@ $(document).ready(function() {
         }
     });
 
+    /* 
+     * UTILITY PANEL
+     */
 
+    $("#addShapeDropDown").change(function(){
+        var selectedSVG = $(this).children("option:selected").html();
+        $('#add-circle-btn').prop('disabled', false);
+        $('#scale-circle-btn').prop('disabled', false);
+        $('#add-rect-btn').prop('disabled', false);
+        $('#scale-rect-btn').prop('disabled', false);
+        console.log("Selected: " + selectedSVG);
+    });
+
+    /* Scaling circle */
+    $(document).on('input', '#scale-circ-range', function() {
+        $('#circ-range-lbl').html("Scale factor circle:" + $(this).val());
+        //console.log("val: " + $(this).val());
+    });
+
+    /* Updating scale circle */
+    $('#scale-circle-btn').click(function(){
+        var selectedSVG = $('#addShapeDropDown').children("option:selected").html();
+        var scaleVal = $('#scale-circ-range').val();
+        $.ajax({
+            type: 'get',            //Request type
+            dataType: 'json',       //Data type - we will use JSON for almost everything 
+            url: '/scaleShape',   //The server endpoint we are connecting to
+            data: {
+                type: 2,
+                scale: scaleVal,
+                fileName: selectedSVG,
+            },
+            success: function(data) {
+                returnVal = data.returnData;
+                if(returnVal == 0) {
+                    location.reload();
+                } else {
+                    alert("ERROR: couldn't scale rectangles");
+                }
+                console.log(returnVal);
+
+            },
+            fail: function(error) {
+                //console.log(error); 
+            }
+            
+        });
+    });
+
+    /* Scaling rect */
+    $(document).on('input', '#scale-rect-range', function() {
+        $('#rect-range-lbl').html("Scale Rectangle:" + $(this).val());
+        //console.log("val: " + $(this).val());
+    });
+
+    /* Updating scale rect */
+    $('#scale-rect-btn').click(function(){
+        var selectedSVG = $('#addShapeDropDown').children("option:selected").html();
+        var scaleVal = $('#scale-rect-range').val();
+        $.ajax({
+            type: 'get',            //Request type
+            dataType: 'json',       //Data type - we will use JSON for almost everything 
+            url: '/scaleShape',   //The server endpoint we are connecting to
+            data: {
+                type: 1,
+                scale: scaleVal,
+                fileName: selectedSVG,
+            },
+            success: function(data) {
+                returnVal = data.returnData;
+                if(returnVal == 0) {
+                    location.reload();
+                } else {
+                    alert("ERROR: couldn't scale rectangles");
+                }
+                console.log(returnVal);
+
+            },
+            fail: function(error) {
+                //console.log(error); 
+            }
+            
+        });
+    });
 
     /* 
      * ADD CIRCLE 
@@ -617,22 +637,14 @@ $(document).ready(function() {
         var r = $('#r-input').val();
         var unit = $('#unit-circ-input').val();
 
-        console.log("Created circle with cx:" + cx + ", cy:" + cy + ", r:" + r + ", unit:" + unit);
-        /* let circle;
-        circle.append('cx', cx);
-        circle.append('cy', cy);
-        circle.append('r', r);
-        circle.append('units', unit); */
         let string = '{"cx":' + cx + ',"cy":' + cy + ',"r":' + r + ',"units":"' + unit + '"}';
         console.log(string);
-        /* let JSONString = string.stringify(string);
-        console.log(JSONString); */
 
-        var selectedSVG = $('#chooseSVGDropdown').children("option:selected").html();
+        var selectedSVG = $('#addShapeDropDown').children("option:selected").html();
         console.log(selectedSVG);
         $.ajax({
             type: 'get',            //Request type
-            dataType: 'int',       //Data type - we will use JSON for almost everything 
+            dataType: 'json',       //Data type - we will use JSON for almost everything 
             url: '/addShape',   //The server endpoint we are connecting to
             data: {
                 JSONdata: string,
@@ -640,6 +652,11 @@ $(document).ready(function() {
                 fileName: selectedSVG
             },
             success: function (data) {      
+                if(data.returnData == 0) {
+                    location.reload();
+                } else {
+                    alert("Circle not saved");
+                }
             },
             fail: function(error) {
                 console.log(error); 
@@ -647,7 +664,7 @@ $(document).ready(function() {
     
         });
 
-        $.ajax({
+        /* $.ajax({
             type: 'get',            //Request type
             dataType: 'json',       //Data type - we will use JSON for almost everything 
             url: '/loadFiles',   //The server endpoint we are connecting to
@@ -664,7 +681,7 @@ $(document).ready(function() {
             }
         });
 
-        $('#add-circle-modal').modal('toggle');
+        $('#add-circle-modal').modal('toggle'); */
         /* $('#contents-table-body').append('<tr>\
                             <th class="col-component">Circle 3</th>\
                             <td class="col-summary"> cx: ' + cx + unit + ' cy:' + cy + unit + ' r:' + r + unit + '</td>\
@@ -673,7 +690,7 @@ $(document).ready(function() {
                             </td>\
                             </tr>'); */
         //alert("Sucessfully created circle!");
-        location.reload(true);
+        //location.reload(true);
     });
 
 
@@ -685,16 +702,16 @@ $(document).ready(function() {
         var height = $('#height-input').val();
         var unit = $('#unit-rect-input').val();
 
-        console.log("Created Rect with x:" + x + ", y:" + y + ", width:" + width + ", height:" + height + ", unit:" + unit);
+        //console.log("Created Rect with x:" + x + ", y:" + y + ", width:" + width + ", height:" + height + ", unit:" + unit);
         let string = '{"x":' + x + ',"y":' + y + ',"w":' + width + ',"h":' + height + ',"units":"' + unit + '"}';
         console.log(string);
 
 
-        var selectedSVG = $('#chooseSVGDropdown').children("option:selected").html();
+        var selectedSVG = $('#addShapeDropDown').children("option:selected").html();
         console.log(selectedSVG);
         $.ajax({
             type: 'get',            //Request type
-            dataType: 'int',       //Data type - we will use JSON for almost everything 
+            dataType: 'json',       //Data type - we will use JSON for almost everything 
             url: '/addShape',   //The server endpoint we are connecting to
             data: {
                 JSONdata: string,
@@ -702,7 +719,13 @@ $(document).ready(function() {
                 fileName: selectedSVG
             },
             success: function (data) {
-                
+                console.log(data.returnData);
+                if(data.returnData == 0) {
+                    console.log("SUCCESS");
+                    location.reload();
+                } else {
+                    alert("Rect not saved");
+                }
             },
             fail: function(error) {
                 console.log(error); 
@@ -710,7 +733,7 @@ $(document).ready(function() {
     
         });
 
-        $.ajax({
+        /* $.ajax({
             type: 'get',            //Request type
             dataType: 'json',       //Data type - we will use JSON for almost everything 
             url: '/loadFiles',   //The server endpoint we are connecting to
@@ -726,7 +749,7 @@ $(document).ready(function() {
                 console.log(error); 
             }
         });      
-        $('#add-rect-modal').modal('toggle');
+        $('#add-rect-modal').modal('toggle'); */
         /* $('#contents-table-body').append('<tr>\
                             <th class="col-component">Rectangle 3</th>\
                             <td class="col-summary"> Upper left corner: x = ' + x + unit + ', y = ' + y + unit + ', Width:' + width + unit + ', Height:' + height + unit + '</td>\
@@ -735,7 +758,7 @@ $(document).ready(function() {
                             </td>\
                             </tr>'); */
         //alert("Sucessfully created rectangle!");
-        location.reload(true);
+        //location.reload(true);
 
     });
 
@@ -772,11 +795,14 @@ function loadFileLogTable(data) {
 /* Loads all options in the dropdown upon page load */
 function loadDropdownData(data) {
     $('#chooseSVGDropdown').html('');
+    $('#addShapeDropDown').html('');
     let files = data.fileList;
     for(var i = 0; i < files.length; i++) {
         $('#chooseSVGDropdown').append('<option value="' + files[i][0] + '">' + files[i][0] + '</option>');
+        $('#addShapeDropDown').append('<option value="' + files[i][0] + '">' + files[i][0] + '</option>');
     }
     $('#chooseSVGDropdown').append('<option value="" disabled selected hidden>Choose an SVG file</option>');
+    $('#addShapeDropDown').append('<option value="" disabled selected hidden>Choose an SVG file</option>');
     console.log("created dropdown with " + files.length + " items");
 }
 

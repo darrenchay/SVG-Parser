@@ -61,7 +61,7 @@ int writeAttrFromJSON(char* fileName, char* schemaFile, int index, int type, cha
 Attribute* JSONtoAttr(const char* JSONstring);
 int updateCircle(Circle* oldCirc, Circle* newCirc);
 int updateRect(Rectangle* oldRect, Rectangle* newRect);
-
+int scaleShape(char* fileName, char* schemaFile, char* scaleFactorString, int type);
 
 /** Function to create an SVG object based on the contents of an SVG file.
  *@pre File name cannot be an empty string or NULL.
@@ -2310,6 +2310,70 @@ int updateRect(Rectangle* oldRect, Rectangle* newRect) {
     return 0;
 }
 
+int scaleShape(char* fileName, char* schemaFile, char* scaleFactorString, int type) {
+    if(scaleFactorString == NULL || type < 1 || type > 2 || fileName == NULL || schemaFile == NULL) {
+        return -1;
+    }
+    char* buffer;
+    double scaleFactor = strtod(scaleFactorString, &buffer);
+
+    printf("scale: %lf\n", scaleFactor);
+
+    SVGimage* img = createValidSVGimage(fileName, schemaFile);
+    if(img == NULL) {
+        return -1;
+    }
+
+    if(type == 1) {
+        List* rectList = getRects(img);
+        if(rectList == NULL) {
+            return -2;
+        }
+        void* elem;
+        printf("len: %d\n", getLength(rectList));
+
+        //getting the element at the right index
+        ListIterator iter = createIterator(rectList);
+        while((elem = nextElement(&iter)) != NULL) {
+            Rectangle* rect = (Rectangle *)elem;
+            printf("old width: %lf\n", rect->width);
+            rect->width = rect->width * scaleFactor;
+            printf("new: %lf\n", rect->width);
+            rect->height = rect->height * scaleFactor;
+        }
+        freeList(rectList);
+    } else if(type == 2) {
+        List* circleList = getCircles(img);
+        if(circleList == NULL) {
+            return -2;
+        }
+        void* elem;
+
+        //getting the element at the right index
+        ListIterator iter = createIterator(circleList);
+        while((elem = nextElement(&iter)) != NULL) {
+            Circle* circ = (Circle *)elem;
+            printf("old: %lf\n", circ->r);
+            circ->r = circ->r * scaleFactor;
+            printf("new: %lf\n", circ->r);
+        }
+        freeList(circleList);
+    }
+
+    if(validateSVGimage(img, schemaFile) == true) {
+        if(writeSVGimage(img, fileName) == true) {
+            deleteSVGimage(img);
+            return 0;
+        } else {
+            deleteSVGimage(img);
+            return -4;
+        }
+    } else {
+        deleteSVGimage(img);
+        return -5;
+    }
+
+}
 
 /* ******************************* List helper functions  - MUST be implemented *************************** */
 
