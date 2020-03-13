@@ -332,5 +332,27 @@ app.get('/saveAttr', function(req, res) {
 
 });
 
+app.get('/saveStrings', function(req, res) {
+  let sharedLib = ffi.Library('./libsvgparse', {
+    'saveTitleAndDesc' : [ 'int', [ 'string', 'string', 'string', 'int' ] ],
+  });
+
+  let fileName = req.query.fileName;
+  console.log(fileName);
+
+  let data = req.query.data;
+  console.log(data);
+
+  let type = req.query.type;
+
+  let returnVal = sharedLib.saveTitleAndDesc('uploads/' + fileName, 'svg.xsd', data, type);
+  console.log(returnVal);
+
+  res.send({
+    returnData: returnVal
+  });
+
+});
+
 app.listen(portNum);
 console.log('Running app at localhost: ' + portNum);

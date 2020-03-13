@@ -62,6 +62,7 @@ Attribute* JSONtoAttr(const char* JSONstring);
 int updateCircle(Circle* oldCirc, Circle* newCirc);
 int updateRect(Rectangle* oldRect, Rectangle* newRect);
 int scaleShape(char* fileName, char* schemaFile, char* scaleFactorString, int type);
+int saveTitleAndDesc(char* fileName, char* schemaFile, char* JSONdata, int type);
 
 /** Function to create an SVG object based on the contents of an SVG file.
  *@pre File name cannot be an empty string or NULL.
@@ -1794,8 +1795,8 @@ char* groupToJSON(const Group *g){
 *@param event - a pointer to a List struct
 **/
 char* attrListToJSON(const List *list){
-    char *string = calloc(500, sizeof(char));
     if(list == NULL || getLength((List *)list) == 0) {
+        char *string = calloc(10, sizeof(char));
         strcpy(string, "[]");
         return string;
     }
@@ -1804,7 +1805,6 @@ char* attrListToJSON(const List *list){
     int length = 0;
     bool isFirstElem = true;
     
-    strcpy(string, "[");
     void *elem;
     ListIterator iter = createIterator((List *)list);
     while((elem = nextElement(&iter)) != NULL) {
@@ -1813,9 +1813,18 @@ char* attrListToJSON(const List *list){
         //getting attributeJSON string
         buffer = attrToJSON(attribute);
         length += strlen(buffer);
-        if(length > 500) { //realloc if length > size of string
-            string = realloc(buffer, length * sizeof(char));
-        }
+        free(buffer);
+
+    }
+
+    char *string = calloc(length + 100, sizeof(char));
+    strcpy(string, "[");
+    iter = createIterator((List *)list);
+    while((elem = nextElement(&iter)) != NULL) {
+        Attribute* attribute = (Attribute *)elem;
+
+        //getting attributeJSON string
+        buffer = attrToJSON(attribute);
 
         //checking if first att element, if it is, don't put a ,
         if(!isFirstElem) {
@@ -1839,8 +1848,8 @@ char* attrListToJSON(const List *list){
 *@param event - a pointer to a List struct
 **/
 char* circListToJSON(const List *list){
-    char *string = calloc(500, sizeof(char));
     if(list == NULL || getLength((List *)list) == 0) {
+        char *string = calloc(10, sizeof(char));
         strcpy(string, "[]");
         return string;
     }
@@ -1849,7 +1858,6 @@ char* circListToJSON(const List *list){
     int length = 0;
     bool isFirstElem = true;
     
-    strcpy(string, "[");
     void *elem;
     ListIterator iter = createIterator((List *)list);
     while((elem = nextElement(&iter)) != NULL) {
@@ -1858,9 +1866,18 @@ char* circListToJSON(const List *list){
         //getting circle JSON string
         buffer = circleToJSON(circle);
         length += strlen(buffer);
-        if(length > 500) { //realloc if length > size of string
-            string = realloc(buffer, length * sizeof(char));
-        }
+        free(buffer);
+
+    }
+
+    char *string = calloc(length + 100, sizeof(char));
+    strcpy(string, "[");
+    iter = createIterator((List *)list);
+    while((elem = nextElement(&iter)) != NULL) {
+        Circle* circle = (Circle *)elem;
+
+        //getting circle JSON string
+        buffer = circleToJSON(circle);
 
         //checking if first att element, if it is, don't put a ,
         if(!isFirstElem) {
@@ -1884,8 +1901,8 @@ char* circListToJSON(const List *list){
 *@param event - a pointer to a List struct
 **/
 char* rectListToJSON(const List *list){
-    char *string = calloc(500, sizeof(char));
     if(list == NULL || getLength((List *)list) == 0) {
+        char *string = calloc(10, sizeof(char));
         strcpy(string, "[]");
         return string;
     }
@@ -1893,9 +1910,9 @@ char* rectListToJSON(const List *list){
     char *buffer = NULL;
     int length = 0;
     bool isFirstElem = true;
-    
-    strcpy(string, "[");
     void *elem;
+    
+    
     ListIterator iter = createIterator((List *)list);
     while((elem = nextElement(&iter)) != NULL) {
         Rectangle* rect = (Rectangle *)elem;
@@ -1903,10 +1920,18 @@ char* rectListToJSON(const List *list){
         //getting rect JSON string
         buffer = rectToJSON(rect);
         length += strlen(buffer);
-        if(length > 500) { //realloc if length > size of string
-            string = realloc(buffer, length * sizeof(char));
-        }
+        free(buffer);
 
+    }
+
+    char *string = calloc(length + 100, sizeof(char));
+    strcpy(string, "[");
+    iter = createIterator((List *)list);
+    while((elem = nextElement(&iter)) != NULL) {
+        Rectangle* rect = (Rectangle *)elem;
+
+        //getting rect JSON string
+        buffer = rectToJSON(rect);
         //checking if first att element, if it is, don't put a ,
         if(!isFirstElem) {
             strcat(string, ",");
@@ -1959,11 +1984,6 @@ char* pathListToJSON(const List *list){
 
         //getting path JSON string
         buffer = pathToJSON(path);
-        //length += strlen(buffer);
-        /* printf("[%d] + [%ld]\n", length, length * sizeof(char));
-        if(length > 500) { //realloc if length > size of string
-            string = realloc(string, length * sizeof(char));
-        } */
         //checking if first att element, if it is, don't put a ,
         if(!isFirstElem) {
             strcat(string, ",");
@@ -1988,8 +2008,8 @@ char* pathListToJSON(const List *list){
 *@param event - a pointer to a List struct
 **/
 char* groupListToJSON(const List *list){
-    char *string = calloc(500, sizeof(char));
     if(list == NULL || getLength((List *)list) == 0) {
+        char *string = calloc(10, sizeof(char));
         strcpy(string, "[]");
         return string;
     }
@@ -1998,7 +2018,6 @@ char* groupListToJSON(const List *list){
     int length = 0;
     bool isFirstElem = true;
     
-    strcpy(string, "[");
     void *elem;
     ListIterator iter = createIterator((List *)list);
     while((elem = nextElement(&iter)) != NULL) {
@@ -2007,9 +2026,18 @@ char* groupListToJSON(const List *list){
         //getting group JSON string
         buffer = groupToJSON(group);
         length += strlen(buffer);
-        if(length > 500) { //realloc if length > size of string
-            string = realloc(buffer, length * sizeof(char));
-        }
+        free(buffer);
+
+    }
+
+    char *string = calloc(length + 150, sizeof(char));
+    strcpy(string, "[");
+    iter = createIterator((List *)list);
+    while((elem = nextElement(&iter)) != NULL) {
+        Group* group = (Group *)elem;
+
+        //getting group JSON string
+        buffer = groupToJSON(group);
 
         //checking if first att element, if it is, don't put a ,
         if(!isFirstElem) {
@@ -2390,6 +2418,40 @@ int scaleShape(char* fileName, char* schemaFile, char* scaleFactorString, int ty
     }
 
 }
+
+int saveTitleAndDesc(char* fileName, char* schemaFile, char* JSONdata, int type) {
+    if(JSONdata == NULL || type > 2 || type < 1 || fileName == NULL || schemaFile == NULL) {
+        return -1;
+    }
+
+    SVGimage* img = createValidSVGimage(fileName, schemaFile);
+    if(img == NULL) {
+        return -2;
+    }
+
+    if(type == 1) {
+        img->title[0] = '\0';
+        strcpy(img->title, JSONdata);
+    } else if (type == 2) {
+        img->description[0] = '\0';
+        strcpy(img->description, JSONdata);
+    }
+
+    if(validateSVGimage(img, schemaFile) == true) {
+        if(writeSVGimage(img, fileName) == true) {
+            deleteSVGimage(img);
+            return 0;
+        } else {
+            deleteSVGimage(img);
+            return -4;
+        }
+    } else {
+        deleteSVGimage(img);
+        return -5;
+    }
+
+}
+
 
 /* ******************************* List helper functions  - MUST be implemented *************************** */
 

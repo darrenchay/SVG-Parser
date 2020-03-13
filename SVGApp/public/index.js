@@ -103,12 +103,34 @@ $(document).ready(function() {
     
     document.getElementById('confirm-edit-title').onclick = function() {
         document.getElementById('titleInput').readOnly = true;
+        let string = $('#titleInput').val();
+        //console.log(string);
         $("#titleInput").removeClass("border border-dark");
         document.getElementById('edit-title').style.display = "block";
         document.getElementById('confirm-edit-title').style.display = "none";
-
-        
-        console.log("Title saved");
+        var selectedSVG = $('#chooseSVGDropdown').children("option:selected").html();
+        $.ajax({
+            type: 'get',            //Request type
+            dataType: 'json',       //Data type - we will use JSON for almost everything 
+            url: '/saveStrings',   //The server endpoint we are connecting to
+            data: {
+                fileName: selectedSVG,
+                type: 1,
+                data: string
+            },
+            success: function (data) {
+                console.log(data.returnData);
+                if(data.returnData == 0) {
+                    location.reload();
+                } else {
+                    alert("Incorrect title");
+                }                
+            },
+            fail: function(error) {
+                console.log(error); 
+            }
+    
+        });
     } 
     
     document.getElementById('edit-desc').onclick = function () {
@@ -124,7 +146,32 @@ $(document).ready(function() {
         $("#descInput").removeClass("border border-dark");
         document.getElementById('edit-desc').style.display = "block";
         document.getElementById('confirm-edit-desc').style.display = "none";
-        console.log("Desc saved");
+
+        var selectedSVG = $('#chooseSVGDropdown').children("option:selected").html();
+        let string = $('#descInput').val();
+        console.log(string);
+        $.ajax({
+            type: 'get',            //Request type
+            dataType: 'json',       //Data type - we will use JSON for almost everything 
+            url: '/saveStrings',   //The server endpoint we are connecting to
+            data: {
+                fileName: selectedSVG,
+                type: 2,
+                data: string
+            },
+            success: function (data) {
+                console.log(data.returnData);
+                if(data.returnData == 0) {
+                    location.reload();
+                } else {
+                    alert("Incorrect description");
+                }                
+            },
+            fail: function(error) {
+                console.log(error); 
+            }
+    
+        });
     } 
 
     /* 
