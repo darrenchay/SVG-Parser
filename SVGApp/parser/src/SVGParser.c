@@ -1536,8 +1536,10 @@ char* getCircJSONlist(char* fileName, char* schemaFile) {
 
 char* getPathJSONlist(char* fileName, char* schemaFile) {
     SVGimage* img = createValidSVGimage(fileName, schemaFile);
+    printf("%s\n", toString(img->paths));
 
     char* JSONstring = pathListToJSON(img->paths);
+
     deleteSVGimage(img);
     return JSONstring;
 }
@@ -1739,7 +1741,7 @@ char* rectToJSON(const Rectangle *r){
 *@param event - a pointer to a Path struct
 **/
 char* pathToJSON(const Path *p){
-    char* string = calloc(1000, sizeof(char));
+    char* string = calloc(100, sizeof(char));
     if(p == NULL) {
         strcpy(string, "{}");
         return string;
@@ -1753,7 +1755,7 @@ char* pathToJSON(const Path *p){
     sprintf(buffer, "%d", getLength(p->otherAttributes));
     strcat(string, buffer);
     strcat(string, "\"}");
-
+    printf("%ld\n", strlen(string));
     return string;
 }
 
@@ -1927,18 +1929,17 @@ char* rectListToJSON(const List *list){
 *@param event - a pointer to a List struct
 **/
 char* pathListToJSON(const List *list){
-    char *string = calloc(500, sizeof(char));
     if(list == NULL || getLength((List *)list) == 0) {
+        char *string = malloc(10 * sizeof(char));
         strcpy(string, "[]");
         return string;
     }
 
-    char *buffer = NULL;
+    char *buffer;
     int length = 0;
     bool isFirstElem = true;
-    
-    strcpy(string, "[");
     void *elem;
+
     ListIterator iter = createIterator((List *)list);
     while((elem = nextElement(&iter)) != NULL) {
         Path* path = (Path *)elem;
@@ -1946,10 +1947,23 @@ char* pathListToJSON(const List *list){
         //getting path JSON string
         buffer = pathToJSON(path);
         length += strlen(buffer);
-        if(length > 500) { //realloc if length > size of string
-            string = realloc(buffer, length * sizeof(char));
-        }
+        free(buffer);
+        //printf("%d\n", length);
+    }
+    
+    char *string = calloc(length + 100, sizeof(char));
+    strcpy(string, "[");
+    iter = createIterator((List *)list);
+    while((elem = nextElement(&iter)) != NULL) {
+        Path* path = (Path *)elem;
 
+        //getting path JSON string
+        buffer = pathToJSON(path);
+        //length += strlen(buffer);
+        /* printf("[%d] + [%ld]\n", length, length * sizeof(char));
+        if(length > 500) { //realloc if length > size of string
+            string = realloc(string, length * sizeof(char));
+        } */
         //checking if first att element, if it is, don't put a ,
         if(!isFirstElem) {
             strcat(string, ",");
@@ -1958,9 +1972,11 @@ char* pathListToJSON(const List *list){
         }
         strcat(string, buffer);
         free(buffer);
+        //printf("%s\n", string);
 
     }
     strcat(string, "]");
+    //printf("%s\n", string);
     return string;
 }
 
@@ -2145,7 +2161,7 @@ Circle* JSONtoCircle(const char* svgString) {
     if(circle->r < 0) {
         circle->r = 0;
     }
-    printf("[%s]\n", circleToString(circle));
+    //printf("[%s]\n", circleToString(circle));
     return circle;
 }
 

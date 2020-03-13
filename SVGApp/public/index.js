@@ -106,6 +106,8 @@ $(document).ready(function() {
         $("#titleInput").removeClass("border border-dark");
         document.getElementById('edit-title').style.display = "block";
         document.getElementById('confirm-edit-title').style.display = "none";
+
+        
         console.log("Title saved");
     } 
     
@@ -557,7 +559,7 @@ $(document).ready(function() {
 
     /* Scaling circle */
     $(document).on('input', '#scale-circ-range', function() {
-        $('#circ-range-lbl').html("Scale factor circle:" + $(this).val());
+        $('#circ-range-lbl').html("<b>Scale factor circle:</b>" + $(this).val());
         //console.log("val: " + $(this).val());
     });
 
@@ -593,7 +595,7 @@ $(document).ready(function() {
 
     /* Scaling rect */
     $(document).on('input', '#scale-rect-range', function() {
-        $('#rect-range-lbl').html("Scale Rectangle:" + $(this).val());
+        $('#rect-range-lbl').html("<b>Scale factor rectangle:</b>" + $(this).val());
         //console.log("val: " + $(this).val());
     });
 
@@ -655,7 +657,7 @@ $(document).ready(function() {
                 if(data.returnData == 0) {
                     location.reload();
                 } else {
-                    alert("Circle not saved");
+                    alert("Invalid Circle, make appropriate changes");
                 }
             },
             fail: function(error) {
@@ -663,34 +665,6 @@ $(document).ready(function() {
             }
     
         });
-
-        /* $.ajax({
-            type: 'get',            //Request type
-            dataType: 'json',       //Data type - we will use JSON for almost everything 
-            url: '/loadFiles',   //The server endpoint we are connecting to
-            success: function (data) {
-                loadFileLogTable(data);
-                loadDropdownData(data);
-                
-                //We write the object to the console to show that the request was successful
-                console.log("Successfully loaded table"); 
-                //console.log(data);
-            },
-            fail: function(error) {
-                console.log(error); 
-            }
-        });
-
-        $('#add-circle-modal').modal('toggle'); */
-        /* $('#contents-table-body').append('<tr>\
-                            <th class="col-component">Circle 3</th>\
-                            <td class="col-summary"> cx: ' + cx + unit + ' cy:' + cy + unit + ' r:' + r + unit + '</td>\
-                            <td class="col-attributes">0\
-                                <button class="btn btn-info btn-sm show-att-btn" data-toggle="modal" data-target="#show-attr-modal" type="button">Show</button>\
-                            </td>\
-                            </tr>'); */
-        //alert("Sucessfully created circle!");
-        //location.reload(true);
     });
 
 
@@ -724,7 +698,7 @@ $(document).ready(function() {
                     console.log("SUCCESS");
                     location.reload();
                 } else {
-                    alert("Rect not saved");
+                    alert("Rectangle not valid, please make appropriate changes");
                 }
             },
             fail: function(error) {
@@ -732,33 +706,6 @@ $(document).ready(function() {
             }
     
         });
-
-        /* $.ajax({
-            type: 'get',            //Request type
-            dataType: 'json',       //Data type - we will use JSON for almost everything 
-            url: '/loadFiles',   //The server endpoint we are connecting to
-            success: function (data) {
-                loadFileLogTable(data);
-                loadDropdownData(data);
-                
-                //We write the object to the console to show that the request was successful
-                console.log("Successfully loaded table"); 
-                //console.log(data);
-            },
-            fail: function(error) {
-                console.log(error); 
-            }
-        });      
-        $('#add-rect-modal').modal('toggle'); */
-        /* $('#contents-table-body').append('<tr>\
-                            <th class="col-component">Rectangle 3</th>\
-                            <td class="col-summary"> Upper left corner: x = ' + x + unit + ', y = ' + y + unit + ', Width:' + width + unit + ', Height:' + height + unit + '</td>\
-                            <td class="col-attributes">0\
-                                <button class="btn btn-info btn-sm show-att-btn" data-toggle="modal" data-target="#show-attr-modal" type="button">Show</button>\
-                            </td>\
-                            </tr>'); */
-        //alert("Sucessfully created rectangle!");
-        //location.reload(true);
 
     });
 
