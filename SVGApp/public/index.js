@@ -11,6 +11,8 @@ $(document).ready(function() {
     $('#titleInput').val('');
     $('#descInput').val('');
     $('#upload-file-btn').prop('disabled', true);
+    $('#scale-circ-range').prop('disabled', true);
+    $('#scale-rect-range').prop('disabled', true);
     
 
     $.ajax({
@@ -592,6 +594,9 @@ $(document).ready(function() {
     $("#addShapeDropDown").change(function(){
         var selectedSVG = $(this).children("option:selected").html();
         $('#add-circle-btn').prop('disabled', false);
+        $('#scale-rect-range').prop('disabled', false);
+        $('#scale-circ-range').prop('disabled', false);
+
         //$('#scale-circle-btn').prop('disabled', false);
         $('#add-rect-btn').prop('disabled', false);
         //$('#scale-rect-btn').prop('disabled', false);

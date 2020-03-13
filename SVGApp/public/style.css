@@ -4,13 +4,14 @@ html {
     min-height: 100%;
     margin: 0 auto;
     font-size: 16px;
-    background-color: #FFFFFF;
+    background-color: #6fbfe4;
 }
 body {
     height: 100%;
     min-height: 100%;
     line-height: 1.75;
-    background-color: #FFFFFF;
+    background-color: #6fbfe4;
+    background-image: url("https://www.google.com/url?sa=i&url=https%3A%2F%2Fgiphy.com%2Fgifs%2Fsnow-gallery-Cv7wrQjYcd6hO&psig=AOvVaw25Ni7QM0q-R-xXThumq6t_&ust=1584156593100000&source=images&cd=vfe&ved=0CAIQjRxqFwoTCPip9q_BlugCFQAAAAAdAAAAABAD");
 }
 a:link:hover {
     -webkit-transition: all 0.3s ease;
