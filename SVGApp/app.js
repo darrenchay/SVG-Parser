@@ -228,18 +228,30 @@ app.get('/createFile', function(req, res) {
   let titleDescJSON = req.query.titleDesc;
   console.log(titleDescJSON);
 
-  let returnVal = sharedLib.writeJSONSVGtoSVGFile(titleDescJSON, 'uploads/' + fileName + ".svg", 'svg.xsd');
-  console.log(returnVal);
+  const fs = require('fs');
 
-  /* let titleAndDescAsJSON = sharedLib.SVGdetailsToJSON('uploads/' + fileName, 'svg.xsd');
-  console.log(titleAndDescAsJSON);
+  let duplicate = 0;
+  /* Reading all svg files into items */
+  fs.readdir('uploads/', function(err, items) {
+    /* Creating the array of JSON objects for each SVG file */
+    for(var i = 0; i < items.length; i++) {
+      if(fileName + ".svg" == items[i]) {
+        duplicate = 1;
+        console.log("Duplicate file");
+        break;
+      }
+    };
 
-  let fileData = JSON.parse(titleAndDescAsJSON);
-  console.log(fileData.desc); */
-  res.send({
-    success: 1
+    if(duplicate == 0) {
+      let returnVal = sharedLib.writeJSONSVGtoSVGFile(titleDescJSON, 'uploads/' + fileName + ".svg", 'svg.xsd');
+      console.log(returnVal);
+    }
+
+    res.send({
+      returnVal: duplicate
+    });
+
   });
-
 });
 
 app.get('/addShape', function(req, res) {

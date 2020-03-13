@@ -8,6 +8,9 @@ $(document).ready(function() {
     $('#scale-rect-btn').prop('disabled', true);
     $('#edit-title').prop('disabled', true);
     $('#edit-desc').prop('disabled', true);
+    $('#titleInput').val('');
+    $('#descInput').val('');
+    $('#upload-file-btn').prop('disabled', true);
     
 
     $.ajax({
@@ -51,7 +54,10 @@ $(document).ready(function() {
     $(".custom-file-input").on("change", function() {
         var fileName = $(this).val().split("\\").pop();
         $(this).siblings(".custom-file-label").addClass("selected").html(fileName);
+        $('#upload-file-btn').prop('disabled', false);
+
     });
+    
 
     /* 
      * SVG VIEW PANEL FUNCTIONS
@@ -121,7 +127,7 @@ $(document).ready(function() {
             success: function (data) {
                 console.log(data.returnData);
                 if(data.returnData == 0) {
-                    location.reload();
+                    //location.reload();
                 } else {
                     alert("Incorrect title");
                 }                
@@ -162,7 +168,7 @@ $(document).ready(function() {
             success: function (data) {
                 console.log(data.returnData);
                 if(data.returnData == 0) {
-                    location.reload();
+                    //location.reload();
                 } else {
                     alert("Incorrect description");
                 }                
@@ -199,24 +205,12 @@ $(document).ready(function() {
                     titleDesc: JSON.stringify(convertTitleAndDesc("", ""))
                 },
                 success: function (data) {
-                    console.log("created file successfully");  
-                    location.reload();
-                    /* $.ajax({
-                        type: 'get',            //Request type
-                        dataType: 'json',       //Data type - we will use JSON for almost everything 
-                        url: '/loadFiles',   //The server endpoint we are connecting to
-                        success: function (data) {
-                            loadFileLogTable(data);
-                            loadDropdownData(data);
-                            
-                            //We write the object to the console to show that the request was successful
-                            console.log("Successfully loaded table"); 
-                            //console.log(data);
-                        },
-                        fail: function(error) {
-                            console.log(error); 
-                        }
-                    });       */         
+                    if(data.returnVal == 0) {
+                        console.log("created file successfully");  
+                        location.reload();   
+                    } else {
+                        alert("File already exists");
+                    }    
                 },
                 fail: function(error) {
                     console.log(error); 
@@ -598,15 +592,16 @@ $(document).ready(function() {
     $("#addShapeDropDown").change(function(){
         var selectedSVG = $(this).children("option:selected").html();
         $('#add-circle-btn').prop('disabled', false);
-        $('#scale-circle-btn').prop('disabled', false);
+        //$('#scale-circle-btn').prop('disabled', false);
         $('#add-rect-btn').prop('disabled', false);
-        $('#scale-rect-btn').prop('disabled', false);
+        //$('#scale-rect-btn').prop('disabled', false);
         console.log("Selected: " + selectedSVG);
     });
 
     /* Scaling circle */
     $(document).on('input', '#scale-circ-range', function() {
         $('#circ-range-lbl').html("<b>Scale factor circle:</b>" + $(this).val());
+        $('#scale-circle-btn').prop('disabled', false);
         //console.log("val: " + $(this).val());
     });
 
@@ -643,6 +638,7 @@ $(document).ready(function() {
     /* Scaling rect */
     $(document).on('input', '#scale-rect-range', function() {
         $('#rect-range-lbl').html("<b>Scale factor rectangle:</b>" + $(this).val());
+        $('#scale-rect-btn').prop('disabled', false);
         //console.log("val: " + $(this).val());
     });
 
