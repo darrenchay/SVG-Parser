@@ -757,8 +757,8 @@ $(document).ready(function() {
 /* Adds a new row to the file log table for the file input */
 function appendNewSVGFile(file) {
     $('#file-table-body').append('<tr> \
-                                <td class="img-cell"><img src="' + file[0] + '" href="' + file[0] + '" class="img-responsive img-thumbnail image" alt="Responsive image"></td> \
-                                <td><a href="' + file[0] + '">' + file[0] + '</a></td> \
+                                <td class="img-cell"><a download="' + file[0] + '" href="' + file[0] + '" ><img src="' + file[0] + '" href="' + file[0] + '" class="img-responsive img-thumbnail image" alt="Responsive image"></a></td> \
+                                <td><a href="' + file[0] + '" download>' + file[0] + '</a></td> \
                                 <td>' + file[1] + 'KB</td> \
                                 <td>' + file[2] + '</td> \
                                 <td>' + file[3] + '</td> \
